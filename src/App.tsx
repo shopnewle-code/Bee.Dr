@@ -67,6 +67,7 @@ const App = () => (
             <Route path="/timeline" element={<ProtectedRoute><MedicalTimeline /></ProtectedRoute>} />
             <Route path="/alerts" element={<ProtectedRoute><EmergencyAlerts /></ProtectedRoute>} />
             <Route path="/family" element={<ProtectedRoute><FamilyDashboard /></ProtectedRoute>} />
+            <Route path="/health-profile" element={<ProtectedRoute><HealthProfilePage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
