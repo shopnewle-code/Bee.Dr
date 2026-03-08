@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
   User, ArrowLeft, Camera, Crown, Shield, HelpCircle,
-  ChevronRight, Globe, LogOut
+  ChevronRight, Globe, LogOut, HeartPulse
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
@@ -44,6 +44,7 @@ const ProfilePage = () => {
   };
 
   const menuItems = [
+    { icon: HeartPulse, label: 'Health Profile', path: '/health-profile', desc: 'Blood group, allergies' },
     { icon: Crown, label: 'Subscription', path: '/subscription', desc: 'Free Plan' },
     { icon: Globe, label: 'Language', path: '/language', desc: 'English' },
     { icon: Shield, label: 'Privacy & Security', path: '/settings', desc: 'Data protection' },
