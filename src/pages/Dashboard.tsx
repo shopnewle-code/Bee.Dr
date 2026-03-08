@@ -93,6 +93,49 @@ const DashboardPage = () => {
           </div>
         </motion.div>
 
+        {/* Health Profile Summary */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
+          onClick={() => navigate('/health-profile')}
+          className="bg-card border border-border rounded-xl p-4 cursor-pointer hover:border-primary/30 hover:shadow-md transition-all">
+          {healthProfile ? (() => {
+            const bmi = healthProfile.height_cm && healthProfile.weight_kg
+              ? (Number(healthProfile.weight_kg) / Math.pow(Number(healthProfile.height_cm) / 100, 2)).toFixed(1)
+              : null;
+            const allergyCount = healthProfile.allergies?.length || 0;
+            return (
+              <div className="flex items-center gap-4">
+                <div className="grid grid-cols-3 gap-3 flex-1">
+                  <div className="text-center">
+                    <Droplets className="w-4 h-4 text-primary mx-auto mb-1" />
+                    <p className="text-lg font-bold text-foreground">{healthProfile.blood_group || '—'}</p>
+                    <p className="text-[10px] text-muted-foreground">Blood Group</p>
+                  </div>
+                  <div className="text-center">
+                    <HeartPulse className="w-4 h-4 text-primary mx-auto mb-1" />
+                    <p className="text-lg font-bold text-foreground">{bmi || '—'}</p>
+                    <p className="text-[10px] text-muted-foreground">BMI</p>
+                  </div>
+                  <div className="text-center">
+                    <Shield className="w-4 h-4 text-destructive mx-auto mb-1" />
+                    <p className="text-lg font-bold text-foreground">{allergyCount}</p>
+                    <p className="text-[10px] text-muted-foreground">Allergies</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+              </div>
+            );
+          })() : (
+            <div className="flex items-center gap-3">
+              <HeartPulse className="w-5 h-5 text-primary" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">Set up Health Profile</p>
+                <p className="text-xs text-muted-foreground">Add blood group, height, weight & allergies</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </div>
+          )}
+        </motion.div>
+
         {/* Main Actions */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <div className="grid grid-cols-2 gap-3">
