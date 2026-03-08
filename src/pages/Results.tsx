@@ -14,11 +14,8 @@ import ReportExplanation from '@/components/report/ReportExplanation';
 import ReportChat from '@/components/report/ReportChat';
 import RiskRadarChart from '@/components/report/RiskRadarChart';
 import { useSimpleLanguage } from '@/hooks/use-simple-language';
+import { useLanguage, SUPPORTED_LANGUAGES } from '@/hooks/use-language';
 import { toast } from 'sonner';
-
-type Language = 'en' | 'hi';
-
-const langLabels: Record<Language, string> = { en: 'English', hi: 'हिन्दी' };
 
 const ResultsPage = () => {
   const { id } = useParams<{ id: string }>();
