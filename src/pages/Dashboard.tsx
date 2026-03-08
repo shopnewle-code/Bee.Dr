@@ -170,6 +170,11 @@ const DashboardPage = () => {
               { icon: Search, label: 'Medicine Scanner', desc: 'Drug info & AI', path: '/medicine-scanner', gradient: false },
               { icon: MapPin, label: 'Health Map', desc: 'Nearby services', path: '/health-map', gradient: false },
               { icon: ShoppingCart, label: 'Medicine Store', desc: 'Buy medicines', path: '/medicine-store', gradient: false },
+              { icon: Heart, label: 'ECG Interpreter', desc: 'AI ECG analysis', path: '/ecg', gradient: false },
+              { icon: FileImage, label: 'X-ray AI', desc: 'Radiology AI', path: '/xray', gradient: false },
+              { icon: Brain, label: 'MRI Analysis', desc: 'MRI AI reader', path: '/mri', gradient: false },
+              { icon: ClipboardList, label: 'Treatment Plan', desc: 'AI care plan', path: '/treatment-plan', gradient: false },
+              { icon: Building2, label: 'Pharmacy Panel', desc: 'Partner dashboard', path: '/pharmacy-dashboard', gradient: false },
             ].map(({ icon: Icon, label, desc, path, gradient }, i) => (
               <motion.button key={label}
                 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
