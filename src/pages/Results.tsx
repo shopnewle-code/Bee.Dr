@@ -25,7 +25,7 @@ const ResultsPage = () => {
   const [loading, setLoading] = useState(true);
   const [analysis, setAnalysis] = useState<any>(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
-  const [language, setLanguage] = useState<Language>('en');
+  const { language, setLanguage, languageInfo } = useLanguage();
   const { simpleLanguage } = useSimpleLanguage();
 
   useEffect(() => {
