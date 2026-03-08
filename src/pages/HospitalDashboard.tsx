@@ -1,15 +1,18 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@/contexts/ThemeContext';
 import {
   Building2, Users, Bed, Activity, TrendingUp, BarChart3, Settings,
   Bell, ChevronRight, ArrowUpRight, ArrowDownRight, Search,
   Stethoscope, ClipboardList, AlertTriangle, Heart, Thermometer,
-  UserPlus, UserMinus, Clock, Zap, Shield
+  UserPlus, UserMinus, Clock, Zap, Shield, Sun, Moon,
+  ArrowLeft, DollarSign, PieChart, Calendar
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { StatCard } from '@/components/medical/Cards';
 
 const hospitalStats = [
   { label: 'Total Patients', value: '347', change: '+12', up: true, icon: Users },
