@@ -4,37 +4,19 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Activity, ArrowLeft, Heart, Droplets, Pill, AlertTriangle,
-  CheckCircle2, AlertCircle, Info, ChevronRight, Shield
+  Activity, ArrowLeft, Shield, FileText, MessageCircle,
+  Globe, Loader2
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
+import ReportExplanation from '@/components/report/ReportExplanation';
+import ReportChat from '@/components/report/ReportChat';
+import { toast } from 'sonner';
 
-const severityConfig = {
-  low: { icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10', label: 'Low Risk' },
-  medium: { icon: AlertCircle, color: 'text-warning', bg: 'bg-warning/10', label: 'Medium Risk' },
-  high: { icon: AlertTriangle, color: 'text-destructive', bg: 'bg-destructive/10', label: 'High Risk' },
-};
+type Language = 'en' | 'hi';
 
-const riskIcons: Record<string, typeof Heart> = {
-  cardiovascular: Heart,
-  anemia: Droplets,
-  diabetes: Pill,
-  abnormal_findings: AlertTriangle,
-};
-
-const riskLabels: Record<string, string> = {
-  cardiovascular: 'Cardiovascular',
-  anemia: 'Anemia',
-  diabetes: 'Diabetes',
-  abnormal_findings: 'Abnormal Findings',
-};
-
-const barColors: Record<string, string> = {
-  success: 'bg-success',
-  warning: 'bg-warning',
-  destructive: 'bg-destructive',
-};
+const langLabels: Record<Language, string> = { en: 'English', hi: 'हिन्दी' };
 
 const ResultsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -42,19 +24,53 @@ const ResultsPage = () => {
   const navigate = useNavigate();
   const [scan, setScan] = useState<Tables<'scan_results'> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [analysis, setAnalysis] = useState<any>(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [language, setLanguage] = useState<Language>('en');
 
   useEffect(() => {
     if (!id || !user) return;
-    supabase
-      .from('scan_results')
-      .select('*')
-      .eq('id', id)
-      .single()
-      .then(({ data }) => {
-        setScan(data);
-        setLoading(false);
-      });
+    supabase.from('scan_results').select('*').eq('id', id).single()
+      .then(({ data }) => { setScan(data); setLoading(false); });
   }, [id, user]);
+
+  // Fetch detailed analysis when scan loads or language changes
+  useEffect(() => {
+    if (!scan) return;
+    const fetchAnalysis = async () => {
+      setAnalysisLoading(true);
+      try {
+        const resp = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-report`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            },
+            body: JSON.stringify({
+              scanData: {
+                file_name: scan.file_name,
+                risk_scores: scan.risk_scores,
+                insights: scan.insights,
+                recommendations: scan.recommendations,
+                raw_data: scan.raw_data,
+              },
+              language,
+            }),
+          }
+        );
+        if (!resp.ok) throw new Error('Failed to analyze');
+        const data = await resp.json();
+        setAnalysis(data);
+      } catch (e: any) {
+        toast.error(e.message || 'Failed to load analysis');
+      } finally {
+        setAnalysisLoading(false);
+      }
+    };
+    fetchAnalysis();
+  }, [scan, language]);
 
   if (loading) {
     return (
@@ -72,154 +88,167 @@ const ResultsPage = () => {
     );
   }
 
-  const riskScores = (scan.risk_scores as any) || {};
-  const insights = (scan.insights as any[]) || [];
-  const recommendations = (scan.recommendations as any[]) || [];
-
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-3">
+      {/* Header */}
+      <header className="border-b border-border bg-card sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-3 flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
             <ArrowLeft className="w-4 h-4" />
           </Button>
-          <Activity className="w-6 h-6 text-primary" />
-          <span className="text-lg font-display font-bold text-foreground">Analysis Results</span>
+          <Activity className="w-5 h-5 text-primary" />
+          <div className="flex-1 min-w-0">
+            <span className="text-sm font-display font-bold text-foreground block truncate">{scan.file_name}</span>
+            <span className="text-[11px] text-muted-foreground">
+              {new Date(scan.created_at).toLocaleDateString()}
+            </span>
+          </div>
+          {/* Language Toggle */}
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
+            {(Object.keys(langLabels) as Language[]).map((lang) => (
+              <button key={lang} onClick={() => setLanguage(lang)}
+                className={`text-[11px] px-2.5 py-1 rounded-md font-medium transition-all flex items-center gap-1 ${
+                  language === lang
+                    ? 'bg-card text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}>
+                <Globe className="w-3 h-3" />
+                {langLabels[lang]}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-3xl space-y-8">
-        {/* Report header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-2xl font-display font-bold text-foreground mb-1">{scan.file_name}</h1>
-          <p className="text-sm text-muted-foreground">Analyzed on {new Date(scan.created_at).toLocaleDateString()}</p>
-        </motion.div>
+      <main className="container mx-auto px-4 py-6 max-w-3xl">
+        <Tabs defaultValue="explanation" className="w-full">
+          <TabsList className="w-full grid grid-cols-3 mb-6">
+            <TabsTrigger value="explanation" className="flex items-center gap-1.5 text-xs">
+              <FileText className="w-3.5 h-3.5" /> Report
+            </TabsTrigger>
+            <TabsTrigger value="risks" className="flex items-center gap-1.5 text-xs">
+              <Shield className="w-3.5 h-3.5" /> Risks
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="flex items-center gap-1.5 text-xs">
+              <MessageCircle className="w-3.5 h-3.5" /> Ask AI
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Risk Assessment */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <h2 className="text-xl font-display font-semibold text-foreground mb-4 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-primary" />
-            Health Risk Assessment
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {Object.entries(riskScores).map(([key, value]: [string, any], i) => {
-              const Icon = riskIcons[key] || AlertTriangle;
-              return (
-                <motion.div
-                  key={key}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.15 + i * 0.1 }}
-                  className="bg-card border border-border rounded-xl p-4"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Icon className="w-5 h-5 text-primary" />
-                      <span className="font-medium text-foreground text-sm">{riskLabels[key] || key}</span>
-                    </div>
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                      value.color === 'success' ? 'bg-success/10 text-success' :
-                      value.color === 'warning' ? 'bg-warning/10 text-warning' :
-                      'bg-destructive/10 text-destructive'
-                    }`}>
-                      {value.label}
-                    </span>
-                  </div>
-                  <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
-                    <motion.div
-                      className={`h-full rounded-full ${barColors[value.color] || 'bg-primary'}`}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${value.score * 100}%` }}
-                      transition={{ delay: 0.3 + i * 0.1, duration: 0.8 }}
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{Math.round(value.score * 100)}% risk score</p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.section>
+          {/* Tab: Report Explanation */}
+          <TabsContent value="explanation">
+            {analysisLoading ? (
+              <div className="flex flex-col items-center justify-center py-16 gap-3">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                <p className="text-sm text-muted-foreground">Analyzing your report with AI...</p>
+              </div>
+            ) : analysis ? (
+              <ReportExplanation analysis={analysis} />
+            ) : (
+              <p className="text-center text-muted-foreground py-12">Unable to load analysis</p>
+            )}
+          </TabsContent>
 
-        {/* AI Insights */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <h2 className="text-xl font-display font-semibold text-foreground mb-4 flex items-center gap-2">
-            <Info className="w-5 h-5 text-primary" />
-            AI Insights
-          </h2>
-          <div className="space-y-3">
-            {insights.map((insight: any, i: number) => {
-              const config = severityConfig[insight.severity as keyof typeof severityConfig] || severityConfig.low;
-              const SevIcon = config.icon;
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + i * 0.1 }}
-                  className="bg-card border border-border rounded-xl p-4"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={`w-8 h-8 rounded-lg ${config.bg} flex items-center justify-center shrink-0 mt-0.5`}>
-                      <SevIcon className={`w-4 h-4 ${config.color}`} />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-foreground text-sm">{insight.title}</h3>
-                        <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${config.bg} ${config.color}`}>
-                          {config.label}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{insight.detail}</p>
+          {/* Tab: Risk Assessment */}
+          <TabsContent value="risks">
+            {analysisLoading ? (
+              <div className="flex flex-col items-center justify-center py-16 gap-3">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                <p className="text-sm text-muted-foreground">Evaluating health risks...</p>
+              </div>
+            ) : analysis ? (
+              <div className="space-y-6">
+                {/* Overall Risks from analysis */}
+                {analysis.overallRisks?.length > 0 && (
+                  <div className="space-y-3">
+                    {analysis.overallRisks.map((risk: any, i: number) => (
+                      <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.08 }}
+                        className="bg-card border border-border rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-semibold text-foreground text-sm">{risk.condition}</span>
+                          <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                            risk.level === 'high' ? 'bg-destructive/10 text-destructive' :
+                            risk.level === 'medium' ? 'bg-warning/10 text-warning' :
+                            'bg-success/10 text-success'
+                          }`}>{risk.level} risk</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">{risk.explanation}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Abnormal tests summary */}
+                {analysis.tests?.filter((t: any) => t.status !== 'normal').length > 0 && (
+                  <div>
+                    <h3 className="font-display font-semibold text-foreground mb-3 text-sm">Abnormal Values</h3>
+                    <div className="space-y-2">
+                      {analysis.tests.filter((t: any) => t.status !== 'normal').map((t: any, i: number) => (
+                        <div key={i} className={`bg-card border rounded-xl p-3 ${
+                          t.status === 'critical' ? 'border-destructive/30' :
+                          t.status === 'high' ? 'border-warning/30' : 'border-info/30'
+                        }`}>
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-foreground text-sm">{t.name}</span>
+                            <span className="text-sm font-display font-bold text-foreground">{t.value} {t.unit}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">Normal: {t.normalRange} {t.unit}</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.section>
+                )}
 
-        {/* Recommendations */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-          <h2 className="text-xl font-display font-semibold text-foreground mb-4 flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-primary" />
-            Personalized Action Plan
-          </h2>
-          <div className="space-y-2">
-            {recommendations.map((rec: any, i: number) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + i * 0.08 }}
-                className="bg-card border border-border rounded-xl p-4 flex items-center gap-3"
-              >
-                <div className={`w-2 h-2 rounded-full shrink-0 ${
-                  rec.priority === 'high' ? 'bg-destructive' :
-                  rec.priority === 'medium' ? 'bg-warning' : 'bg-success'
-                }`} />
-                <div className="flex-1">
-                  <p className="font-medium text-foreground text-sm">{rec.action}</p>
-                  <p className="text-xs text-muted-foreground">{rec.context}</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
+                {/* Lifestyle recs */}
+                {analysis.lifestyleRecommendations?.length > 0 && (
+                  <div>
+                    <h3 className="font-display font-semibold text-foreground mb-3 text-sm">Action Plan</h3>
+                    <div className="space-y-2">
+                      {analysis.lifestyleRecommendations.map((rec: any, i: number) => (
+                        <div key={i} className="bg-card border border-border rounded-xl p-3 flex items-start gap-3">
+                          <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
+                            rec.priority === 'high' ? 'bg-destructive' :
+                            rec.priority === 'medium' ? 'bg-warning' : 'bg-success'
+                          }`} />
+                          <div>
+                            <span className="font-medium text-foreground text-xs">{rec.category}</span>
+                            <p className="text-xs text-muted-foreground">{rec.advice}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-center text-muted-foreground py-12">Unable to load risk assessment</p>
+            )}
+          </TabsContent>
+
+          {/* Tab: Chat */}
+          <TabsContent value="chat">
+            <ReportChat
+              scanData={{
+                file_name: scan.file_name,
+                risk_scores: scan.risk_scores,
+                insights: scan.insights,
+                recommendations: scan.recommendations,
+                raw_data: scan.raw_data,
+              }}
+              suggestedQuestions={analysis?.suggestedQuestions || []}
+            />
+          </TabsContent>
+        </Tabs>
 
         {/* Disclaimer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="bg-accent/30 border border-border rounded-xl p-4"
-        >
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            ⚕️ <strong>Medical Disclaimer:</strong> This AI analysis is for informational purposes only and does not constitute medical advice. Results are generated using machine learning models and may not be 100% accurate. Always consult a qualified healthcare professional for diagnosis and treatment decisions. Bee.dr does not replace your doctor.
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+          className="bg-accent/30 border border-border rounded-xl p-4 mt-6">
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            ⚕️ <strong>Medical Disclaimer:</strong> This AI analysis is for informational purposes only and does not constitute medical advice. Always consult a qualified healthcare professional for diagnosis and treatment. Bee.dr does not replace your doctor.
           </p>
         </motion.div>
 
-        <div className="flex gap-3 pb-8">
+        <div className="flex gap-3 pb-8 mt-4">
           <Button variant="outline" className="flex-1" onClick={() => navigate('/dashboard')}>
             Back to Dashboard
           </Button>
