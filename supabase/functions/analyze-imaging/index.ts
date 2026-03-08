@@ -73,7 +73,7 @@ Include specific measurements and anatomical landmarks.`,
 Use standard radiology reporting terminology (BIRADS, LIRADS, Lung-RADS where applicable).`,
     };
 
-    const systemPrompt = modalityPrompts[modality] || modalityPrompts.xray;
+    const systemPrompt = langModifier + (modalityPrompts[modality] || modalityPrompts.xray);
     const userContent: any[] = [
       { type: "text", text: `Analyze this ${modality.toUpperCase()} image.${patientContext ? ` Patient context: ${patientContext}` : ''} Provide a thorough clinical analysis.` },
     ];
