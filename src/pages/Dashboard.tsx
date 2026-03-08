@@ -167,6 +167,9 @@ const DashboardPage = () => {
               { icon: Users, label: 'Family Health', desc: 'Track family', path: '/family', gradient: false },
               { icon: Watch, label: 'Wearables', desc: 'Sync devices', path: '/wearables', gradient: false },
               { icon: Stethoscope, label: 'Symptom Checker', desc: 'AI diagnosis', path: '/symptom-checker', gradient: false },
+              { icon: Search, label: 'Medicine Scanner', desc: 'Drug info & AI', path: '/medicine-scanner', gradient: false },
+              { icon: MapPin, label: 'Health Map', desc: 'Nearby services', path: '/health-map', gradient: false },
+              { icon: ShoppingCart, label: 'Medicine Store', desc: 'Buy medicines', path: '/medicine-store', gradient: false },
             ].map(({ icon: Icon, label, desc, path, gradient }, i) => (
               <motion.button key={label}
                 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}

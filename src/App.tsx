@@ -99,6 +99,9 @@ const App = () => (
             <Route path="/consultations" element={<ProtectedRoute><ConsultationHistoryPage /></ProtectedRoute>} />
             <Route path="/wearables" element={<ProtectedRoute><WearableIntegrationPage /></ProtectedRoute>} />
             <Route path="/symptom-checker" element={<ProtectedRoute><SymptomCheckerPage /></ProtectedRoute>} />
+            <Route path="/medicine-scanner" element={<ProtectedRoute><MedicineScannerPage /></ProtectedRoute>} />
+            <Route path="/health-map" element={<ProtectedRoute><HealthMapPage /></ProtectedRoute>} />
+            <Route path="/medicine-store" element={<ProtectedRoute><MedicineMarketplacePage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
