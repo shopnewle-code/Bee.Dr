@@ -32,7 +32,7 @@ const VoiceDoctorPage = () => {
 
   const scribe = useScribe({
     modelId: 'scribe_v2_realtime',
-    commitStrategy: 'vad',
+    commitStrategy: CommitStrategy.VAD,
     onPartialTranscript: (data) => {
       setCurrentTranscript(data.text);
     },
