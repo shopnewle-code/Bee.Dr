@@ -44,7 +44,9 @@ const ProfilePage = () => {
   };
 
   const menuItems = [
-    { icon: HeartPulse, label: 'Health Profile', path: '/health-profile', desc: 'Blood group, allergies' },
+    { icon: HeartPulse, label: 'Health Profile', path: '/health-profile', desc: 'Blood group, allergies, lifestyle' },
+    { icon: Stethoscope, label: 'Find a Doctor', path: '/doctors', desc: 'Consult specialists' },
+    { icon: CalendarCheck, label: 'My Consultations', path: '/consultations', desc: 'Booking history' },
     { icon: Crown, label: 'Subscription', path: '/subscription', desc: 'Free Plan' },
     { icon: Globe, label: 'Language', path: '/language', desc: 'English' },
     { icon: Shield, label: 'Privacy & Security', path: '/settings', desc: 'Data protection' },
