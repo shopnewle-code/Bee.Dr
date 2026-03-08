@@ -632,11 +632,11 @@ Include specific measurements and anatomical landmarks.
 ---
 
 ### P-020: CT Scan Analyzer
-- **Function**: `analyze-imaging` (modality="ct") — future
+- **Function**: `analyze-ct`
 - **Model**: `google/gemini-2.5-flash` (vision)
 - **Type**: System prompt
 - **Output**: Streaming text
-- **Status**: 🔧 PLANNED
+- **Status**: ✅ LIVE
 
 ```
 You are a senior radiologist AI analyzing a CT scan. Provide:
@@ -1421,11 +1421,11 @@ IMPORTANT:
 ---
 
 ### P-044: Skin Condition Progress Tracker
-- **Function**: Skin scanner (follow-up)
+- **Function**: `skin-progress`
 - **Model**: `google/gemini-2.5-flash` (vision)
 - **Type**: System prompt
 - **Output**: JSON
-- **Status**: 🔧 PLANNED
+- **Status**: ✅ LIVE
 
 ```
 Compare two skin condition images taken at different dates and assess progress.
