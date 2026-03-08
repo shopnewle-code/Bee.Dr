@@ -405,22 +405,76 @@ const PitchPage = () => {
         </div>
       </section>
 
-      {/* Microservices Architecture */}
+      {/* Product Ecosystem Overview */}
       <section className="py-20">
         <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-primary border border-primary/20 mb-4">
+              <Layers className="w-3 h-3" /> Ecosystem
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Product Ecosystem</h2>
+            <p className="text-muted-foreground">Bee.dr becomes a healthcare platform, not just an app</p>
+          </motion.div>
+
+          <div className="max-w-4xl mx-auto space-y-4">
+            {/* Top: Patients */}
+            <motion.div {...fadeUp} className="glass-card p-5 text-center max-w-xs mx-auto">
+              <Users className="w-6 h-6 text-primary mx-auto mb-2" />
+              <p className="font-display font-semibold text-foreground text-sm">Patients</p>
+              <p className="text-[10px] text-muted-foreground">Upload reports / AI chat</p>
+            </motion.div>
+
+            <div className="flex justify-center">
+              <ArrowDown className="w-5 h-5 text-primary" />
+            </div>
+
+            {/* Middle: Stakeholders */}
+            <motion.div {...fadeUp} className="grid grid-cols-3 gap-3 max-w-2xl mx-auto">
+              {[
+                { icon: Stethoscope, title: 'Doctors', desc: 'Consultations' },
+                { icon: ShoppingCart, title: 'Pharmacies', desc: 'Medicine Sales' },
+                { icon: Building2, title: 'Hospitals', desc: 'Lab Reports' },
+              ].map(({ icon: Icon, title, desc }) => (
+                <div key={title} className="glass-card p-4 text-center">
+                  <Icon className="w-5 h-5 text-primary mx-auto mb-1.5" />
+                  <p className="text-xs font-semibold text-foreground">{title}</p>
+                  <p className="text-[10px] text-muted-foreground">{desc}</p>
+                </div>
+              ))}
+            </motion.div>
+
+            <div className="flex justify-center">
+              <ArrowDown className="w-5 h-5 text-primary" />
+            </div>
+
+            {/* Bottom: Bee.dr Hub */}
+            <motion.div {...fadeUp} className="relative overflow-hidden rounded-2xl gradient-hero p-6 text-center max-w-sm mx-auto">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-6 translate-x-6" />
+              <Activity className="w-8 h-8 text-white mx-auto mb-2" />
+              <p className="font-display font-bold text-white text-lg">Bee.dr</p>
+              <p className="text-xs text-white/70">AI Health Hub</p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* System Architecture */}
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-primary/[0.02]" />
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div {...fadeUp} className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">System Architecture</h2>
             <p className="text-muted-foreground">15 microservices + AI pipelines</p>
           </motion.div>
 
           <div className="max-w-5xl mx-auto space-y-6">
-            {/* Flow diagram */}
+            {/* Application Architecture Flow */}
             <motion.div {...fadeUp} className="glass-card p-6 text-center">
               <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
                 <span className="gradient-primary text-primary-foreground font-bold px-4 py-2 rounded-xl shadow-glow">Mobile App / Web</span>
-                <ArrowRight className="w-4 h-4 text-primary" />
+                <ArrowDown className="w-4 h-4 text-primary" />
                 <span className="glass-subtle border border-primary/20 text-foreground font-semibold px-4 py-2 rounded-xl">API Gateway</span>
-                <ArrowRight className="w-4 h-4 text-primary" />
+                <ArrowDown className="w-4 h-4 text-primary" />
                 <span className="glass-subtle border border-secondary/20 text-foreground font-semibold px-4 py-2 rounded-xl">Microservices Layer</span>
               </div>
             </motion.div>
@@ -428,8 +482,8 @@ const PitchPage = () => {
             {/* Microservices Grid */}
             <motion.div {...fadeUp} className="grid grid-cols-3 sm:grid-cols-5 gap-2">
               {[
-                'Auth', 'User Profile', 'Report', 'OCR', 'AI Analysis',
-                'Chat', 'Medicine', 'Doctor', 'Pharmacy', 'Marketplace',
+                'Auth', 'User Profile', 'Medical Report', 'OCR Processing', 'AI Analysis',
+                'AI Doctor Chat', 'Medicine Intelligence', 'Doctor Consultation', 'Pharmacy Marketplace', 'Marketplace',
                 'Notification', 'Analytics', 'Map', 'Billing', 'Admin',
               ].map((service) => (
                 <div key={service} className="glass-card p-3 text-center hover:shadow-glow transition-all">
@@ -439,6 +493,190 @@ const PitchPage = () => {
               ))}
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Data Architecture */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Data Architecture</h2>
+            <p className="text-muted-foreground">All health data stored securely</p>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
+            {[
+              { icon: Database, title: 'PostgreSQL', desc: 'Users / Reports / Medicines', color: 'from-primary to-blue-glow' },
+              { icon: Brain, title: 'Vector Database', desc: 'Medical Knowledge Embeddings', color: 'from-secondary to-teal' },
+              { icon: Zap, title: 'Redis Cache', desc: 'Sessions / AI caching', color: 'from-amber-400 to-orange-500' },
+              { icon: HardDrive, title: 'Object Storage', desc: 'Medical Reports / Images', color: 'from-emerald-400 to-green-600' },
+            ].map(({ icon: Icon, title, desc, color }, i) => (
+              <motion.div key={title} {...fadeUp} transition={{ delay: i * 0.08 }}
+                className="glass-card p-5 relative overflow-hidden group hover:shadow-glow transition-all">
+                <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${color} opacity-10 rounded-full -translate-y-6 translate-x-6`} />
+                <div className="flex items-center gap-3 relative z-10">
+                  <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center shrink-0 group-hover:bg-primary/15 transition-colors">
+                    <Icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-display font-semibold text-foreground text-sm">{title}</p>
+                    <p className="text-xs text-muted-foreground">{desc}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Infrastructure Architecture */}
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-primary/[0.02]" />
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Infrastructure</h2>
+            <p className="text-muted-foreground">Production deployment for scaling</p>
+          </motion.div>
+
+          <div className="max-w-md mx-auto space-y-3">
+            {[
+              { icon: Users, label: 'Users', gradient: true },
+              { icon: Globe, label: 'CDN / Edge' },
+              { icon: Shield, label: 'Load Balancer' },
+              { icon: Server, label: 'API Gateway' },
+              { icon: Container, label: 'Kubernetes Cluster' },
+              { icon: Cloud, label: 'Microservices Containers' },
+              { icon: Database, label: 'Databases' },
+            ].map(({ icon: Icon, label, gradient }, i) => (
+              <motion.div key={label} {...fadeUp} transition={{ delay: i * 0.06 }}>
+                <div className={`${gradient ? 'gradient-primary text-primary-foreground shadow-glow' : 'glass-card'} p-3 text-center rounded-xl flex items-center justify-center gap-2`}>
+                  <Icon className={`w-4 h-4 ${gradient ? '' : 'text-primary'}`} />
+                  <span className={`text-xs font-semibold ${gradient ? '' : 'text-foreground'}`}>{label}</span>
+                </div>
+                {i < 6 && <div className="flex justify-center mt-2"><ArrowDown className="w-4 h-4 text-primary/50" /></div>}
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Tech Stack */}
+          <motion.div {...fadeUp} className="flex flex-wrap items-center justify-center gap-2 mt-8">
+            {['Docker', 'Kubernetes', 'PostgreSQL', 'Redis', 'Vector DB', 'Cloud Storage'].map((tech) => (
+              <span key={tech} className="glass-subtle border border-primary/10 text-foreground text-[10px] font-medium px-3 py-1.5 rounded-lg">{tech}</span>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Product Growth Loop */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Engagement Loop</h2>
+            <p className="text-muted-foreground">Drives engagement, retention, and revenue</p>
+          </motion.div>
+
+          <motion.div {...fadeUp} className="glass-card p-6 max-w-md mx-auto mb-8">
+            <div className="space-y-2">
+              {[
+                { step: 'Upload Report', icon: FileText },
+                { step: 'AI Explanation', icon: Brain },
+                { step: 'User Trust', icon: Heart },
+                { step: 'Daily AI Doctor Chat', icon: Bot },
+                { step: 'Health Insights', icon: BarChart3 },
+                { step: 'Doctor Consultation', icon: Stethoscope },
+                { step: 'Medicine Purchase', icon: ShoppingCart },
+              ].map(({ step, icon: Icon }, i, arr) => (
+                <div key={step}>
+                  <div className="glass-subtle border border-primary/10 p-3 rounded-xl flex items-center gap-3">
+                    <Icon className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-xs font-semibold text-foreground">{step}</span>
+                  </div>
+                  {i < arr.length - 1 && <div className="flex justify-center py-1"><ArrowDown className="w-3 h-3 text-primary/40" /></div>}
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <RefreshCw className="w-4 h-4 text-secondary" />
+              <span className="text-[10px] text-secondary font-semibold">Cycle repeats</span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Analytics Dashboard */}
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-primary/[0.02]" />
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Analytics Overview</h2>
+          </motion.div>
+
+          <div className="max-w-3xl mx-auto space-y-6">
+            {/* Key Metrics */}
+            <motion.div {...fadeUp} className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {[
+                { label: 'Daily Active Users', icon: Users },
+                { label: 'Reports Analyzed', icon: FileText },
+                { label: 'AI Chat Sessions', icon: Bot },
+                { label: 'Consultations', icon: Stethoscope },
+                { label: 'Medicine Orders', icon: ShoppingCart },
+              ].map(({ label, icon: Icon }) => (
+                <div key={label} className="glass-card p-3 text-center hover:shadow-glow transition-all">
+                  <Icon className="w-4 h-4 text-primary mx-auto mb-1" />
+                  <p className="text-[10px] font-semibold text-foreground leading-tight">{label}</p>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* AI Usage Growth */}
+            <motion.div {...fadeUp} className="glass-card p-6">
+              <h4 className="font-display font-semibold text-foreground mb-4 text-center">AI Usage Growth</h4>
+              <div className="space-y-3">
+                {[
+                  { month: 'Month 1', reports: '500', width: '3%' },
+                  { month: 'Month 3', reports: '5,000', width: '10%' },
+                  { month: 'Month 6', reports: '40,000', width: '40%' },
+                  { month: 'Month 12', reports: '200,000', width: '100%' },
+                ].map(({ month, reports, width }) => (
+                  <div key={month} className="flex items-center gap-3">
+                    <span className="text-xs text-muted-foreground w-20 shrink-0">{month}</span>
+                    <div className="flex-1 h-6 bg-muted/20 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-secondary to-teal rounded-full flex items-center justify-end pr-2" style={{ width }}>
+                        <span className="text-[10px] font-bold text-white">{reports}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pitch Deck Architecture Slide */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Platform Evolution</h2>
+            <p className="text-muted-foreground">Bee.dr evolving into a digital health ecosystem</p>
+          </motion.div>
+
+          <motion.div {...fadeUp} className="max-w-md mx-auto space-y-3">
+            {[
+              { label: 'Patient App', color: true },
+              { label: 'API Platform' },
+              { label: 'AI Health Engine' },
+              { label: 'Health Data Platform' },
+              { label: 'Healthcare Marketplace' },
+            ].map(({ label, color }, i, arr) => (
+              <div key={label}>
+                <div className={`${color ? 'gradient-primary text-primary-foreground shadow-glow' : 'glass-card text-foreground'} p-4 text-center rounded-xl`}>
+                  <span className="text-sm font-display font-semibold">{label}</span>
+                </div>
+                {i < arr.length - 1 && <div className="flex justify-center py-1"><ArrowDown className="w-4 h-4 text-primary/50" /></div>}
+              </div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
