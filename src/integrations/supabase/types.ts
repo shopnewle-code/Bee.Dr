@@ -14,6 +14,193 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          response: string | null
+          scan_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          response?: string | null
+          scan_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          response?: string | null
+          scan_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_scan_id_fkey"
+            columns: ["scan_id"]
+            isOneToOne: false
+            referencedRelation: "scan_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      emergency_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          description: string
+          id: string
+          is_dismissed: boolean
+          scan_id: string | null
+          test_name: string | null
+          test_value: number | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          alert_type?: string
+          created_at?: string
+          description: string
+          id?: string
+          is_dismissed?: boolean
+          scan_id?: string | null
+          test_name?: string | null
+          test_value?: number | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_dismissed?: boolean
+          scan_id?: string | null
+          test_name?: string | null
+          test_value?: number | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emergency_alerts_scan_id_fkey"
+            columns: ["scan_id"]
+            isOneToOne: false
+            referencedRelation: "scan_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      family_members: {
+        Row: {
+          age: number | null
+          blood_group: string | null
+          created_at: string
+          gender: string | null
+          health_score: number | null
+          id: string
+          name: string
+          owner_id: string
+          relation: string
+          risk_summary: Json | null
+          updated_at: string
+        }
+        Insert: {
+          age?: number | null
+          blood_group?: string | null
+          created_at?: string
+          gender?: string | null
+          health_score?: number | null
+          id?: string
+          name: string
+          owner_id: string
+          relation: string
+          risk_summary?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          age?: number | null
+          blood_group?: string | null
+          created_at?: string
+          gender?: string | null
+          health_score?: number | null
+          id?: string
+          name?: string
+          owner_id?: string
+          relation?: string
+          risk_summary?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      health_insights: {
+        Row: {
+          details: Json | null
+          generated_at: string
+          id: string
+          risk_score: number
+          risk_type: string
+          user_id: string
+        }
+        Insert: {
+          details?: Json | null
+          generated_at?: string
+          id?: string
+          risk_score?: number
+          risk_type: string
+          user_id: string
+        }
+        Update: {
+          details?: Json | null
+          generated_at?: string
+          id?: string
+          risk_score?: number
+          risk_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      health_profiles: {
+        Row: {
+          allergies: string[] | null
+          blood_group: string | null
+          chronic_conditions: string[] | null
+          created_at: string
+          height_cm: number | null
+          id: string
+          updated_at: string
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          allergies?: string[] | null
+          blood_group?: string | null
+          chronic_conditions?: string[] | null
+          created_at?: string
+          height_cm?: number | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          allergies?: string[] | null
+          blood_group?: string | null
+          chronic_conditions?: string[] | null
+          created_at?: string
+          height_cm?: number | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -85,6 +272,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      test_results: {
+        Row: {
+          created_at: string
+          id: string
+          normal_range_max: number | null
+          normal_range_min: number | null
+          result_value: number
+          scan_id: string
+          status: string
+          test_name: string
+          unit: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          normal_range_max?: number | null
+          normal_range_min?: number | null
+          result_value: number
+          scan_id: string
+          status?: string
+          test_name: string
+          unit?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          normal_range_max?: number | null
+          normal_range_min?: number | null
+          result_value?: number
+          scan_id?: string
+          status?: string
+          test_name?: string
+          unit?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_results_scan_id_fkey"
+            columns: ["scan_id"]
+            isOneToOne: false
+            referencedRelation: "scan_results"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
