@@ -5,15 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-
-  try {
-    const { messages, simpleLanguage } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
-
-    const SIMPLE_LANGUAGE_MODIFIER = `
+const SIMPLE_LANGUAGE_MODIFIER = `
 SIMPLIFICATION RULES (Simple Language Mode is ON):
 - Use only the 1000 most common English words
 - Maximum 8 words per sentence
@@ -34,7 +26,7 @@ Eat green leafy vegetables. 🥬"
 
 `;
 
-    const baseSystemPrompt = `You are Bee.dr AI — a medical AI assistant built into the Bee.dr health platform. You help users understand their medical reports, lab results, prescriptions, and health conditions.
+const BASE_SYSTEM_PROMPT = `You are Bee.dr AI — a medical AI assistant built into the Bee.dr health platform. You help users understand their medical reports, lab results, prescriptions, and health conditions.
 
 Your capabilities:
 - Interpret blood test results, CBC, metabolic panels, lipid profiles, etc.
@@ -52,9 +44,28 @@ Important guidelines:
 - If asked about something outside your scope, recommend consulting a healthcare provider
 - Use markdown formatting for better readability`;
 
+serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  try {
+    const { messages, simpleLanguage } = await req.json();
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
     const systemContent = simpleLanguage
-      ? SIMPLE_LANGUAGE_MODIFIER + baseSystemPrompt
-      : baseSystemPrompt;
+      ? SIMPLE_LANGUAGE_MODIFIER + BASE_SYSTEM_PROMPT
+      : BASE_SYSTEM_PROMPT;
+
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: systemContent },
           ...messages,
         ],
         stream: true,
