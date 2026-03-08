@@ -43,7 +43,7 @@ SIMPLIFICATION RULES (Simple Language Mode is ON):
         messages: [
           {
             role: "system",
-            content: `You are a medical report analysis AI for the Bee.dr health platform. ${langInstruction}
+            content: `${simpleLanguageModifier}You are a medical report analysis AI for the Bee.dr health platform. ${langInstruction}
 
 Given medical report data, generate a detailed JSON response with this EXACT structure:
 {
