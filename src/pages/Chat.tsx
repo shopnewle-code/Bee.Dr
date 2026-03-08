@@ -229,6 +229,11 @@ const ChatPage = () => {
           <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={() => navigate('/voice-doctor')}>
             <Mic className="w-3 h-3" /> Voice
           </Button>
+          <Button variant={simpleLanguage ? "default" : "outline"} size="sm"
+            className={`text-xs gap-1.5 ${simpleLanguage ? 'gradient-primary text-primary-foreground' : ''}`}
+            onClick={toggleSimpleLanguage} title={simpleLanguage ? 'Simple Language ON' : 'Simple Language OFF'}>
+            <Type className="w-3 h-3" /> {simpleLanguage ? 'Simple' : 'Aₐ'}
+          </Button>
         </div>
       </header>
 

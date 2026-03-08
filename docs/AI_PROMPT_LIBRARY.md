@@ -1512,7 +1512,7 @@ Rules:
 - **Model**: Any
 - **Type**: System prompt modifier
 - **Output**: Simplified text
-- **Status**: 🔧 PLANNED
+- **Status**: ✅ LIVE
 
 ```
 [Modifier for users who selected "Simple Language" mode]
