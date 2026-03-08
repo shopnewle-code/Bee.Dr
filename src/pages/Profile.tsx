@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
   User, ArrowLeft, Camera, Crown, Shield, HelpCircle,
-  ChevronRight, Globe, LogOut, HeartPulse
+  ChevronRight, Globe, LogOut, HeartPulse, Stethoscope, CalendarCheck
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
