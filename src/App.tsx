@@ -110,6 +110,10 @@ const App = () => (
             <Route path="/health-map" element={<ProtectedRoute><HealthMapPage /></ProtectedRoute>} />
             <Route path="/medicine-store" element={<ProtectedRoute><MedicineMarketplacePage /></ProtectedRoute>} />
             <Route path="/pharmacy-dashboard" element={<ProtectedRoute><PharmacyDashboardPage /></ProtectedRoute>} />
+            <Route path="/ecg" element={<ProtectedRoute><ECGInterpreterPage /></ProtectedRoute>} />
+            <Route path="/xray" element={<ProtectedRoute><XrayAnalysisPage /></ProtectedRoute>} />
+            <Route path="/mri" element={<ProtectedRoute><MRIAnalysisPage /></ProtectedRoute>} />
+            <Route path="/treatment-plan" element={<ProtectedRoute><TreatmentPlanPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
