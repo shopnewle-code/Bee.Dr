@@ -11,6 +11,7 @@ import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
 import BottomNav from '@/components/BottomNav';
 import { useSimpleLanguage } from '@/hooks/use-simple-language';
+import { useLanguage } from '@/hooks/use-language';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
