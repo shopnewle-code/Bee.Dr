@@ -2,3 +2,6 @@ project_id = "ebqrcizstqrifdxwnbcy"
 
 [functions.medical-chat]
 verify_jwt = false
+
+[functions.analyze-report]
+verify_jwt = false
