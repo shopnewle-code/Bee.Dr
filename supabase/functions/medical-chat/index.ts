@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { getLanguageModifier } from "../_shared/language-modifier.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -48,13 +49,12 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, simpleLanguage } = await req.json();
+    const { messages, simpleLanguage, language } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemContent = simpleLanguage
-      ? SIMPLE_LANGUAGE_MODIFIER + BASE_SYSTEM_PROMPT
-      : BASE_SYSTEM_PROMPT;
+    const langModifier = getLanguageModifier(language);
+    const systemContent = (simpleLanguage ? SIMPLE_LANGUAGE_MODIFIER : "") + langModifier + BASE_SYSTEM_PROMPT;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
