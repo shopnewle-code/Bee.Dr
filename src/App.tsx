@@ -56,6 +56,7 @@ const TreatmentPlanPage = lazy(() => import("./pages/TreatmentPlan"));
 const AIAppointmentBookingPage = lazy(() => import("./pages/AIAppointmentBooking"));
 const AITriagePage = lazy(() => import("./pages/AITriage"));
 const TelemedicineConsultationPage = lazy(() => import("./pages/TelemedicineConsultation"));
+const CTScanAnalysisPage = lazy(() => import("./pages/CTScanAnalysis"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
