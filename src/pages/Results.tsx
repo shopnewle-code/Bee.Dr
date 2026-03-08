@@ -13,6 +13,7 @@ import type { Tables } from '@/integrations/supabase/types';
 import ReportExplanation from '@/components/report/ReportExplanation';
 import ReportChat from '@/components/report/ReportChat';
 import RiskRadarChart from '@/components/report/RiskRadarChart';
+import { useSimpleLanguage } from '@/hooks/use-simple-language';
 import { toast } from 'sonner';
 
 type Language = 'en' | 'hi';
