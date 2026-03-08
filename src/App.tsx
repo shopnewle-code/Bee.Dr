@@ -36,6 +36,9 @@ import VaccinationTrackerPage from "./pages/VaccinationTracker";
 import EmergencyCardPage from "./pages/EmergencyCard";
 import SkinScannerPage from "./pages/SkinScanner";
 import PredictiveHealthPage from "./pages/PredictiveHealth";
+import DoctorDiscoveryPage from "./pages/DoctorDiscovery";
+import BookConsultationPage from "./pages/BookConsultation";
+import ConsultationHistoryPage from "./pages/ConsultationHistory";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
