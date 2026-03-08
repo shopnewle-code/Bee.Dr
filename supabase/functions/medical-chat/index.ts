@@ -59,7 +59,19 @@ RESPONSE FORMAT (CRITICAL — always follow this structure for medical queries):
 - Keep each section concise (2-4 bullet points max)
 - For general health questions, use appropriate heading structure but adapt sections as needed
 - When mentioning conditions, include a confidence percentage if applicable (e.g., "Confidence: 75%")
-- End with a brief empathetic note reminding to consult a professional`;
+- End with a brief empathetic note reminding to consult a professional
+
+FOLLOW-UP QUESTIONS (CRITICAL — always include at the very end):
+- After your main response, ALWAYS add a section exactly like this:
+  ## Follow-up Questions
+  - [Yes/No] Do you also experience nausea?
+  - [Yes/No] Is the pain constant or intermittent?
+  - [Option] How long have you had these symptoms? | Less than a day | A few days | More than a week
+- Each follow-up line MUST start with a tag:
+  - [Yes/No] for binary questions
+  - [Option] for multiple choice, with choices separated by | after the question and a ?
+- Include 2-3 relevant follow-up questions to help narrow down the diagnosis
+- Questions should be medically relevant to the user's concern`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });

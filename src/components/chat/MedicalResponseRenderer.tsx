@@ -1,27 +1,66 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import {
   AlertTriangle, Shield, Heart, Stethoscope, TestTube, ArrowRight,
-  ChevronDown, ChevronUp, Activity, Zap, Upload, CalendarDays, Droplets
+  ChevronDown, ChevronUp, Activity, Zap, Upload, CalendarDays, Droplets,
+  MessageCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface MedicalResponseRendererProps {
   content: string;
   isStreaming?: boolean;
+  onFollowUp?: (message: string) => void;
 }
 
-// Parse markdown sections into structured blocks
-function parseMedicalSections(content: string) {
-  const sections: { type: string; title: string; content: string; items?: string[] }[] = [];
+type FollowUpQuestion = 
+  | { type: 'yesno'; question: string }
+  | { type: 'option'; question: string; options: string[] };
 
-  // Detect risk level
+function parseFollowUps(content: string): { cleanContent: string; followUps: FollowUpQuestion[] } {
+  const followUps: FollowUpQuestion[] = [];
+
+  // Find follow-up section and extract questions
+  const followUpRegex = /#{1,3}\s*follow[\s-]*up\s*questions?\s*\n([\s\S]*?)(?=\n#{1,3}\s|\n*$)/i;
+  const match = content.match(followUpRegex);
+
+  if (match) {
+    const section = match[1];
+    const lines = section.split('\n').filter(l => l.trim());
+
+    for (const line of lines) {
+      const cleaned = line.replace(/^[-*•]\s*/, '').trim();
+
+      // [Yes/No] question
+      const yesNoMatch = cleaned.match(/^\[yes\s*\/\s*no\]\s*(.+)/i);
+      if (yesNoMatch) {
+        followUps.push({ type: 'yesno', question: yesNoMatch[1].trim() });
+        continue;
+      }
+
+      // [Option] question | opt1 | opt2 | opt3
+      const optionMatch = cleaned.match(/^\[option\]\s*(.+?\?)\s*\|(.+)/i);
+      if (optionMatch) {
+        const options = optionMatch[2].split('|').map(o => o.trim()).filter(Boolean);
+        followUps.push({ type: 'option', question: optionMatch[1].trim(), options });
+        continue;
+      }
+    }
+
+    // Remove the follow-up section from displayed content
+    const cleanContent = content.replace(followUpRegex, '').replace(/#{1,3}\s*follow[\s-]*up\s*questions?\s*$/im, '').trim();
+    return { cleanContent, followUps };
+  }
+
+  return { cleanContent: content, followUps };
+}
+
+function parseMedicalSections(content: string) {
   const riskMatch = content.match(/(?:risk\s*level|urgency)[:\s]*(?:🔴|🟡|🟢)?\s*(high|moderate|low|critical|mild|severe)/i);
   const riskLevel = riskMatch?.[1]?.toLowerCase() || null;
 
-  // Detect structured sections by markdown headings or bold labels
   const sectionPatterns = [
     { regex: /(?:#{1,3}\s*)?(?:🔍?\s*)?symptoms?\s*(?:detected|identified|reported|analysis)[:\s]*/i, type: 'symptoms' },
     { regex: /(?:#{1,3}\s*)?(?:🧠?\s*)?(?:possible|potential|likely)\s*(?:conditions?|diagnos[ie]s|causes?)[:\s]*/i, type: 'conditions' },
@@ -29,13 +68,10 @@ function parseMedicalSections(content: string) {
     { regex: /(?:#{1,3}\s*)?(?:👨‍⚕️?\s*)?(?:recommended|suggested)\s*(?:specialist|doctor|physician)[:\s]*/i, type: 'doctor' },
     { regex: /(?:#{1,3}\s*)?(?:🧪?\s*)?(?:suggested|recommended)\s*tests?[:\s]*/i, type: 'tests' },
     { regex: /(?:#{1,3}\s*)?(?:✅?\s*)?(?:next\s*steps?|action\s*(?:items?|plan)|what\s*(?:to\s*do|you\s*(?:can|should)))[:\s]*/i, type: 'actions' },
-    { regex: /(?:#{1,3}\s*)?(?:💡?\s*)?(?:recommendation|advice|guidance)[:\s]*/i, type: 'recommendation' },
   ];
 
-  // Check if the content has any structured sections
   const hasStructuredSections = sectionPatterns.some(p => p.regex.test(content));
-
-  return { hasStructuredSections, riskLevel, content };
+  return { hasStructuredSections, riskLevel };
 }
 
 function RiskBadge({ level }: { level: string | null }) {
@@ -71,76 +107,113 @@ function QuickActions() {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
-      className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-border/50"
-    >
+    <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-border/50">
       {actions.map(({ icon: Icon, label, path, color }) => (
-        <Button
-          key={label}
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(path)}
-          className={`text-[11px] h-8 rounded-xl gap-1.5 ${color} transition-all`}
-        >
-          <Icon className="w-3 h-3" />
-          {label}
+        <Button key={label} variant="ghost" size="sm" onClick={() => navigate(path)}
+          className={`text-[11px] h-8 rounded-xl gap-1.5 ${color} transition-all`}>
+          <Icon className="w-3 h-3" /> {label}
         </Button>
       ))}
-    </motion.div>
+    </div>
   );
 }
 
 function ConfidenceMeter({ content }: { content: string }) {
-  // Extract confidence if mentioned
   const confidenceMatch = content.match(/confidence[:\s]*(\d{1,3})%/i);
   if (!confidenceMatch) return null;
   const confidence = parseInt(confidenceMatch[1]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.2 }}
-      className="flex items-center gap-2 mt-2"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
+      className="flex items-center gap-2 mt-2">
       <span className="text-[10px] text-muted-foreground font-medium">AI Confidence</span>
       <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden max-w-[100px]">
-        <motion.div
-          className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
-          initial={{ width: 0 }}
-          animate={{ width: `${confidence}%` }}
-          transition={{ duration: 1, ease: 'easeOut', delay: 0.5 }}
-        />
+        <motion.div className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
+          initial={{ width: 0 }} animate={{ width: `${confidence}%` }}
+          transition={{ duration: 1, ease: 'easeOut', delay: 0.5 }} />
       </div>
       <span className="text-[10px] font-semibold text-foreground">{confidence}%</span>
     </motion.div>
   );
 }
 
-export function MedicalResponseRenderer({ content, isStreaming }: MedicalResponseRendererProps) {
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+function FollowUpButtons({ followUps, onFollowUp }: { followUps: FollowUpQuestion[]; onFollowUp?: (msg: string) => void }) {
+  if (!followUps.length || !onFollowUp) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.4 }}
+      className="mt-3 pt-3 border-t border-border/50 space-y-2.5"
+    >
+      <div className="flex items-center gap-1.5">
+        <MessageCircle className="w-3 h-3 text-primary" />
+        <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Follow-up</span>
+      </div>
+      {followUps.map((fq, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.5 + i * 0.1 }}
+          className="space-y-1.5"
+        >
+          <p className="text-xs text-foreground/80">{fq.question}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {fq.type === 'yesno' ? (
+              <>
+                <Button variant="outline" size="sm"
+                  onClick={() => onFollowUp(`Yes, ${fq.question.toLowerCase().replace(/\?$/, '').replace(/^do you (also )?/i, 'I ').replace(/^is the/i, 'the').replace(/^are you/i, 'I am')}`)}
+                  className="text-[11px] h-7 rounded-xl px-3 bg-success/5 border-success/20 text-success hover:bg-success/15 hover:text-success">
+                  Yes
+                </Button>
+                <Button variant="outline" size="sm"
+                  onClick={() => onFollowUp(`No, ${fq.question.toLowerCase().replace(/\?$/, '').replace(/^do you (also )?/i, 'I don\'t ').replace(/^is the/i, 'the').replace(/^are you/i, 'I\'m not')}`)}
+                  className="text-[11px] h-7 rounded-xl px-3 bg-muted/50 border-border text-muted-foreground hover:bg-muted hover:text-foreground">
+                  No
+                </Button>
+              </>
+            ) : (
+              fq.options.map(opt => (
+                <Button key={opt} variant="outline" size="sm"
+                  onClick={() => onFollowUp(opt)}
+                  className="text-[11px] h-7 rounded-xl px-3 bg-primary/5 border-primary/15 text-primary hover:bg-primary/15">
+                  {opt}
+                </Button>
+              ))
+            )}
+          </div>
+        </motion.div>
+      ))}
+    </motion.div>
+  );
+}
+
+const markdownClasses = `prose prose-sm max-w-none text-foreground
+  [&>h1]:text-base [&>h1]:font-display [&>h1]:font-bold [&>h1]:text-foreground [&>h1]:mt-4 [&>h1]:mb-2
+  [&>h2]:text-sm [&>h2]:font-display [&>h2]:font-semibold [&>h2]:text-foreground [&>h2]:mt-3 [&>h2]:mb-1.5
+  [&>h3]:text-xs [&>h3]:font-semibold [&>h3]:text-foreground [&>h3]:mt-2.5 [&>h3]:mb-1
+  [&>p]:text-sm [&>p]:text-foreground/90 [&>p]:leading-relaxed [&>p]:mb-2
+  [&>ul]:space-y-1 [&>ul]:mb-2.5 [&>ul]:pl-0 [&>ul]:list-none
+  [&>ul>li]:text-sm [&>ul>li]:text-foreground/90 [&>ul>li]:pl-4 [&>ul>li]:relative
+  [&>ul>li]:before:content-[''] [&>ul>li]:before:absolute [&>ul>li]:before:left-0 [&>ul>li]:before:top-[9px] [&>ul>li]:before:w-1.5 [&>ul>li]:before:h-1.5 [&>ul>li]:before:rounded-full [&>ul>li]:before:bg-primary/40
+  [&>ol]:space-y-1 [&>ol]:mb-2.5
+  [&>ol>li]:text-sm [&>ol>li]:text-foreground/90
+  [&>blockquote]:border-l-2 [&>blockquote]:border-primary/30 [&>blockquote]:pl-3 [&>blockquote]:italic [&>blockquote]:text-muted-foreground
+  [&>strong]:text-foreground [&>strong]:font-semibold
+  [&>em]:text-muted-foreground
+  [&>hr]:border-border/50 [&>hr]:my-3
+  [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs
+  [&>*:first-child]:mt-0 [&>*:last-child]:mb-0`;
+
+export function MedicalResponseRenderer({ content, isStreaming, onFollowUp }: MedicalResponseRendererProps) {
   const { hasStructuredSections, riskLevel } = parseMedicalSections(content);
+  const { cleanContent, followUps } = isStreaming ? { cleanContent: content, followUps: [] } : parseFollowUps(content);
 
-  const toggleSection = (id: string) => {
-    setExpandedSections(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-
-  // For structured medical responses, wrap in a medical card
   if (hasStructuredSections && !isStreaming) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-3"
-      >
-        {/* AI Analysis header */}
+      <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center">
             <Zap className="w-3 h-3 text-primary" />
@@ -149,51 +222,23 @@ export function MedicalResponseRenderer({ content, isStreaming }: MedicalRespons
           {riskLevel && <RiskBadge level={riskLevel} />}
         </div>
 
-        {/* Markdown content with enhanced styling */}
-        <div className="prose prose-sm max-w-none text-foreground
-          [&>h1]:text-base [&>h1]:font-display [&>h1]:font-bold [&>h1]:text-foreground [&>h1]:mt-4 [&>h1]:mb-2
-          [&>h2]:text-sm [&>h2]:font-display [&>h2]:font-semibold [&>h2]:text-foreground [&>h2]:mt-3 [&>h2]:mb-1.5 [&>h2]:flex [&>h2]:items-center [&>h2]:gap-1.5
-          [&>h3]:text-xs [&>h3]:font-semibold [&>h3]:text-foreground [&>h3]:mt-2.5 [&>h3]:mb-1
-          [&>p]:text-sm [&>p]:text-foreground/90 [&>p]:leading-relaxed [&>p]:mb-2
-          [&>ul]:space-y-1 [&>ul]:mb-2.5 [&>ul]:pl-0 [&>ul]:list-none
-          [&>ul>li]:text-sm [&>ul>li]:text-foreground/90 [&>ul>li]:pl-4 [&>ul>li]:relative
-          [&>ul>li]:before:content-[''] [&>ul>li]:before:absolute [&>ul>li]:before:left-0 [&>ul>li]:before:top-[9px] [&>ul>li]:before:w-1.5 [&>ul>li]:before:h-1.5 [&>ul>li]:before:rounded-full [&>ul>li]:before:bg-primary/40
-          [&>ol]:space-y-1 [&>ol]:mb-2.5
-          [&>ol>li]:text-sm [&>ol>li]:text-foreground/90
-          [&>blockquote]:border-l-2 [&>blockquote]:border-primary/30 [&>blockquote]:pl-3 [&>blockquote]:italic [&>blockquote]:text-muted-foreground
-          [&>strong]:text-foreground [&>strong]:font-semibold
-          [&>em]:text-muted-foreground
-          [&>hr]:border-border/50 [&>hr]:my-3
-          [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs
-          [&>*:first-child]:mt-0 [&>*:last-child]:mb-0
-        ">
-          <ReactMarkdown>{content}</ReactMarkdown>
+        <div className={markdownClasses}>
+          <ReactMarkdown>{cleanContent}</ReactMarkdown>
         </div>
 
-        <ConfidenceMeter content={content} />
+        <ConfidenceMeter content={cleanContent} />
+        <FollowUpButtons followUps={followUps} onFollowUp={onFollowUp} />
         <QuickActions />
       </motion.div>
     );
   }
 
-  // Default: render with enhanced markdown
   return (
     <div className="space-y-1">
-      <div className="prose prose-sm max-w-none text-foreground
-        [&>p]:text-sm [&>p]:text-foreground/90 [&>p]:leading-relaxed [&>p]:mb-2
-        [&>ul]:space-y-1 [&>ul]:mb-2
-        [&>ul>li]:text-sm [&>ul>li]:text-foreground/90
-        [&>ol>li]:text-sm [&>ol>li]:text-foreground/90
-        [&>h1]:text-base [&>h1]:font-display [&>h1]:font-bold [&>h1]:text-foreground
-        [&>h2]:text-sm [&>h2]:font-display [&>h2]:font-semibold [&>h2]:text-foreground
-        [&>h3]:text-xs [&>h3]:font-semibold [&>h3]:text-foreground
-        [&>blockquote]:border-l-2 [&>blockquote]:border-primary/30 [&>blockquote]:pl-3 [&>blockquote]:italic
-        [&>strong]:text-foreground [&>strong]:font-semibold
-        [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs
-        [&>*:first-child]:mt-0 [&>*:last-child]:mb-0
-      ">
-        <ReactMarkdown>{content}</ReactMarkdown>
+      <div className={markdownClasses}>
+        <ReactMarkdown>{cleanContent}</ReactMarkdown>
       </div>
+      {!isStreaming && <FollowUpButtons followUps={followUps} onFollowUp={onFollowUp} />}
     </div>
   );
 }
