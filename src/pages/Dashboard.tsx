@@ -10,7 +10,7 @@ import {
   Calendar, ShieldAlert, Users, Droplets, HeartPulse, SmilePlus, Target,
   Syringe, AlertTriangle, ScanEye, Mic, Brain, Watch, Stethoscope,
   MapPin, ShoppingCart, Search, FileImage, ClipboardList, Building2,
-  CalendarDays, Zap, Video
+  CalendarDays, Zap, Video, ScanLine
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
@@ -174,6 +174,7 @@ const DashboardPage = () => {
               { icon: Heart, label: 'ECG Interpreter', desc: 'AI ECG analysis', path: '/ecg', gradient: false },
               { icon: FileImage, label: 'X-ray AI', desc: 'Radiology AI', path: '/xray', gradient: false },
               { icon: Brain, label: 'MRI Analysis', desc: 'MRI AI reader', path: '/mri', gradient: false },
+              { icon: ScanLine, label: 'CT Scan AI', desc: 'CT scan analysis', path: '/ct-scan', gradient: false },
               { icon: ClipboardList, label: 'Treatment Plan', desc: 'AI care plan', path: '/treatment-plan', gradient: false },
               { icon: Building2, label: 'Pharmacy Panel', desc: 'Partner dashboard', path: '/pharmacy-dashboard', gradient: false },
               { icon: CalendarDays, label: 'Book Appointment', desc: 'AI scheduling', path: '/book-appointment', gradient: false },
