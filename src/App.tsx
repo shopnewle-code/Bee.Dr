@@ -26,6 +26,7 @@ import HelpSupport from "./pages/HelpSupport";
 import MedicalTimeline from "./pages/MedicalTimeline";
 import EmergencyAlerts from "./pages/EmergencyAlerts";
 import FamilyDashboard from "./pages/FamilyDashboard";
+import HealthProfilePage from "./pages/HealthProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
