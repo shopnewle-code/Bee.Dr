@@ -304,7 +304,7 @@ const WearableIntegration = () => {
               : latestValue && selectedMetric === 'steps' && latestValue < 5000
               ? '🚶 Your step count is below the recommended 8,000 steps. Increasing activity can improve your cholesterol levels shown in your reports.'
               : latestValue && selectedMetric === 'sleep_hours' && latestValue < 6
-              ? '😴 You're getting less than 6 hours of sleep. Poor sleep can worsen the vitamin D deficiency noted in your reports.'
+              ? '😴 You are getting less than 6 hours of sleep. Poor sleep can worsen the vitamin D deficiency noted in your reports.'
               : latestValue && selectedMetric === 'spo2' && latestValue < 95
               ? '🫁 Your SpO₂ is below normal. Combined with low hemoglobin from your reports, please seek medical attention.'
               : '📊 Your wearable data combined with lab reports helps AI provide more accurate health predictions. Keep logging daily!'}
