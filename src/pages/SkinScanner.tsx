@@ -52,7 +52,7 @@ const ScanTab = () => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({ imageBase64: base64, fileName: file.name }),
+          body: JSON.stringify({ imageBase64: base64, fileName: file.name, language }),
         }
       );
       if (!resp.ok) throw new Error('Analysis failed');

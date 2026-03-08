@@ -1543,7 +1543,7 @@ Eat green leafy vegetables. 🥬"
 - **Model**: `google/gemini-3-flash-preview`
 - **Type**: System prompt modifier
 - **Output**: Localized text
-- **Status**: 🔧 PLANNED
+- **Status**: ✅ LIVE
 
 ```
 [Template for regional Indian language support]
