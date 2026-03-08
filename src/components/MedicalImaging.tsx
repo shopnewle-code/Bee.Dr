@@ -75,6 +75,7 @@ const MedicalImaging = ({ title, subtitle, modality, icon: Icon, color, tips }: 
           imageBase64: base64,
           modality,
           patientContext: context || undefined,
+          language,
         }),
       });
 
