@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.treatment-plan]
 verify_jwt = false
+
+[functions.ai-triage]
+verify_jwt = false

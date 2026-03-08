@@ -50,6 +50,9 @@ import ECGInterpreterPage from "./pages/ECGInterpreter";
 import XrayAnalysisPage from "./pages/XrayAnalysis";
 import MRIAnalysisPage from "./pages/MRIAnalysis";
 import TreatmentPlanPage from "./pages/TreatmentPlan";
+import AIAppointmentBookingPage from "./pages/AIAppointmentBooking";
+import AITriagePage from "./pages/AITriage";
+import TelemedicineConsultationPage from "./pages/TelemedicineConsultation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -114,6 +117,9 @@ const App = () => (
             <Route path="/xray" element={<ProtectedRoute><XrayAnalysisPage /></ProtectedRoute>} />
             <Route path="/mri" element={<ProtectedRoute><MRIAnalysisPage /></ProtectedRoute>} />
             <Route path="/treatment-plan" element={<ProtectedRoute><TreatmentPlanPage /></ProtectedRoute>} />
+            <Route path="/book-appointment" element={<ProtectedRoute><AIAppointmentBookingPage /></ProtectedRoute>} />
+            <Route path="/triage" element={<ProtectedRoute><AITriagePage /></ProtectedRoute>} />
+            <Route path="/telemedicine" element={<ProtectedRoute><TelemedicineConsultationPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

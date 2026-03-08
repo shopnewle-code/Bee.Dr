@@ -14,6 +14,71 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          ai_notes: string | null
+          appointment_date: string
+          appointment_type: string
+          consultation_notes: string | null
+          created_at: string
+          doctor_id: string
+          end_time: string
+          id: string
+          prescription: string | null
+          reason: string | null
+          start_time: string
+          status: string
+          symptoms: string[] | null
+          triage_level: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_notes?: string | null
+          appointment_date: string
+          appointment_type?: string
+          consultation_notes?: string | null
+          created_at?: string
+          doctor_id: string
+          end_time: string
+          id?: string
+          prescription?: string | null
+          reason?: string | null
+          start_time: string
+          status?: string
+          symptoms?: string[] | null
+          triage_level?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_notes?: string | null
+          appointment_date?: string
+          appointment_type?: string
+          consultation_notes?: string | null
+          created_at?: string
+          doctor_id?: string
+          end_time?: string
+          id?: string
+          prescription?: string | null
+          reason?: string | null
+          start_time?: string
+          status?: string
+          symptoms?: string[] | null
+          triage_level?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           created_at: string
@@ -143,6 +208,47 @@ export type Database = {
           water_glasses?: number | null
         }
         Relationships: []
+      }
+      doctor_availability: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          doctor_id: string
+          end_time: string
+          id: string
+          is_active: boolean
+          slot_duration_minutes: number
+          start_time: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          doctor_id: string
+          end_time: string
+          id?: string
+          is_active?: boolean
+          slot_duration_minutes?: number
+          start_time: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          doctor_id?: string
+          end_time?: string
+          id?: string
+          is_active?: boolean
+          slot_duration_minutes?: number
+          start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_availability_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       doctors: {
         Row: {
@@ -737,6 +843,101 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      telemedicine_messages: {
+        Row: {
+          attachment_url: string | null
+          created_at: string
+          id: string
+          message: string
+          message_type: string
+          sender_id: string
+          sender_role: string
+          session_id: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          message_type?: string
+          sender_id: string
+          sender_role?: string
+          session_id: string
+        }
+        Update: {
+          attachment_url?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          message_type?: string
+          sender_id?: string
+          sender_role?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telemedicine_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "telemedicine_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telemedicine_sessions: {
+        Row: {
+          ai_summary: string | null
+          appointment_id: string | null
+          created_at: string
+          doctor_id: string
+          ended_at: string | null
+          id: string
+          patient_id: string
+          patient_rating: number | null
+          started_at: string | null
+          status: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          appointment_id?: string | null
+          created_at?: string
+          doctor_id: string
+          ended_at?: string | null
+          id?: string
+          patient_id: string
+          patient_rating?: number | null
+          started_at?: string | null
+          status?: string
+        }
+        Update: {
+          ai_summary?: string | null
+          appointment_id?: string | null
+          created_at?: string
+          doctor_id?: string
+          ended_at?: string | null
+          id?: string
+          patient_id?: string
+          patient_rating?: number | null
+          started_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telemedicine_sessions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "telemedicine_sessions_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       test_results: {
         Row: {

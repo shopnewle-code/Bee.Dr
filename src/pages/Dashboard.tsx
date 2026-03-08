@@ -9,7 +9,8 @@ import {
   Heart, Bell, Scan, TrendingUp, Pill, Shield, ChevronRight, GitCompare,
   Calendar, ShieldAlert, Users, Droplets, HeartPulse, SmilePlus, Target,
   Syringe, AlertTriangle, ScanEye, Mic, Brain, Watch, Stethoscope,
-  MapPin, ShoppingCart, Search, FileImage, ClipboardList, Building2
+  MapPin, ShoppingCart, Search, FileImage, ClipboardList, Building2,
+  CalendarDays, Zap, Video
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
@@ -175,6 +176,9 @@ const DashboardPage = () => {
               { icon: Brain, label: 'MRI Analysis', desc: 'MRI AI reader', path: '/mri', gradient: false },
               { icon: ClipboardList, label: 'Treatment Plan', desc: 'AI care plan', path: '/treatment-plan', gradient: false },
               { icon: Building2, label: 'Pharmacy Panel', desc: 'Partner dashboard', path: '/pharmacy-dashboard', gradient: false },
+              { icon: CalendarDays, label: 'Book Appointment', desc: 'AI scheduling', path: '/book-appointment', gradient: false },
+              { icon: Zap, label: 'AI Triage', desc: 'Urgency check', path: '/triage', gradient: false },
+              { icon: Video, label: 'Telemedicine', desc: 'Virtual consult', path: '/telemedicine', gradient: false },
             ].map(({ icon: Icon, label, desc, path, gradient }, i) => (
               <motion.button key={label}
                 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
