@@ -139,7 +139,7 @@ const ChatPage = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: [...messages, apiMsg], simpleLanguage }),
+        body: JSON.stringify({ messages: [...messages, apiMsg], simpleLanguage, language }),
       });
 
       if (!resp.ok) {
