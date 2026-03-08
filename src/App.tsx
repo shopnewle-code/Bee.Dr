@@ -44,6 +44,7 @@ import SymptomCheckerPage from "./pages/SymptomChecker";
 import MedicineScannerPage from "./pages/MedicineScanner";
 import HealthMapPage from "./pages/HealthMap";
 import MedicineMarketplacePage from "./pages/MedicineMarketplace";
+import InvestorDeckPage from "./pages/InvestorDeck";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
