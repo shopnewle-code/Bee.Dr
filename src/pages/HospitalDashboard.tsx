@@ -112,16 +112,16 @@ const HospitalDashboard = () => {
           </div>
         </motion.div>
 
-        {/* Section Tabs */}
-        <div className="flex gap-1 p-1 glass-subtle rounded-2xl">
+        <div className="flex gap-1 p-1 glass-subtle rounded-2xl overflow-x-auto">
           {[
             { key: 'overview' as const, label: 'Overview', icon: Activity },
             { key: 'departments' as const, label: 'Departments', icon: Building2 },
             { key: 'flow' as const, label: 'Patient Flow', icon: TrendingUp },
+            { key: 'revenue' as const, label: 'Revenue', icon: DollarSign },
           ].map(({ key, label, icon: Icon }) => (
             <button key={key}
               onClick={() => setActiveSection(key)}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium transition-all whitespace-nowrap px-3 ${
                 activeSection === key ? 'glass-card text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'
               }`}>
               <Icon className="w-3.5 h-3.5" />
