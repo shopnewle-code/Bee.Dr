@@ -71,6 +71,7 @@ const App = () => (
             <Route path="/family" element={<ProtectedRoute><FamilyDashboard /></ProtectedRoute>} />
             <Route path="/health-profile" element={<ProtectedRoute><HealthProfilePage /></ProtectedRoute>} />
             <Route path="/prescription" element={<ProtectedRoute><PrescriptionScannerPage /></ProtectedRoute>} />
+            <Route path="/voice-doctor" element={<ProtectedRoute><VoiceDoctorPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
