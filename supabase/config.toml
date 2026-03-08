@@ -35,3 +35,9 @@ verify_jwt = false
 
 [functions.ai-triage]
 verify_jwt = false
+
+[functions.analyze-ct]
+verify_jwt = false
+
+[functions.skin-progress]
+verify_jwt = false
