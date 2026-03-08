@@ -40,6 +40,7 @@ import DoctorDiscoveryPage from "./pages/DoctorDiscovery";
 import BookConsultationPage from "./pages/BookConsultation";
 import ConsultationHistoryPage from "./pages/ConsultationHistory";
 import WearableIntegrationPage from "./pages/WearableIntegration";
+import SymptomCheckerPage from "./pages/SymptomChecker";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
