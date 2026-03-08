@@ -6,8 +6,14 @@ import { lovable } from '@/integrations/lovable/index';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Activity, Mail, Lock, User, ArrowLeft } from 'lucide-react';
+import { Activity, Mail, Lock, User, ChevronRight, Sparkles, Heart, Shield, Brain } from 'lucide-react';
 import { toast } from 'sonner';
+
+const features = [
+  { icon: Brain, label: 'AI Report Analysis' },
+  { icon: Heart, label: 'Health Tracking' },
+  { icon: Shield, label: 'Data Privacy' },
+];
 
 const AuthPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -47,57 +53,68 @@ const AuthPage = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left panel */}
-      <div className="hidden lg:flex lg:w-1/2 gradient-hero items-center justify-center p-12 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full bg-primary-foreground"
-              style={{
-                width: Math.random() * 100 + 20,
-                height: Math.random() * 100 + 20,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                opacity: Math.random() * 0.3,
-              }}
-            />
-          ))}
+      {/* Left panel — hero */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <div className="absolute inset-0 gradient-hero" />
+        {/* Decorative orbs */}
+        <motion.div animate={{ y: [0, -20, 0] }} transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-20 left-20 w-72 h-72 rounded-full bg-white/5 blur-3xl" />
+        <motion.div animate={{ y: [0, 15, 0] }} transition={{ duration: 10, repeat: Infinity, delay: 1 }}
+          className="absolute bottom-20 right-10 w-80 h-80 rounded-full bg-secondary/10 blur-3xl" />
+        
+        <div className="relative z-10 flex flex-col items-center justify-center w-full p-12">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <div className="w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center mb-8 mx-auto shadow-xl">
+              <Activity className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-4xl font-display font-bold text-white text-center mb-3 tracking-tight">Bee.dr</h2>
+            <p className="text-lg text-white/60 text-center max-w-sm mb-10">
+              AI-powered healthcare platform for smarter health decisions
+            </p>
+
+            {/* Feature pills */}
+            <div className="flex flex-col gap-3">
+              {features.map(({ icon: Icon, label }, i) => (
+                <motion.div key={label}
+                  initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 + i * 0.15 }}
+                  className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15">
+                  <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-white/90 text-sm font-medium">{label}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 text-primary-foreground text-center"
-        >
-          <Activity className="w-16 h-16 mx-auto mb-6" />
-          <h2 className="text-4xl font-display font-bold mb-4">Bee.dr</h2>
-          <p className="text-lg opacity-80 max-w-sm">
-            AI-powered medical report analysis for smarter health decisions
-          </p>
-        </motion.div>
       </div>
 
-      {/* Right panel */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      {/* Right panel — form */}
+      <div className="flex-1 flex items-center justify-center p-6 bg-background gradient-mesh relative">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
           className="w-full max-w-md"
         >
-          <div className="lg:hidden flex items-center gap-2 mb-8">
-            <Activity className="w-8 h-8 text-primary" />
-            <span className="text-2xl font-display font-bold text-foreground">Bee.dr</span>
+          {/* Mobile logo */}
+          <div className="lg:hidden flex items-center gap-2.5 mb-8">
+            <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
+              <Activity className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-xl font-display font-bold text-foreground tracking-tight">Bee.dr</span>
           </div>
 
-          <h1 className="text-2xl font-display font-bold text-foreground mb-2">
+          <h1 className="text-2xl font-display font-bold text-foreground mb-1 tracking-tight">
             {isSignUp ? 'Create your account' : 'Welcome back'}
           </h1>
-          <p className="text-muted-foreground mb-6">
-            {isSignUp ? 'Start analyzing your health reports with AI' : 'Sign in to access your health dashboard'}
+          <p className="text-sm text-muted-foreground mb-6">
+            {isSignUp ? 'Start your AI-powered health journey' : 'Sign in to your health dashboard'}
           </p>
 
           {/* Google Sign-In */}
-          <Button variant="outline" className="w-full mb-4 gap-2 h-11" onClick={handleGoogleSignIn}>
+          <Button variant="outline" className="w-full mb-4 gap-2.5 h-12 rounded-xl border-border/80 hover:bg-accent/50 transition-all" onClick={handleGoogleSignIn}>
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -107,51 +124,62 @@ const AuthPage = () => {
             Continue with Google
           </Button>
 
-          <div className="relative mb-4">
+          <div className="relative mb-5">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">or continue with email</span>
+            <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
+              <span className="bg-background px-3 text-muted-foreground">or continue with email</span>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
-              <div>
-                <Label htmlFor="name" className="text-foreground">Full Name</Label>
-                <div className="relative mt-1">
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+                <Label htmlFor="name" className="text-xs font-medium text-muted-foreground">Full Name</Label>
+                <div className="relative mt-1.5">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Dr. Jane Smith" className="pl-10" required />
+                    placeholder="Dr. Jane Smith" className="pl-10 h-11 rounded-xl bg-white/50 border-border/60 focus:border-primary/40" required />
                 </div>
-              </div>
+              </motion.div>
             )}
 
             <div>
-              <Label htmlFor="email" className="text-foreground">Email</Label>
-              <div className="relative mt-1">
+              <Label htmlFor="email" className="text-xs font-medium text-muted-foreground">Email</Label>
+              <div className="relative mt-1.5">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com" className="pl-10" required />
+                  placeholder="you@example.com" className="pl-10 h-11 rounded-xl bg-white/50 border-border/60 focus:border-primary/40" required />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-foreground">Password</Label>
-              <div className="relative mt-1">
+              <Label htmlFor="password" className="text-xs font-medium text-muted-foreground">Password</Label>
+              <div className="relative mt-1.5">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••" className="pl-10" required minLength={6} />
+                  placeholder="••••••••" className="pl-10 h-11 rounded-xl bg-white/50 border-border/60 focus:border-primary/40" required minLength={6} />
               </div>
             </div>
 
-            <Button type="submit" className="w-full gradient-primary text-primary-foreground" size="lg" disabled={loading}>
-              {loading ? 'Please wait...' : isSignUp ? 'Create Account' : 'Sign In'}
+            <Button type="submit" size="lg" disabled={loading}
+              className="w-full h-12 rounded-xl gradient-primary text-white shadow-glow hover:shadow-xl transition-all text-sm font-semibold">
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Please wait...
+                </div>
+              ) : (
+                <>
+                  {isSignUp ? 'Create Account' : 'Sign In'}
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </>
+              )}
             </Button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
             {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-            <button onClick={() => setIsSignUp(!isSignUp)} className="text-primary font-medium hover:underline">
+            <button onClick={() => setIsSignUp(!isSignUp)} className="text-primary font-semibold hover:underline">
               {isSignUp ? 'Sign in' : 'Sign up'}
             </button>
           </p>
