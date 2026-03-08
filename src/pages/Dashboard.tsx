@@ -152,12 +152,18 @@ const DashboardPage = () => {
             {[
               { icon: Upload, label: 'Upload Report', desc: 'PDF or Photo', path: '/upload', gradient: true },
               { icon: Bot, label: 'AI Doctor Chat', desc: 'Ask anything', path: '/chat', gradient: false },
+              { icon: SmilePlus, label: 'Daily Check-in', desc: 'Track daily', path: '/checkin', gradient: false },
+              { icon: Target, label: 'Health Habits', desc: 'Water, exercise', path: '/habits', gradient: false },
               { icon: TrendingUp, label: 'Health Trends', desc: 'Track biomarkers', path: '/trends', gradient: false },
+              { icon: Brain, label: 'Predictive Health', desc: 'AI forecasts', path: '/predictive', gradient: false },
+              { icon: Scan, label: 'Scan Prescription', desc: 'Camera OCR', path: '/prescription', gradient: false },
+              { icon: ScanEye, label: 'Skin Scanner', desc: 'AI dermatology', path: '/skin-scanner', gradient: false },
+              { icon: Mic, label: 'Voice Doctor', desc: 'Speak to AI', path: '/voice-doctor', gradient: false },
               { icon: GitCompare, label: 'Compare Reports', desc: 'Old vs New', path: '/compare', gradient: false },
               { icon: Calendar, label: 'Health Timeline', desc: 'Medical history', path: '/timeline', gradient: false },
+              { icon: AlertTriangle, label: 'Emergency Card', desc: 'Quick health info', path: '/emergency-card', gradient: false },
               { icon: ShieldAlert, label: 'Emergency Alerts', desc: 'Critical values', path: '/alerts', gradient: false },
               { icon: Users, label: 'Family Health', desc: 'Track family', path: '/family', gradient: false },
-              { icon: Scan, label: 'Scan Prescription', desc: 'Camera OCR', path: '/prescription', gradient: false },
             ].map(({ icon: Icon, label, desc, path, gradient }, i) => (
               <motion.button key={label}
                 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
