@@ -27,6 +27,7 @@ import MedicalTimeline from "./pages/MedicalTimeline";
 import EmergencyAlerts from "./pages/EmergencyAlerts";
 import FamilyDashboard from "./pages/FamilyDashboard";
 import HealthProfilePage from "./pages/HealthProfile";
+import PrescriptionScannerPage from "./pages/PrescriptionScanner";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="/alerts" element={<ProtectedRoute><EmergencyAlerts /></ProtectedRoute>} />
             <Route path="/family" element={<ProtectedRoute><FamilyDashboard /></ProtectedRoute>} />
             <Route path="/health-profile" element={<ProtectedRoute><HealthProfilePage /></ProtectedRoute>} />
+            <Route path="/prescription" element={<ProtectedRoute><PrescriptionScannerPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
