@@ -165,6 +165,10 @@
   .animate-scan {
     animation: scan 2s ease-in-out infinite;
   }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
 }
 
 @keyframes float {
