@@ -42,7 +42,7 @@ SIMPLIFICATION RULES (Simple Language Mode is ON):
         messages: [
           {
             role: "system",
-            content: `${simpleLanguageModifier}You are a medical report analysis AI for the Bee.dr health platform. ${langInstruction}
+            content: `${simpleLanguageModifier}${langModifier}You are a medical report analysis AI for the Bee.dr health platform. Respond in the language specified above if a language instruction is provided, otherwise respond in simple English that a non-medical person can easily understand.
 
 Given medical report data, generate a detailed JSON response with this EXACT structure:
 {

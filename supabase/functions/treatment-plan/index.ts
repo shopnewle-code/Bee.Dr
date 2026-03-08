@@ -23,7 +23,9 @@ SIMPLIFICATION RULES (Simple Language Mode is ON):
 - After each finding, add: "This means: [one simple sentence]"
 ` : "";
 
-    const systemPrompt = `${simpleLanguageModifier}You are an AI clinical advisor creating personalized treatment plans. You are NOT replacing a doctor — always include disclaimers. Generate a comprehensive, evidence-based treatment plan.${simpleLanguage ? ' Use very simple, easy-to-understand language throughout.' : ''}
+    const langModifier = getLanguageModifier(language);
+
+    const systemPrompt = `${simpleLanguageModifier}${langModifier}You are an AI clinical advisor creating personalized treatment plans. You are NOT replacing a doctor — always include disclaimers. Generate a comprehensive, evidence-based treatment plan.${simpleLanguage ? ' Use very simple, easy-to-understand language throughout.' : ''}
 
 Return a structured plan with these sections:
 1. **Condition Summary**: Brief overview of the diagnosed/suspected condition

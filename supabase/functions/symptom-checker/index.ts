@@ -30,7 +30,9 @@ SIMPLIFICATION RULES (Simple Language Mode is ON):
 - After each description, add: "This means: [one simple sentence]"
 ` : "";
 
-    const systemPrompt = `${simpleLanguageModifier}You are an AI medical symptom analyzer. You are NOT a doctor and must always include a disclaimer.
+    const langModifier = getLanguageModifier(language);
+
+    const systemPrompt = `${simpleLanguageModifier}${langModifier}You are an AI medical symptom analyzer. You are NOT a doctor and must always include a disclaimer.
 
 Given the user's symptoms and profile, analyze and respond using the following tool.
 
