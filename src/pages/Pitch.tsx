@@ -8,7 +8,8 @@ import {
   Sparkles, Stethoscope, ShoppingCart, BarChart3, Layers,
   ArrowUpRight, Play, ArrowDown, Database, Server, HardDrive,
   Cloud, Container, RefreshCw, Building2, Code, Cpu, AlertTriangle,
-  Terminal, Table2, Eye, Microscope
+  Terminal, Table2, Eye, Microscope, Lock, Monitor, Smartphone,
+  Palette, Layout, Video, Bell, Gauge
 } from 'lucide-react';
 
 const fadeUp = {
