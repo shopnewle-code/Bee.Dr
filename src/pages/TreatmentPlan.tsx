@@ -74,6 +74,7 @@ const TreatmentPlan = () => {
             current_medications: medications || undefined,
           },
           simpleLanguage,
+          language,
         }),
       });
 
