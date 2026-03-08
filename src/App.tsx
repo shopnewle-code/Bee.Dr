@@ -65,6 +65,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<IndexRedirect />} />
             <Route path="/pitch" element={<PitchPage />} />
+            <Route path="/investor-deck" element={<InvestorDeckPage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/language" element={<LanguageSelection />} />
