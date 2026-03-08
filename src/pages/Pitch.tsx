@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import {
   Activity, Brain, Shield, TrendingUp, Users, Zap, Globe,
   FileText, Bot, Scan, Heart, Pill, ChevronRight, ArrowRight,
-  Smartphone, Cloud, BarChart3, Target,
-  DollarSign, Rocket, CheckCircle2, Star, MessageCircle,
-  BookOpen, Languages, Lightbulb, Eye, Sparkles
+  Target, DollarSign, Rocket, CheckCircle2, Star, MessageCircle,
+  Sparkles, Stethoscope, ShoppingCart, BarChart3, Layers,
+  ArrowUpRight, Play
 } from 'lucide-react';
 
 const fadeUp = {
@@ -43,7 +43,6 @@ const PitchPage = () => {
 
       {/* Hero */}
       <section className="pt-32 pb-24 relative">
-        {/* Floating orbs */}
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
@@ -51,33 +50,34 @@ const PitchPage = () => {
         <div className="container mx-auto px-4 text-center relative z-10">
           <motion.div {...fadeUp}>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-subtle text-xs font-semibold text-primary mb-6 border border-primary/20">
-              <Zap className="w-3 h-3" /> AI-Powered Medical Intelligence Platform
+              <Zap className="w-3 h-3" /> AI Health Intelligence Platform
             </span>
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-display font-bold text-foreground mb-6 leading-tight">
-              Your Health,<br />
-              <span className="text-gradient">Decoded by AI</span>
+              Understand your health<br />
+              <span className="text-gradient">data instantly.</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-              Bee.dr transforms complex medical reports into clear, actionable insights — with test-by-test explanations,
-              risk predictions, and an AI doctor you can chat with, all in your language.
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4 leading-relaxed">
+              Make healthcare information understandable for everyone. Bee.dr transforms complex medical reports
+              into clear insights with AI analysis, doctor chat, and medicine intelligence.
             </p>
-            <div className="flex gap-3 justify-center flex-wrap">
-              <Button size="lg" className="gradient-primary text-primary-foreground shadow-glow rounded-2xl px-8" onClick={() => navigate('/auth')}>
-                Try Bee.dr Free <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-              <Button size="lg" variant="outline" className="rounded-2xl glass-subtle border-white/20 px-8"
-                onClick={() => document.getElementById('product')?.scrollIntoView({ behavior: 'smooth' })}>
-                See How It Works
-              </Button>
-            </div>
           </motion.div>
 
-          <motion.div {...fadeUp} transition={{ delay: 0.2 }} className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-16 max-w-3xl mx-auto">
+          <motion.div {...fadeUp} transition={{ delay: 0.15 }} className="flex gap-3 justify-center flex-wrap mb-16">
+            <Button size="lg" className="gradient-primary text-primary-foreground shadow-glow rounded-2xl px-8" onClick={() => navigate('/auth')}>
+              Try Bee.dr Free <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+            <Button size="lg" variant="outline" className="rounded-2xl glass-subtle border-white/20 px-8"
+              onClick={() => navigate('/investor-deck')}>
+              <Play className="w-4 h-4 mr-2" /> View Pitch Deck
+            </Button>
+          </motion.div>
+
+          <motion.div {...fadeUp} transition={{ delay: 0.25 }} className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
             {[
-              { value: '95%', label: 'Accuracy Rate', icon: Target },
+              { value: '$500B+', label: 'Digital Health Market', icon: TrendingUp },
               { value: '<3s', label: 'Analysis Time', icon: Zap },
               { value: '50+', label: 'Biomarkers', icon: Activity },
-              { value: '2+', label: 'Languages', icon: Globe },
+              { value: '15', label: 'AI Modules', icon: Brain },
             ].map(({ value, label, icon: Icon }) => (
               <div key={label} className="glass-card p-4 text-center group hover:shadow-glow transition-all">
                 <Icon className="w-4 h-4 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
@@ -89,107 +89,98 @@ const PitchPage = () => {
         </div>
       </section>
 
-      {/* Core Product Feature */}
-      <section id="product" className="py-20 relative">
-        <div className="absolute inset-0 bg-primary/[0.02]" />
+      {/* Problem */}
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-destructive/[0.02]" />
         <div className="container mx-auto px-4 relative z-10">
           <motion.div {...fadeUp} className="text-center mb-12">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-primary border border-primary/20 mb-4">
-              <Star className="w-3 h-3" /> Core Innovation
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-destructive border border-destructive/20 mb-4">
+              The Problem
             </span>
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Detailed Report Explanation</h2>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Healthcare information is broken</h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Every test result is broken down into simple language with normal range comparisons,
-              abnormal value highlights, and personalized recommendations
+              Millions of people cannot understand medical reports, doctor handwriting, medicines, or disease risks
             </p>
           </motion.div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
-            {[
-              { icon: Eye, title: 'Test-by-Test Breakdown', desc: 'Each result is individually explained with what it measures and what your value means for your health' },
-              { icon: BarChart3, title: 'Normal Range Comparison', desc: 'Visual bars show where your value falls relative to the normal range — instantly spot what needs attention' },
-              { icon: BookOpen, title: 'Medical Terms Simplified', desc: 'Complex medical terminology is translated into plain language anyone can understand' },
-              { icon: Shield, title: 'Abnormal Value Alerts', desc: 'High, low, and critical values are highlighted with color-coded severity indicators' },
-              { icon: Heart, title: 'Health Risk Analysis', desc: 'AI identifies potential health risks like cardiovascular disease, diabetes, and anemia from your biomarkers' },
-              { icon: Lightbulb, title: 'Action Plan', desc: 'Personalized diet, exercise, sleep, and medication recommendations based on your specific results' },
-            ].map(({ icon: Icon, title, desc }, i) => (
-              <motion.div key={title} {...fadeUp} transition={{ delay: i * 0.08 }}
-                className="glass-card p-6 group hover:shadow-glow transition-all">
-                <div className="w-11 h-11 rounded-xl bg-primary/8 flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
-                  <Icon className="w-5 h-5 text-primary" />
+          <div className="max-w-3xl mx-auto">
+            <motion.div {...fadeUp} className="glass-card p-6 mb-4">
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 flex-wrap justify-center w-full">
+                  <span className="glass-subtle px-3 py-2 rounded-xl text-foreground font-medium">Patient receives blood test report</span>
+                  <ArrowRight className="w-4 h-4 text-primary shrink-0" />
+                  <span className="glass-subtle px-3 py-2 rounded-xl text-foreground font-medium">Cannot understand results</span>
+                  <ArrowRight className="w-4 h-4 text-destructive shrink-0" />
+                  <span className="bg-destructive/10 border border-destructive/20 px-3 py-2 rounded-xl text-destructive font-medium">Anxiety + confusion</span>
                 </div>
-                <h3 className="font-display font-semibold text-foreground mb-1.5">{title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
-              </motion.div>
-            ))}
+              </div>
+            </motion.div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {[
+                { icon: FileText, text: 'Medical reports written in jargon only doctors understand' },
+                { icon: Stethoscope, text: 'Long waits (2-4 weeks) to discuss results with a doctor' },
+                { icon: Globe, text: 'Language barriers — reports always in English' },
+                { icon: TrendingUp, text: 'No way to track health trends across reports over time' },
+              ].map(({ icon: Icon, text }, i) => (
+                <motion.div key={text} {...fadeUp} transition={{ delay: i * 0.08 }}
+                  className="glass-card p-4 flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
+                    <Icon className="w-4 h-4 text-destructive" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">{text}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* In-Report AI Chat */}
+      {/* Solution */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <motion.div {...fadeUp} className="text-center mb-12">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-primary border border-primary/20 mb-4">
-              <MessageCircle className="w-3 h-3" /> In-Report Chat
+              <Star className="w-3 h-3" /> The Solution
             </span>
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Ask AI About Your Report</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              An AI chat assistant is embedded right inside your report — ask questions, get contextual answers,
-              and receive proactive follow-up suggestions
-            </p>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Three steps to clarity</h2>
           </motion.div>
 
-          <div className="max-w-3xl mx-auto grid sm:grid-cols-2 gap-4">
-            <motion.div {...fadeUp} className="glass-card p-6">
-              <h3 className="font-display font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Bot className="w-5 h-5 text-primary" /> Contextual Q&A
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">The AI reads your specific report data and provides personalized answers:</p>
-              <div className="space-y-2">
-                {[
-                  "Is this result dangerous?",
-                  "What should I eat to improve this?",
-                  "Do I need to see a doctor?",
-                  "What does this test mean?",
-                  "How can I improve this value?",
-                ].map((q) => (
-                  <div key={q} className="text-xs glass-subtle border border-white/10 rounded-xl px-3 py-2.5 text-foreground">
-                    💬 {q}
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div {...fadeUp} transition={{ delay: 0.1 }} className="glass-card p-6">
-              <h3 className="font-display font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Languages className="w-5 h-5 text-primary" /> Multi-Language Support
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Full report explanations available in English and Hindi, with more regional languages coming:
-              </p>
-              <div className="space-y-2">
-                {[
-                  { flag: '🇬🇧', lang: 'English', status: 'Available' },
-                  { flag: '🇮🇳', lang: 'हिन्दी (Hindi)', status: 'Available' },
-                  { flag: '🇮🇳', lang: 'தமிழ் (Tamil)', status: 'Coming Q3' },
-                  { flag: '🇮🇳', lang: 'తెలుగు (Telugu)', status: 'Coming Q3' },
-                  { flag: '🇮🇳', lang: 'বাংলা (Bengali)', status: 'Coming Q4' },
-                ].map((l) => (
-                  <div key={l.lang} className="flex items-center justify-between text-xs glass-subtle border border-white/10 rounded-xl px-3 py-2.5">
-                    <span className="text-foreground">{l.flag} {l.lang}</span>
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${l.status === 'Available' ? 'bg-success/10 text-success' : 'bg-muted text-muted-foreground'}`}>
-                      {l.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+          <div className="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto mb-8">
+            {[
+              { icon: FileText, step: '01', title: 'Upload Report', desc: 'Upload medical report PDF or photo', color: 'from-primary to-blue-glow' },
+              { icon: Scan, step: '02', title: 'Scan Medicine', desc: 'Scan any medicine for instant info', color: 'from-secondary to-teal' },
+              { icon: Bot, step: '03', title: 'Ask AI Doctor', desc: 'Chat with AI about your health', color: 'from-amber-400 to-orange-500' },
+            ].map(({ icon: Icon, step, title, desc, color }, i) => (
+              <motion.div key={step} {...fadeUp} transition={{ delay: i * 0.1 }}
+                className={`relative overflow-hidden rounded-2xl p-6 text-center bg-gradient-to-br ${color} text-white shadow-lg`}>
+                <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-6 translate-x-6" />
+                <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center mx-auto mb-4">
+                  <Icon className="w-7 h-7" />
+                </div>
+                <span className="text-xs text-white/60 font-medium">Step {step}</span>
+                <h3 className="font-display font-bold text-lg mt-1">{title}</h3>
+                <p className="text-sm text-white/70 mt-1">{desc}</p>
+              </motion.div>
+            ))}
           </div>
+
+          {/* User Flow */}
+          <motion.div {...fadeUp} className="glass-card p-6 max-w-3xl mx-auto">
+            <h4 className="font-display font-semibold text-foreground mb-4 text-center">Product Demo Flow</h4>
+            <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
+              {['Upload medical report', 'AI analyzes report', 'Simple explanation', 'Ask AI doctor questions', 'Suggested actions'].map((step, i, arr) => (
+                <span key={step} className="flex items-center gap-2">
+                  <span className="glass-subtle border border-white/10 text-foreground font-medium px-3 py-2 rounded-xl">{step}</span>
+                  {i < arr.length - 1 && <ArrowRight className="w-3 h-3 text-primary shrink-0" />}
+                </span>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Full Features */}
+      {/* Product Features */}
       <section className="py-20 relative">
         <div className="absolute inset-0 bg-primary/[0.02]" />
         <div className="container mx-auto px-4 relative z-10">
@@ -198,96 +189,120 @@ const PitchPage = () => {
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-xs font-semibold text-primary uppercase tracking-wider">Platform</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Complete Health Platform</h2>
-            <p className="text-muted-foreground max-w-lg mx-auto">Eight powerful modules working together</p>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Core Modules</h2>
           </motion.div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-5xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-5xl mx-auto">
             {[
-              { icon: Scan, title: 'Smart OCR', desc: 'TrOCR + handwriting recognition for any medical document' },
-              { icon: Brain, title: 'AI Interpretation', desc: 'BioBERT-powered biomarker analysis' },
-              { icon: Bot, title: 'AI Doctor Chat', desc: 'Contextual chat embedded in reports' },
-              { icon: Heart, title: 'Risk Prediction', desc: 'Multi-disease risk scoring from biomarkers' },
-              { icon: Pill, title: 'Rx Analysis', desc: 'Drug interaction & dosage checks' },
-              { icon: TrendingUp, title: 'Health Tracking', desc: 'Biomarker trends over time' },
-              { icon: FileText, title: 'Report Explanation', desc: 'Test-by-test plain language breakdown' },
-              { icon: Globe, title: 'Multi-Language', desc: 'English + Hindi with more coming' },
+              { icon: FileText, title: 'AI Report Analysis', desc: 'Upload any medical report for instant AI-powered interpretation' },
+              { icon: Bot, title: 'AI Doctor Chat', desc: 'Ask health questions and get contextual AI answers' },
+              { icon: Scan, title: 'Medicine Scanner', desc: 'Scan any medicine for interactions, dosage, and alternatives' },
+              { icon: BarChart3, title: 'Health Dashboard', desc: 'Track biomarkers, trends, and health scores over time' },
+              { icon: Stethoscope, title: 'Doctor Consultations', desc: 'Book appointments with verified specialists' },
+              { icon: ShoppingCart, title: 'Pharmacy Marketplace', desc: 'Order medicines with prescription verification' },
             ].map(({ icon: Icon, title, desc }, i) => (
               <motion.div key={title} {...fadeUp} transition={{ delay: i * 0.06 }}
-                className="glass-card p-5 hover:shadow-glow transition-all group">
-                <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center mb-3 group-hover:bg-primary/15 transition-colors">
-                  <Icon className="w-4.5 h-4.5 text-primary" />
+                className="glass-card p-5 group hover:shadow-glow transition-all">
+                <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mb-3 group-hover:bg-primary/15 transition-colors">
+                  <Icon className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="font-display font-semibold text-foreground text-sm mb-0.5">{title}</h3>
-                <p className="text-xs text-muted-foreground">{desc}</p>
+                <h3 className="font-display font-semibold text-foreground text-sm mb-1">{title}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Architecture */}
-      <section id="architecture" className="py-20">
+      {/* Technology / Architecture */}
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <motion.div {...fadeUp} className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">System Architecture</h2>
-            <p className="text-muted-foreground">Production-grade infrastructure built for global scale</p>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Technology</h2>
+            <p className="text-muted-foreground">Key innovation: <span className="text-primary font-semibold">medical document intelligence</span></p>
           </motion.div>
-          <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-4">
-            {[
-              { icon: Smartphone, title: 'Frontend', items: ['React + TypeScript PWA', 'Framer Motion animations', 'Responsive mobile-first', 'Real-time SSE streaming'], color: 'from-primary to-blue-glow' },
-              { icon: Cloud, title: 'Backend', items: ['Edge Functions (Deno)', 'PostgreSQL + RLS', 'Secure file storage', 'Multi-region deployment'], color: 'from-secondary to-teal' },
-              { icon: Brain, title: 'AI/NLP Pipeline', items: ['TrOCR → text extraction', 'BioBERT → entity recognition', 'Gemini → interpretation', 'XGBoost → risk scoring'], color: 'from-amber-400 to-orange-500' },
-              { icon: Shield, title: 'Security & Compliance', items: ['End-to-end encryption', 'HIPAA compliance ready', 'Row-level security', 'SOC2 Type II roadmap'], color: 'from-emerald-400 to-green-600' },
-            ].map(({ icon: Icon, title, items, color }, i) => (
-              <motion.div key={title} {...fadeUp} transition={{ delay: i * 0.1 }}
-                className="glass-card p-6 relative overflow-hidden">
-                <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${color} opacity-10 rounded-full -translate-y-8 translate-x-8`} />
-                <div className="flex items-center gap-3 mb-4 relative z-10">
-                  <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
-                    <Icon className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                  <h3 className="font-display font-semibold text-foreground">{title}</h3>
-                </div>
-                <ul className="space-y-2.5 relative z-10">
-                  {items.map(item => (
-                    <li key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" /> {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
+
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* AI Pipeline */}
+            <motion.div {...fadeUp} className="glass-card p-6">
+              <h4 className="font-display font-semibold text-foreground mb-4">AI Pipeline</h4>
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                {['Medical Report', 'Document Layout Detection', 'OCR Extraction', 'Medical Entity Recognition', 'AI Interpretation', 'Risk Prediction', 'Recommendation Engine', 'AI Doctor Assistant'].map((step, i, arr) => (
+                  <span key={step} className="flex items-center gap-2">
+                    <span className="glass-subtle border border-primary/20 text-foreground font-medium px-3 py-2 rounded-xl">{step}</span>
+                    {i < arr.length - 1 && <ChevronRight className="w-3 h-3 text-primary shrink-0" />}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* RAG Pipeline */}
+            <motion.div {...fadeUp} className="glass-card p-6">
+              <h4 className="font-display font-semibold text-foreground mb-4">RAG AI Chat Pipeline</h4>
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                {['User Question', 'Retrieve Report Data', 'Retrieve Medical Knowledge', 'LLM Reasoning', 'AI Answer'].map((step, i, arr) => (
+                  <span key={step} className="flex items-center gap-2">
+                    <span className="glass-subtle border border-secondary/20 text-foreground font-medium px-3 py-2 rounded-xl">{step}</span>
+                    {i < arr.length - 1 && <ChevronRight className="w-3 h-3 text-secondary shrink-0" />}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Architecture Cards */}
+            <div className="grid sm:grid-cols-2 gap-4">
+              {[
+                { title: 'Medical Document AI', items: ['TrOCR text extraction', 'BioBERT entity recognition', 'Clinical interpretation engine'] },
+                { title: 'LLM Doctor Assistant', items: ['RAG with report context', 'Multi-language generation', 'Streaming responses'] },
+                { title: 'Risk Prediction Models', items: ['XGBoost ensemble scoring', 'Cardiovascular, diabetes, anemia', 'Temporal trend analysis'] },
+                { title: 'Health Knowledge Graph', items: ['Drug interaction database', 'Biomarker reference ranges', 'Clinical guideline mapping'] },
+              ].map(({ title, items }, i) => (
+                <motion.div key={title} {...fadeUp} transition={{ delay: i * 0.08 }}
+                  className="glass-card p-5">
+                  <h4 className="font-display font-semibold text-foreground text-sm mb-3">{title}</h4>
+                  <ul className="space-y-2">
+                    {items.map(item => (
+                      <li key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" /> {item}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Medical NLP Pipeline */}
+      {/* Competitive Landscape */}
       <section className="py-20 relative">
         <div className="absolute inset-0 bg-primary/[0.02]" />
         <div className="container mx-auto px-4 relative z-10">
           <motion.div {...fadeUp} className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Medical NLP Pipeline</h2>
-            <p className="text-muted-foreground">7-stage intelligent processing in under 3 seconds</p>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Competitive Landscape</h2>
           </motion.div>
-          <div className="max-w-3xl mx-auto">
+
+          <motion.div {...fadeUp} className="glass-card p-6 max-w-3xl mx-auto mb-6">
+            <p className="text-center text-sm text-muted-foreground mb-6">Differentiation:</p>
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              {['Report Intelligence', 'Medicine Intelligence', 'Health Data Platform'].map((item, i, arr) => (
+                <span key={item} className="flex items-center gap-3">
+                  <span className="gradient-primary text-primary-foreground font-semibold px-4 py-2 rounded-xl text-sm shadow-glow">{item}</span>
+                  {i < arr.length - 1 && <span className="text-primary font-bold text-lg">+</span>}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-3 gap-3 max-w-3xl mx-auto">
             {[
-              { step: '01', title: 'Document Ingestion', desc: 'PDF/image upload with format detection, EXIF cleaning, and preprocessing' },
-              { step: '02', title: 'TrOCR Extraction', desc: 'Transformer-based OCR for printed text + IAM-trained model for doctor handwriting' },
-              { step: '03', title: 'BioBERT NER', desc: 'Named entity recognition extracts biomarkers, values, units, and reference ranges' },
-              { step: '04', title: 'Clinical Interpretation', desc: 'Reference range comparison, delta analysis vs prior reports, clinical significance scoring' },
-              { step: '05', title: 'Risk Modeling', desc: 'XGBoost + neural network ensemble for cardiovascular, diabetes, anemia risk prediction' },
-              { step: '06', title: 'LLM Explanation', desc: 'Gemini generates plain-language explanations, medical term definitions, and personalized recommendations in the user\'s language' },
-              { step: '07', title: 'Structured Delivery', desc: 'Results with confidence scores, suggested follow-up questions, and actionable next steps' },
-            ].map(({ step, title, desc }, i) => (
-              <motion.div key={step} {...fadeUp} transition={{ delay: i * 0.08 }}
-                className="flex items-start gap-4 mb-4 last:mb-0">
-                <div className="w-11 h-11 rounded-xl gradient-primary flex items-center justify-center shrink-0 text-primary-foreground text-sm font-display font-bold shadow-glow">
-                  {step}
-                </div>
-                <div className="flex-1 glass-card p-4">
-                  <h4 className="font-display font-semibold text-foreground text-sm">{title}</h4>
-                  <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{desc}</p>
-                </div>
+              { name: 'Ada Health', focus: 'Symptom checker' },
+              { name: 'Practo', focus: 'Doctor booking' },
+              { name: 'Teladoc', focus: 'Telehealth' },
+            ].map(({ name, focus }, i) => (
+              <motion.div key={name} {...fadeUp} transition={{ delay: i * 0.08 }}
+                className="glass-card p-4 text-center">
+                <p className="font-display font-semibold text-foreground text-sm">{name}</p>
+                <p className="text-xs text-muted-foreground">{focus}</p>
               </motion.div>
             ))}
           </div>
@@ -299,60 +314,67 @@ const PitchPage = () => {
         <div className="container mx-auto px-4">
           <motion.div {...fadeUp} className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Business Model</h2>
-            <p className="text-muted-foreground">Sustainable growth through value-aligned pricing</p>
           </motion.div>
-          <div className="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            {[
-              { tier: 'Free', price: '$0', features: ['3 scans/month', 'Basic AI insights', 'English only', 'Limited chat'], highlight: false },
-              { tier: 'Pro', price: '$9.99', features: ['Unlimited scans', 'Full report explanation', 'Multi-language', 'Unlimited AI chat', 'Health trends', 'Priority processing'], highlight: true },
-              { tier: 'Enterprise', price: 'Custom', features: ['API access', 'Hospital integrations', 'Bulk processing', 'Custom languages', 'Dedicated support', 'HIPAA BAA'], highlight: false },
-            ].map(({ tier, price, features, highlight }) => (
-              <motion.div key={tier} {...fadeUp}
-                className={`rounded-2xl p-6 relative overflow-hidden ${highlight
-                  ? 'gradient-hero text-white shadow-glow'
-                  : 'glass-card'
-                }`}>
-                {highlight && (
-                  <>
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-12 translate-x-12" />
-                    <span className="text-xs font-semibold text-white/80 mb-2 block">Most Popular</span>
-                  </>
-                )}
-                <h3 className={`font-display font-bold text-lg ${highlight ? 'text-white' : 'text-foreground'}`}>{tier}</h3>
-                <p className={`text-3xl font-display font-bold mt-1 mb-5 ${highlight ? 'text-white' : 'text-foreground'}`}>
-                  {price}<span className={`text-sm font-normal ${highlight ? 'text-white/60' : 'text-muted-foreground'}`}>/mo</span>
-                </p>
-                <ul className="space-y-2.5">
-                  {features.map(f => (
-                    <li key={f} className={`flex items-center gap-2 text-sm ${highlight ? 'text-white/80' : 'text-muted-foreground'}`}>
-                      <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${highlight ? 'text-white/70' : 'text-primary'}`} /> {f}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
+
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* Revenue Streams */}
+            <motion.div {...fadeUp} className="grid sm:grid-cols-4 gap-3">
+              {[
+                { icon: Star, title: 'Premium Subscription', desc: '$7/month' },
+                { icon: Stethoscope, title: 'Doctor Consultations', desc: '20% fee' },
+                { icon: ShoppingCart, title: 'Pharmacy Marketplace', desc: '10% commission' },
+                { icon: BarChart3, title: 'Health Insights API', desc: 'Enterprise pricing' },
+              ].map(({ icon: Icon, title, desc }) => (
+                <div key={title} className="glass-card p-4 text-center group hover:shadow-glow transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mx-auto mb-2 group-hover:bg-primary/15 transition-colors">
+                    <Icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <p className="text-xs font-semibold text-foreground">{title}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{desc}</p>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* Financial Projections */}
+            <motion.div {...fadeUp} className="grid sm:grid-cols-3 gap-4">
+              {[
+                { year: 'Year 1', revenue: '$150K', color: 'from-primary to-blue-glow' },
+                { year: 'Year 2', revenue: '$1M ARR', color: 'from-secondary to-teal' },
+                { year: 'Year 3', revenue: '$10M ARR', color: 'from-amber-400 to-orange-500' },
+              ].map(({ year, revenue, color }) => (
+                <div key={year} className={`relative overflow-hidden rounded-2xl p-6 text-center bg-gradient-to-br ${color} text-white shadow-lg`}>
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full -translate-y-4 translate-x-4" />
+                  <p className="text-xs text-white/60 font-medium">{year}</p>
+                  <p className="text-3xl font-display font-bold mt-1">{revenue}</p>
+                </div>
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Roadmap */}
+      {/* Growth Strategy */}
       <section className="py-20 relative">
         <div className="absolute inset-0 bg-primary/[0.02]" />
         <div className="container mx-auto px-4 relative z-10">
           <motion.div {...fadeUp} className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">MVP Development Roadmap</h2>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-primary border border-primary/20 mb-4">
+              <Rocket className="w-3 h-3" /> 0 → 1M Users
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Growth Strategy</h2>
           </motion.div>
-          <div className="max-w-3xl mx-auto grid sm:grid-cols-2 gap-4">
+
+          <div className="grid sm:grid-cols-2 gap-4 max-w-4xl mx-auto">
             {[
-              { q: 'Q1 2026', title: 'Foundation', items: ['Auth + upload flow', 'OCR pipeline MVP', 'Basic AI interpretation', 'Report explanation UI'], color: 'from-primary to-blue-glow' },
-              { q: 'Q2 2026', title: 'Intelligence', items: ['AI Doctor chat (streaming)', 'In-report contextual chat', 'Hindi language support', 'Risk prediction models'], color: 'from-secondary to-teal' },
-              { q: 'Q3 2026', title: 'Scale', items: ['iOS/Android PWA', 'Tamil, Telugu support', 'Health trends dashboard', 'Prescription analysis'], color: 'from-amber-400 to-orange-500' },
-              { q: 'Q4 2026', title: 'Enterprise', items: ['B2B API launch', 'Hospital integrations', 'Clinical trial matching', 'Global expansion (10+ languages)'], color: 'from-emerald-400 to-green-600' },
-            ].map(({ q, title, items, color }, i) => (
-              <motion.div key={q} {...fadeUp} transition={{ delay: i * 0.1 }}
+              { phase: 'Phase 1', range: '0–10K users', title: 'Early Users', items: ['Free AI report explanation', 'Diagnostic lab partnerships', 'Reddit / health communities', 'SEO for lab reports'], color: 'from-primary to-blue-glow' },
+              { phase: 'Phase 2', range: '10K–100K users', title: 'Product-Market Fit', items: ['Health score + AI doctor chat', 'YouTube health education', 'Doctor referrals', 'Medicine reminders'], color: 'from-secondary to-teal' },
+              { phase: 'Phase 3', range: '100K–500K users', title: 'Platform Expansion', items: ['Doctor consultations marketplace', 'Medicine ordering', 'Clinic & pharmacy partnerships'], color: 'from-amber-400 to-orange-500' },
+              { phase: 'Phase 4', range: '500K–1M users', title: 'Viral Growth', items: ['Family health profiles', 'Preventive alerts', 'Health sharing — network effect', 'One user → family joins'], color: 'from-emerald-400 to-green-600' },
+            ].map(({ phase, range, title, items, color }, i) => (
+              <motion.div key={phase} {...fadeUp} transition={{ delay: i * 0.1 }}
                 className="glass-card p-6 relative overflow-hidden">
-                <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${color} opacity-10 rounded-full -translate-y-6 translate-x-6`} />
-                <span className="text-xs font-semibold text-primary">{q}</span>
+                <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${color} opacity-10 rounded-full -translate-y-8 translate-x-8`} />
+                <span className="text-xs font-semibold text-primary">{phase} · {range}</span>
                 <h4 className="font-display font-semibold text-foreground mt-1 mb-3">{title}</h4>
                 <ul className="space-y-2">
                   {items.map(item => (
@@ -364,74 +386,156 @@ const PitchPage = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* Growth Loop */}
+          <motion.div {...fadeUp} className="glass-card p-6 max-w-3xl mx-auto mt-6">
+            <h4 className="font-display font-semibold text-foreground mb-4 text-center">Viral Growth Loop</h4>
+            <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
+              {['User uploads report', 'AI explains results', 'User shares insights', 'New users join'].map((step, i, arr) => (
+                <span key={step} className="flex items-center gap-2">
+                  <span className="glass-subtle border border-primary/20 text-foreground font-medium px-3 py-2 rounded-xl">{step}</span>
+                  {i < arr.length - 1 && <ArrowRight className="w-3 h-3 text-primary shrink-0" />}
+                </span>
+              ))}
+              <ArrowUpRight className="w-4 h-4 text-secondary" />
+              <span className="text-[10px] text-secondary font-semibold">Repeat</span>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Go-to-Market */}
+      {/* Microservices Architecture */}
       <section className="py-20">
-        <div className="container mx-auto px-4 max-w-4xl">
+        <div className="container mx-auto px-4">
           <motion.div {...fadeUp} className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Go-to-Market Strategy</h2>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">System Architecture</h2>
+            <p className="text-muted-foreground">15 microservices + AI pipelines</p>
           </motion.div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            {[
-              { icon: Target, title: 'Target Market', desc: 'Health-conscious individuals 25-55, chronic disease patients, parents managing family health in India & globally. $50B+ TAM in digital health.' },
-              { icon: Rocket, title: 'Growth Channels', desc: 'SEO health content, health influencer partnerships, physician referral program, app store optimization, WhatsApp viral sharing.' },
-              { icon: Users, title: 'User Acquisition', desc: 'Freemium model drives viral growth. Users share report explanations with family & doctors via WhatsApp, creating organic loops.' },
-              { icon: DollarSign, title: 'Revenue Targets', desc: 'Year 1: 100K users, $1.2M ARR. Year 2: 500K users, $8M ARR. Year 3: 2M users, $30M ARR. Path to profitability by Year 2.' },
-            ].map(({ icon: Icon, title, desc }, i) => (
-              <motion.div key={title} {...fadeUp} transition={{ delay: i * 0.1 }}
-                className="glass-card p-6 group hover:shadow-glow transition-all">
-                <div className="w-11 h-11 rounded-xl bg-primary/8 flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
-                  <Icon className="w-5 h-5 text-primary" />
+
+          <div className="max-w-5xl mx-auto space-y-6">
+            {/* Flow diagram */}
+            <motion.div {...fadeUp} className="glass-card p-6 text-center">
+              <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
+                <span className="gradient-primary text-primary-foreground font-bold px-4 py-2 rounded-xl shadow-glow">Mobile App / Web</span>
+                <ArrowRight className="w-4 h-4 text-primary" />
+                <span className="glass-subtle border border-primary/20 text-foreground font-semibold px-4 py-2 rounded-xl">API Gateway</span>
+                <ArrowRight className="w-4 h-4 text-primary" />
+                <span className="glass-subtle border border-secondary/20 text-foreground font-semibold px-4 py-2 rounded-xl">Microservices Layer</span>
+              </div>
+            </motion.div>
+
+            {/* Microservices Grid */}
+            <motion.div {...fadeUp} className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+              {[
+                'Auth', 'User Profile', 'Report', 'OCR', 'AI Analysis',
+                'Chat', 'Medicine', 'Doctor', 'Pharmacy', 'Marketplace',
+                'Notification', 'Analytics', 'Map', 'Billing', 'Admin',
+              ].map((service) => (
+                <div key={service} className="glass-card p-3 text-center hover:shadow-glow transition-all">
+                  <p className="text-[10px] font-semibold text-foreground">{service}</p>
+                  <p className="text-[9px] text-muted-foreground">Service</p>
                 </div>
-                <h4 className="font-display font-semibold text-foreground mb-2">{title}</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
-              </motion.div>
-            ))}
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Investor Pitch Deck */}
+      {/* Traction */}
       <section className="py-20 relative">
         <div className="absolute inset-0 bg-primary/[0.02]" />
-        <div className="container mx-auto px-4 max-w-3xl relative z-10">
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div {...fadeUp} className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Investor Pitch Deck</h2>
-            <p className="text-muted-foreground">12-slide deck structure</p>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Early Traction</h2>
           </motion.div>
-          <div className="grid sm:grid-cols-2 gap-3">
+
+          <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto mb-8">
             {[
-              { slide: '01', title: 'Problem', desc: '80% of patients can\'t understand their medical reports' },
-              { slide: '02', title: 'Solution', desc: 'AI-powered report explanation in plain language' },
-              { slide: '03', title: 'Demo', desc: 'Live product walkthrough — upload → analysis → chat' },
-              { slide: '04', title: 'Market Size', desc: '$50B+ digital health TAM, 1B+ underserved patients globally' },
-              { slide: '05', title: 'Product', desc: 'OCR + NLP + LLM pipeline with multi-language support' },
-              { slide: '06', title: 'Traction', desc: 'Working prototype, patent-pending ML pipeline' },
-              { slide: '07', title: 'Business Model', desc: 'Freemium B2C + Enterprise B2B API licensing' },
-              { slide: '08', title: 'Competition', desc: 'First to combine OCR + NLP + LLM + multi-language at consumer scale' },
-              { slide: '09', title: 'GTM Strategy', desc: 'India-first → APAC → Global, WhatsApp viral distribution' },
-              { slide: '10', title: 'Team', desc: 'AI/ML + Medicine + Product founding team' },
-              { slide: '11', title: 'Financials', desc: '3-year projection: $30M ARR, 2M users, path to profitability' },
-              { slide: '12', title: 'The Ask', desc: '$2M seed round for product + team + market expansion' },
-            ].map(({ slide, title, desc }, i) => (
-              <motion.div key={slide} {...fadeUp} transition={{ delay: i * 0.05 }}
-                className="glass-card p-4 flex items-start gap-3 group hover:shadow-glow transition-all">
-                <span className="text-xs font-display font-bold text-primary-foreground gradient-primary rounded-xl w-9 h-9 flex items-center justify-center shrink-0 shadow-glow">
-                  {slide}
-                </span>
-                <div>
-                  <h4 className="font-display font-semibold text-foreground text-sm">{title}</h4>
-                  <p className="text-xs text-muted-foreground mt-0.5">{desc}</p>
+              { value: '10K+', label: 'Users' },
+              { value: '20K+', label: 'Reports Analyzed' },
+              { value: '5K+', label: 'AI Chats' },
+            ].map(({ value, label }) => (
+              <motion.div key={label} {...fadeUp} className="glass-card p-6 text-center hover:shadow-glow transition-all">
+                <p className="text-3xl font-display font-bold text-primary">{value}</p>
+                <p className="text-sm text-muted-foreground mt-1">{label}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Growth Curve */}
+          <motion.div {...fadeUp} className="glass-card p-6 max-w-2xl mx-auto">
+            <h4 className="font-display font-semibold text-foreground mb-4 text-center">Growth Trajectory</h4>
+            <div className="space-y-3">
+              {[
+                { month: 'Month 1', users: '1K', width: '5%' },
+                { month: 'Month 3', users: '10K', width: '15%' },
+                { month: 'Month 6', users: '100K', width: '40%' },
+                { month: 'Month 12', users: '1M', width: '100%' },
+              ].map(({ month, users, width }) => (
+                <div key={month} className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground w-20 shrink-0">{month}</span>
+                  <div className="flex-1 h-6 bg-muted/30 rounded-full overflow-hidden">
+                    <div className="h-full gradient-primary rounded-full flex items-center justify-end pr-2 transition-all" style={{ width }}>
+                      <span className="text-[10px] font-bold text-primary-foreground">{users}</span>
+                    </div>
+                  </div>
                 </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Roadmap */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Product Roadmap</h2>
+          </motion.div>
+          <div className="max-w-3xl mx-auto grid sm:grid-cols-2 gap-4">
+            {[
+              { q: 'Year 1', title: 'Foundation', items: ['AI report intelligence', 'AI doctor assistant', 'Medicine intelligence', 'Health analytics'], color: 'from-primary to-blue-glow' },
+              { q: 'Year 2', title: 'Platform', items: ['Doctor marketplace', 'Pharmacy platform', 'Preventive health AI', 'Global expansion'], color: 'from-secondary to-teal' },
+            ].map(({ q, title, items, color }, i) => (
+              <motion.div key={q} {...fadeUp} transition={{ delay: i * 0.1 }}
+                className="glass-card p-6 relative overflow-hidden">
+                <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${color} opacity-10 rounded-full -translate-y-6 translate-x-6`} />
+                <span className="text-xs font-semibold text-primary">{q}</span>
+                <h4 className="font-display font-semibold text-foreground mt-1 mb-3">{title}</h4>
+                <ul className="space-y-2">
+                  {items.map(item => (
+                    <li key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle2 className="w-3 h-3 text-primary shrink-0" /> {item}
+                    </li>
+                  ))}
+                </ul>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Investor CTA */}
+      {/* Founder Insight */}
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-primary/[0.02]" />
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div {...fadeUp} className="glass-card p-8 max-w-3xl mx-auto text-center">
+            <Layers className="w-8 h-8 text-primary mx-auto mb-4" />
+            <h3 className="text-xl font-display font-bold text-foreground mb-4">The Health Ecosystem</h3>
+            <div className="flex items-center justify-center gap-3 flex-wrap mb-4">
+              {['Medical Data Platform', 'AI Health Assistant', 'Healthcare Marketplace'].map((item, i, arr) => (
+                <span key={item} className="flex items-center gap-3">
+                  <span className="glass-subtle border border-primary/20 text-foreground font-semibold px-4 py-2 rounded-xl text-sm">{item}</span>
+                  {i < arr.length - 1 && <span className="text-primary font-bold text-lg">+</span>}
+                </span>
+              ))}
+            </div>
+            <p className="text-sm text-muted-foreground">That combination is how companies like Ada Health scaled globally.</p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CTA */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <motion.div {...fadeUp}
@@ -439,13 +543,13 @@ const PitchPage = () => {
             <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -translate-y-20 translate-x-20" />
             <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full translate-y-16 -translate-x-16" />
             <div className="relative z-10">
-              <Star className="w-8 h-8 text-white/80 mx-auto mb-4" />
+              <DollarSign className="w-8 h-8 text-white/80 mx-auto mb-4" />
               <h2 className="text-3xl sm:text-4xl font-display font-bold text-white mb-3">
-                Seeking <span className="text-white/90">$2M Seed Round</span>
+                Seeking <span className="text-white/90">$1M Seed Round</span>
               </h2>
-              <p className="text-white/70 mb-8 leading-relaxed">
-                Join us in building the world's most accessible healthcare AI platform. Working prototype live now
-                with real AI analysis, multi-language support, and contextual AI doctor chat.
+              <p className="text-white/70 mb-4 text-sm">AI development · Engineering team · User growth · Health partnerships</p>
+              <p className="text-white/60 mb-8 leading-relaxed text-sm">
+                Working prototype live now with real AI analysis, multi-language support, and contextual AI doctor chat.
               </p>
               <div className="flex gap-3 justify-center flex-wrap">
                 <Button size="lg" className="bg-white text-primary hover:bg-white/90 rounded-2xl px-8 shadow-lg" onClick={() => navigate('/auth')}>
