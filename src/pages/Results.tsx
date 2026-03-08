@@ -59,6 +59,7 @@ const ResultsPage = () => {
                 raw_data: scan.raw_data,
               },
               language,
+              simpleLanguage,
             }),
           }
         );

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { toast } from 'sonner';
+import { useSimpleLanguage } from '@/hooks/use-simple-language';
 
 const COMMON_SYMPTOMS = [
   'Headache', 'Fatigue', 'Fever', 'Cough', 'Nausea', 'Dizziness',
