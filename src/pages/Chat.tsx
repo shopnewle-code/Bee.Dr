@@ -98,6 +98,7 @@ const ChatPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<ChatMode>('general');
   const { simpleLanguage, toggleSimpleLanguage } = useSimpleLanguage();
+  const { language } = useLanguage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
