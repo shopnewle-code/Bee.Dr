@@ -93,6 +93,7 @@ const App = () => (
             <Route path="/doctors" element={<ProtectedRoute><DoctorDiscoveryPage /></ProtectedRoute>} />
             <Route path="/book-consultation/:doctorId" element={<ProtectedRoute><BookConsultationPage /></ProtectedRoute>} />
             <Route path="/consultations" element={<ProtectedRoute><ConsultationHistoryPage /></ProtectedRoute>} />
+            <Route path="/wearables" element={<ProtectedRoute><WearableIntegrationPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

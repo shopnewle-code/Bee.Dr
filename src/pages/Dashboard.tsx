@@ -164,6 +164,7 @@ const DashboardPage = () => {
               { icon: AlertTriangle, label: 'Emergency Card', desc: 'Quick health info', path: '/emergency-card', gradient: false },
               { icon: ShieldAlert, label: 'Emergency Alerts', desc: 'Critical values', path: '/alerts', gradient: false },
               { icon: Users, label: 'Family Health', desc: 'Track family', path: '/family', gradient: false },
+              { icon: Watch, label: 'Wearables', desc: 'Sync devices', path: '/wearables', gradient: false },
             ].map(({ icon: Icon, label, desc, path, gradient }, i) => (
               <motion.button key={label}
                 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
