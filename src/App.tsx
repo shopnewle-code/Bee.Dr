@@ -23,6 +23,9 @@ import NotificationsPage from "./pages/Notifications";
 import SubscriptionPage from "./pages/Subscription";
 import SettingsPrivacy from "./pages/SettingsPrivacy";
 import HelpSupport from "./pages/HelpSupport";
+import MedicalTimeline from "./pages/MedicalTimeline";
+import EmergencyAlerts from "./pages/EmergencyAlerts";
+import FamilyDashboard from "./pages/FamilyDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -60,6 +63,9 @@ const App = () => (
             <Route path="/help" element={<ProtectedRoute><HelpSupport /></ProtectedRoute>} />
             <Route path="/trends" element={<ProtectedRoute><HealthTrends /></ProtectedRoute>} />
             <Route path="/compare" element={<ProtectedRoute><ReportComparison /></ProtectedRoute>} />
+            <Route path="/timeline" element={<ProtectedRoute><MedicalTimeline /></ProtectedRoute>} />
+            <Route path="/alerts" element={<ProtectedRoute><EmergencyAlerts /></ProtectedRoute>} />
+            <Route path="/family" element={<ProtectedRoute><FamilyDashboard /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

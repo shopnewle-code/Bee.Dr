@@ -6,7 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
   Activity, Upload, FileText, LogOut, Plus, Clock, Bot, User,
-  Heart, Bell, Scan, TrendingUp, Pill, Shield, ChevronRight, GitCompare
+  Heart, Bell, Scan, TrendingUp, Pill, Shield, ChevronRight, GitCompare,
+  Calendar, ShieldAlert, Users
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
@@ -94,10 +95,13 @@ const DashboardPage = () => {
           <div className="grid grid-cols-2 gap-3">
             {[
               { icon: Upload, label: 'Upload Report', desc: 'PDF or Photo', path: '/upload', gradient: true },
-              { icon: Scan, label: 'Scan Prescription', desc: 'Camera OCR', path: '/upload', gradient: false },
               { icon: Bot, label: 'AI Doctor Chat', desc: 'Ask anything', path: '/chat', gradient: false },
               { icon: TrendingUp, label: 'Health Trends', desc: 'Track biomarkers', path: '/trends', gradient: false },
               { icon: GitCompare, label: 'Compare Reports', desc: 'Old vs New', path: '/compare', gradient: false },
+              { icon: Calendar, label: 'Health Timeline', desc: 'Medical history', path: '/timeline', gradient: false },
+              { icon: ShieldAlert, label: 'Emergency Alerts', desc: 'Critical values', path: '/alerts', gradient: false },
+              { icon: Users, label: 'Family Health', desc: 'Track family', path: '/family', gradient: false },
+              { icon: Scan, label: 'Scan Prescription', desc: 'Camera OCR', path: '/upload', gradient: false },
             ].map(({ icon: Icon, label, desc, path, gradient }, i) => (
               <motion.button key={label}
                 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
