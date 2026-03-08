@@ -27,6 +27,7 @@ import MedicalTimeline from "./pages/MedicalTimeline";
 import EmergencyAlerts from "./pages/EmergencyAlerts";
 import FamilyDashboard from "./pages/FamilyDashboard";
 import HealthProfilePage from "./pages/HealthProfile";
+import PrescriptionScannerPage from "./pages/PrescriptionScanner";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
