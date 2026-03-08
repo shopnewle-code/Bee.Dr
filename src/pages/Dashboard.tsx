@@ -46,6 +46,12 @@ const medicalTools = [
   { icon: Search, label: 'Medicine Scanner', path: '/medicine-scanner' },
 ];
 
+const adminDashboards = [
+  { icon: Stethoscope, label: 'Doctor Dashboard', desc: 'Manage patients & appointments', path: '/doctor-dashboard', color: 'from-primary to-blue-glow' },
+  { icon: Building2, label: 'Hospital Admin', desc: 'Operations & analytics', path: '/hospital-dashboard', color: 'from-secondary to-teal' },
+  { icon: ShoppingCart, label: 'Pharmacy Panel', desc: 'Inventory & orders', path: '/pharmacy-dashboard', color: 'from-amber-400 to-orange-500' },
+];
+
 const services = [
   { icon: CalendarDays, label: 'Book Appointment', path: '/book-appointment' },
   { icon: Video, label: 'Telemedicine', path: '/telemedicine' },
@@ -55,7 +61,6 @@ const services = [
   { icon: Watch, label: 'Wearables', path: '/wearables' },
   { icon: AlertTriangle, label: 'Emergency Card', path: '/emergency-card' },
   { icon: ShieldAlert, label: 'Emergency Alerts', path: '/alerts' },
-  { icon: Building2, label: 'Pharmacy Panel', path: '/pharmacy-dashboard' },
 ];
 
 const DashboardPage = () => {
