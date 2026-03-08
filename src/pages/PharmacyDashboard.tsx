@@ -251,11 +251,13 @@ const PharmacyDashboard = () => {
 
       <main className="container mx-auto px-4 py-5 max-w-4xl space-y-5">
         {/* Tab Navigation */}
-        <div className="flex gap-1 p-1 glass-subtle rounded-2xl">
+        <div className="flex gap-1 p-1 glass-subtle rounded-2xl overflow-x-auto">
           {[
             { key: 'overview' as const, label: 'Overview', icon: TrendingUp },
             { key: 'inventory' as const, label: 'Inventory', icon: Package },
             { key: 'orders' as const, label: 'Orders', icon: ShoppingCart },
+            { key: 'analytics' as const, label: 'Analytics', icon: Activity },
+            { key: 'delivery' as const, label: 'Delivery', icon: Truck },
             { key: 'settings' as const, label: 'Settings', icon: Settings },
           ].map(({ key, label, icon: Icon }) => (
             <button key={key}
