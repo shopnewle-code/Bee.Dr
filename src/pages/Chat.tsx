@@ -7,11 +7,12 @@ import {
   Activity, ArrowLeft, Send, Bot, User, Sparkles, AlertCircle,
   Mic, Stethoscope, BookOpen, Pill, HeartPulse, Type
 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
 import BottomNav from '@/components/BottomNav';
 import { useSimpleLanguage } from '@/hooks/use-simple-language';
 import { useLanguage } from '@/hooks/use-language';
+import { MedicalResponseRenderer } from '@/components/chat/MedicalResponseRenderer';
+import { AIBrainWave } from '@/components/ai/AIThinkingAnimation';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
