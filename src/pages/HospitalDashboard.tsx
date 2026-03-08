@@ -1,15 +1,18 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@/contexts/ThemeContext';
 import {
   Building2, Users, Bed, Activity, TrendingUp, BarChart3, Settings,
   Bell, ChevronRight, ArrowUpRight, ArrowDownRight, Search,
   Stethoscope, ClipboardList, AlertTriangle, Heart, Thermometer,
-  UserPlus, UserMinus, Clock, Zap, Shield
+  UserPlus, UserMinus, Clock, Zap, Shield, Sun, Moon,
+  ArrowLeft, DollarSign, PieChart, Calendar
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { StatCard } from '@/components/medical/Cards';
 
 const hospitalStats = [
   { label: 'Total Patients', value: '347', change: '+12', up: true, icon: Users },
@@ -36,7 +39,8 @@ const recentAdmissions = [
 
 const HospitalDashboard = () => {
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState<'overview' | 'departments' | 'flow'>('overview');
+  const { theme, toggleTheme } = useTheme();
+  const [activeSection, setActiveSection] = useState<'overview' | 'departments' | 'flow' | 'revenue'>('overview');
 
   return (
     <div className="min-h-screen bg-background gradient-mesh">
@@ -45,8 +49,11 @@ const HospitalDashboard = () => {
         <div className="glass border-b border-white/20">
           <div className="container mx-auto px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" className="rounded-xl" onClick={() => navigate('/dashboard')}>
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-glow">
-                <Building2 className="w-4.5 h-4.5 text-white" />
+                <Building2 className="w-4 h-4 text-primary-foreground" />
               </div>
               <div>
                 <span className="text-base font-display font-bold text-foreground block leading-tight">Hospital Admin</span>
@@ -54,6 +61,14 @@ const HospitalDashboard = () => {
               </div>
             </div>
             <div className="flex items-center gap-1">
+              <motion.button onClick={toggleTheme} whileTap={{ scale: 0.85 }}
+                className="w-8 h-8 rounded-xl glass-subtle flex items-center justify-center transition-all overflow-hidden">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div key={theme} initial={{ y: -16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 16, opacity: 0 }} transition={{ duration: 0.15 }}>
+                    {theme === 'light' ? <Moon className="w-4 h-4 text-foreground" /> : <Sun className="w-4 h-4 text-amber-400" />}
+                  </motion.div>
+                </AnimatePresence>
+              </motion.button>
               <Button variant="ghost" size="icon" className="rounded-xl relative">
                 <Bell className="w-4 h-4" />
                 <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-destructive animate-pulse" />
@@ -97,16 +112,16 @@ const HospitalDashboard = () => {
           </div>
         </motion.div>
 
-        {/* Section Tabs */}
-        <div className="flex gap-1 p-1 glass-subtle rounded-2xl">
+        <div className="flex gap-1 p-1 glass-subtle rounded-2xl overflow-x-auto">
           {[
             { key: 'overview' as const, label: 'Overview', icon: Activity },
             { key: 'departments' as const, label: 'Departments', icon: Building2 },
             { key: 'flow' as const, label: 'Patient Flow', icon: TrendingUp },
+            { key: 'revenue' as const, label: 'Revenue', icon: DollarSign },
           ].map(({ key, label, icon: Icon }) => (
             <button key={key}
               onClick={() => setActiveSection(key)}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium transition-all whitespace-nowrap px-3 ${
                 activeSection === key ? 'glass-card text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'
               }`}>
               <Icon className="w-3.5 h-3.5" />
@@ -296,6 +311,88 @@ const HospitalDashboard = () => {
                     <Button size="sm" variant="outline" className="rounded-xl text-xs h-7">Dismiss</Button>
                   </div>
                 </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Revenue Tab (NEW) */}
+        {activeSection === 'revenue' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { label: 'Monthly Revenue', value: '₹42L', icon: DollarSign, change: '+12%' },
+                { label: 'Avg. Per Patient', value: '₹8.5K', icon: Users, change: '+5%' },
+                { label: 'Insurance Claims', value: '₹18L', icon: Shield, change: '+8%' },
+                { label: 'Pending Bills', value: '₹3.2L', icon: Clock, change: '-15%' },
+              ].map(({ label, value, icon: Icon, change }, i) => (
+                <motion.div key={label} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
+                  className="glass-card p-4">
+                  <Icon className="w-4 h-4 text-primary mb-2" />
+                  <p className="text-xl font-display font-bold text-foreground">{value}</p>
+                  <p className="text-[10px] text-muted-foreground">{label}</p>
+                  <p className="text-[9px] text-success mt-1">{change}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Revenue by Department */}
+            <div className="glass-card p-5">
+              <h3 className="font-display font-semibold text-foreground text-sm mb-4">Revenue by Department</h3>
+              <div className="space-y-3">
+                {[
+                  { dept: 'Cardiology', revenue: '₹12.5L', pct: '30%', width: '100%', color: 'bg-destructive' },
+                  { dept: 'Orthopedics', revenue: '₹8.2L', pct: '20%', width: '66%', color: 'bg-primary' },
+                  { dept: 'Neurology', revenue: '₹6.8L', pct: '16%', width: '54%', color: 'bg-secondary' },
+                  { dept: 'General Medicine', revenue: '₹5.4L', pct: '13%', width: '43%', color: 'bg-amber-500' },
+                  { dept: 'Pediatrics', revenue: '₹4.1L', pct: '10%', width: '33%', color: 'bg-emerald-500' },
+                  { dept: 'ICU', revenue: '₹5L', pct: '12%', width: '40%', color: 'bg-red-500' },
+                ].map(({ dept, revenue, pct, width, color }) => (
+                  <div key={dept}>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-foreground font-medium">{dept}</span>
+                      <span className="text-muted-foreground">{revenue} ({pct})</span>
+                    </div>
+                    <div className="h-2 bg-muted/20 rounded-full overflow-hidden">
+                      <motion.div initial={{ width: 0 }} animate={{ width }} transition={{ delay: 0.3, duration: 0.6 }}
+                        className={`h-full ${color} rounded-full`} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Payment Summary */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="glass-card p-4">
+                <h4 className="text-xs font-semibold text-foreground mb-3">Payment Methods</h4>
+                {[
+                  { method: 'Insurance', pct: '45%' },
+                  { method: 'Cash', pct: '25%' },
+                  { method: 'UPI/Online', pct: '22%' },
+                  { method: 'Corporate', pct: '8%' },
+                ].map(({ method, pct }) => (
+                  <div key={method} className="flex justify-between text-[11px] py-1.5 border-b border-border last:border-0">
+                    <span className="text-muted-foreground">{method}</span>
+                    <span className="text-foreground font-medium">{pct}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="glass-card p-4">
+                <h4 className="text-xs font-semibold text-foreground mb-3">Monthly Trend</h4>
+                {[
+                  { month: 'Jan', amount: '₹38L' },
+                  { month: 'Feb', amount: '₹40L' },
+                  { month: 'Mar', amount: '₹42L' },
+                ].map(({ month, amount }) => (
+                  <div key={month} className="flex justify-between text-[11px] py-1.5 border-b border-border last:border-0">
+                    <span className="text-muted-foreground">{month}</span>
+                    <span className="text-foreground font-medium">{amount}</span>
+                  </div>
+                ))}
+                <p className="text-[9px] text-success mt-2 flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" /> +5.2% growth trend
+                </p>
               </div>
             </div>
           </motion.div>
