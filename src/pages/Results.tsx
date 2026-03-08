@@ -7,11 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Activity, ArrowLeft, Shield, FileText, MessageCircle,
-  Globe, Loader2
+  Globe, Loader2, Radar
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import ReportExplanation from '@/components/report/ReportExplanation';
 import ReportChat from '@/components/report/ReportChat';
+import RiskRadarChart from '@/components/report/RiskRadarChart';
 import { toast } from 'sonner';
 
 type Language = 'en' | 'hi';
@@ -34,7 +35,6 @@ const ResultsPage = () => {
       .then(({ data }) => { setScan(data); setLoading(false); });
   }, [id, user]);
 
-  // Fetch detailed analysis when scan loads or language changes
   useEffect(() => {
     if (!scan) return;
     const fetchAnalysis = async () => {
@@ -90,7 +90,6 @@ const ResultsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b border-border bg-card sticky top-0 z-40">
         <div className="container mx-auto px-4 py-3 flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
@@ -103,7 +102,6 @@ const ResultsPage = () => {
               {new Date(scan.created_at).toLocaleDateString()}
             </span>
           </div>
-          {/* Language Toggle */}
           <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
             {(Object.keys(langLabels) as Language[]).map((lang) => (
               <button key={lang} onClick={() => setLanguage(lang)}
@@ -122,9 +120,12 @@ const ResultsPage = () => {
 
       <main className="container mx-auto px-4 py-6 max-w-3xl">
         <Tabs defaultValue="explanation" className="w-full">
-          <TabsList className="w-full grid grid-cols-3 mb-6">
+          <TabsList className="w-full grid grid-cols-4 mb-6">
             <TabsTrigger value="explanation" className="flex items-center gap-1.5 text-xs">
               <FileText className="w-3.5 h-3.5" /> Report
+            </TabsTrigger>
+            <TabsTrigger value="radar" className="flex items-center gap-1.5 text-xs">
+              <Radar className="w-3.5 h-3.5" /> Radar
             </TabsTrigger>
             <TabsTrigger value="risks" className="flex items-center gap-1.5 text-xs">
               <Shield className="w-3.5 h-3.5" /> Risks
@@ -134,7 +135,6 @@ const ResultsPage = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Tab: Report Explanation */}
           <TabsContent value="explanation">
             {analysisLoading ? (
               <div className="flex flex-col items-center justify-center py-16 gap-3">
@@ -148,7 +148,19 @@ const ResultsPage = () => {
             )}
           </TabsContent>
 
-          {/* Tab: Risk Assessment */}
+          <TabsContent value="radar">
+            {analysisLoading ? (
+              <div className="flex flex-col items-center justify-center py-16 gap-3">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                <p className="text-sm text-muted-foreground">Generating health radar...</p>
+              </div>
+            ) : analysis ? (
+              <RiskRadarChart analysis={analysis} />
+            ) : (
+              <p className="text-center text-muted-foreground py-12">Unable to load radar</p>
+            )}
+          </TabsContent>
+
           <TabsContent value="risks">
             {analysisLoading ? (
               <div className="flex flex-col items-center justify-center py-16 gap-3">
@@ -157,7 +169,6 @@ const ResultsPage = () => {
               </div>
             ) : analysis ? (
               <div className="space-y-6">
-                {/* Overall Risks from analysis */}
                 {analysis.overallRisks?.length > 0 && (
                   <div className="space-y-3">
                     {analysis.overallRisks.map((risk: any, i: number) => (
@@ -178,7 +189,6 @@ const ResultsPage = () => {
                   </div>
                 )}
 
-                {/* Abnormal tests summary */}
                 {analysis.tests?.filter((t: any) => t.status !== 'normal').length > 0 && (
                   <div>
                     <h3 className="font-display font-semibold text-foreground mb-3 text-sm">Abnormal Values</h3>
@@ -199,7 +209,6 @@ const ResultsPage = () => {
                   </div>
                 )}
 
-                {/* Lifestyle recs */}
                 {analysis.lifestyleRecommendations?.length > 0 && (
                   <div>
                     <h3 className="font-display font-semibold text-foreground mb-3 text-sm">Action Plan</h3>
@@ -225,7 +234,6 @@ const ResultsPage = () => {
             )}
           </TabsContent>
 
-          {/* Tab: Chat */}
           <TabsContent value="chat">
             <ReportChat
               scanData={{
@@ -240,7 +248,6 @@ const ResultsPage = () => {
           </TabsContent>
         </Tabs>
 
-        {/* Disclaimer */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
           className="bg-accent/30 border border-border rounded-xl p-4 mt-6">
           <p className="text-[11px] text-muted-foreground leading-relaxed">
