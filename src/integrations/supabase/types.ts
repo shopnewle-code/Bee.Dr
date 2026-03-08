@@ -634,6 +634,39 @@ export type Database = {
         }
         Relationships: []
       }
+      wearable_data: {
+        Row: {
+          created_at: string
+          id: string
+          metric_type: string
+          recorded_at: string
+          source: string | null
+          unit: string | null
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metric_type: string
+          recorded_at?: string
+          source?: string | null
+          unit?: string | null
+          user_id: string
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metric_type?: string
+          recorded_at?: string
+          source?: string | null
+          unit?: string | null
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
