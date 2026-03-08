@@ -9,7 +9,7 @@ import {
   Heart, Bell, Scan, TrendingUp, Pill, Shield, ChevronRight, GitCompare,
   Calendar, ShieldAlert, Users, Droplets, HeartPulse, SmilePlus, Target,
   Syringe, AlertTriangle, ScanEye, Mic, Brain, Watch, Stethoscope,
-  MapPin, ShoppingCart, Search
+  MapPin, ShoppingCart, Search, FileImage, ClipboardList, Building2
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
