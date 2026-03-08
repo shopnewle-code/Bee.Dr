@@ -39,7 +39,8 @@ const recentAdmissions = [
 
 const HospitalDashboard = () => {
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState<'overview' | 'departments' | 'flow'>('overview');
+  const { theme, toggleTheme } = useTheme();
+  const [activeSection, setActiveSection] = useState<'overview' | 'departments' | 'flow' | 'revenue'>('overview');
 
   return (
     <div className="min-h-screen bg-background gradient-mesh">
