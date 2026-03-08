@@ -103,17 +103,11 @@ const ResultsPage = () => {
             </span>
           </div>
           <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
-            {(Object.keys(langLabels) as Language[]).map((lang) => (
-              <button key={lang} onClick={() => setLanguage(lang)}
-                className={`text-[11px] px-2.5 py-1 rounded-md font-medium transition-all flex items-center gap-1 ${
-                  language === lang
-                    ? 'bg-card text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}>
-                <Globe className="w-3 h-3" />
-                {langLabels[lang]}
-              </button>
-            ))}
+            <button onClick={() => navigate('/language')}
+              className="text-[11px] px-2.5 py-1 rounded-md font-medium transition-all flex items-center gap-1 bg-card text-foreground shadow-sm">
+              <Globe className="w-3 h-3" />
+              {languageInfo.flag} {languageInfo.native}
+            </button>
           </div>
         </div>
       </header>
