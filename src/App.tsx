@@ -28,6 +28,7 @@ import EmergencyAlerts from "./pages/EmergencyAlerts";
 import FamilyDashboard from "./pages/FamilyDashboard";
 import HealthProfilePage from "./pages/HealthProfile";
 import PrescriptionScannerPage from "./pages/PrescriptionScanner";
+import VoiceDoctorPage from "./pages/VoiceDoctor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
