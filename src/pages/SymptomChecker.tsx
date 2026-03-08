@@ -13,6 +13,7 @@ import {
 import BottomNav from '@/components/BottomNav';
 import { toast } from 'sonner';
 import { useSimpleLanguage } from '@/hooks/use-simple-language';
+import { useLanguage } from '@/hooks/use-language';
 
 const COMMON_SYMPTOMS = [
   'Headache', 'Fatigue', 'Fever', 'Cough', 'Nausea', 'Dizziness',
