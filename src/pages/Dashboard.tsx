@@ -12,7 +12,7 @@ import {
   Calendar, ShieldAlert, Users, Droplets, HeartPulse, SmilePlus, Target,
   Syringe, AlertTriangle, ScanEye, Mic, Brain, Watch, Stethoscope,
   MapPin, ShoppingCart, Search, FileImage, ClipboardList, Building2,
-  CalendarDays, Zap, Video, ScanLine, Sparkles, ArrowRight
+  CalendarDays, Zap, Video, ScanLine, Sparkles, ArrowRight, Sun, Moon
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
