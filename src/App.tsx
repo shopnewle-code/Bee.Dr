@@ -23,6 +23,9 @@ import NotificationsPage from "./pages/Notifications";
 import SubscriptionPage from "./pages/Subscription";
 import SettingsPrivacy from "./pages/SettingsPrivacy";
 import HelpSupport from "./pages/HelpSupport";
+import MedicalTimeline from "./pages/MedicalTimeline";
+import EmergencyAlerts from "./pages/EmergencyAlerts";
+import FamilyDashboard from "./pages/FamilyDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
