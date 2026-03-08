@@ -41,6 +41,9 @@ import BookConsultationPage from "./pages/BookConsultation";
 import ConsultationHistoryPage from "./pages/ConsultationHistory";
 import WearableIntegrationPage from "./pages/WearableIntegration";
 import SymptomCheckerPage from "./pages/SymptomChecker";
+import MedicineScannerPage from "./pages/MedicineScanner";
+import HealthMapPage from "./pages/HealthMap";
+import MedicineMarketplacePage from "./pages/MedicineMarketplace";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -96,6 +99,9 @@ const App = () => (
             <Route path="/consultations" element={<ProtectedRoute><ConsultationHistoryPage /></ProtectedRoute>} />
             <Route path="/wearables" element={<ProtectedRoute><WearableIntegrationPage /></ProtectedRoute>} />
             <Route path="/symptom-checker" element={<ProtectedRoute><SymptomCheckerPage /></ProtectedRoute>} />
+            <Route path="/medicine-scanner" element={<ProtectedRoute><MedicineScannerPage /></ProtectedRoute>} />
+            <Route path="/health-map" element={<ProtectedRoute><HealthMapPage /></ProtectedRoute>} />
+            <Route path="/medicine-store" element={<ProtectedRoute><MedicineMarketplacePage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
