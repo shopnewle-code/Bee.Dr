@@ -9,13 +9,28 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { scanData, language = "en" } = await req.json();
+    const { scanData, language = "en", simpleLanguage = false } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const langInstruction = language === "hi"
       ? "Respond entirely in Hindi (Devanagari script). Use simple Hindi that a common person can understand."
       : "Respond in simple English that a non-medical person can easily understand.";
+
+    const simpleLanguageModifier = simpleLanguage ? `
+SIMPLIFICATION RULES (Simple Language Mode is ON):
+- Use only the 1000 most common English words in all text fields
+- Maximum 8 words per sentence in explanations
+- No medical terms — replace ALL of them:
+  - "Hemoglobin" → "blood health number"
+  - "Cholesterol" → "fat in blood"
+  - "Glucose" → "sugar in blood"
+  - "Creatinine" → "kidney health number"
+  - "Thyroid" → "neck gland"
+- Use traffic light indicators in status: 🟢 Good | 🟡 Okay | 🔴 Needs help
+- Include simple emojis in explanations
+- After each explanation, add: "This means: [one simple sentence]"
+` : "";
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
