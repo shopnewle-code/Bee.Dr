@@ -29,6 +29,13 @@ import FamilyDashboard from "./pages/FamilyDashboard";
 import HealthProfilePage from "./pages/HealthProfile";
 import PrescriptionScannerPage from "./pages/PrescriptionScanner";
 import VoiceDoctorPage from "./pages/VoiceDoctor";
+import DailyCheckinPage from "./pages/DailyCheckin";
+import MedicationRemindersPage from "./pages/MedicationReminders";
+import HealthHabitsPage from "./pages/HealthHabits";
+import VaccinationTrackerPage from "./pages/VaccinationTracker";
+import EmergencyCardPage from "./pages/EmergencyCard";
+import SkinScannerPage from "./pages/SkinScanner";
+import PredictiveHealthPage from "./pages/PredictiveHealth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -72,6 +79,13 @@ const App = () => (
             <Route path="/health-profile" element={<ProtectedRoute><HealthProfilePage /></ProtectedRoute>} />
             <Route path="/prescription" element={<ProtectedRoute><PrescriptionScannerPage /></ProtectedRoute>} />
             <Route path="/voice-doctor" element={<ProtectedRoute><VoiceDoctorPage /></ProtectedRoute>} />
+            <Route path="/checkin" element={<ProtectedRoute><DailyCheckinPage /></ProtectedRoute>} />
+            <Route path="/med-reminders" element={<ProtectedRoute><MedicationRemindersPage /></ProtectedRoute>} />
+            <Route path="/habits" element={<ProtectedRoute><HealthHabitsPage /></ProtectedRoute>} />
+            <Route path="/vaccinations" element={<ProtectedRoute><VaccinationTrackerPage /></ProtectedRoute>} />
+            <Route path="/emergency-card" element={<ProtectedRoute><EmergencyCardPage /></ProtectedRoute>} />
+            <Route path="/skin-scanner" element={<ProtectedRoute><SkinScannerPage /></ProtectedRoute>} />
+            <Route path="/predictive" element={<ProtectedRoute><PredictiveHealthPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

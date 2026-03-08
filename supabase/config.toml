@@ -14,3 +14,9 @@ verify_jwt = false
 
 [functions.elevenlabs-stt-token]
 verify_jwt = false
+
+[functions.analyze-skin]
+verify_jwt = false
+
+[functions.predictive-health]
+verify_jwt = false
