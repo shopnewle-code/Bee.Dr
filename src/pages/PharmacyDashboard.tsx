@@ -58,7 +58,7 @@ const PharmacyDashboard = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'inventory' | 'orders' | 'settings'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'inventory' | 'orders' | 'analytics' | 'delivery' | 'settings'>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [orderFilter, setOrderFilter] = useState('all');
@@ -251,11 +251,13 @@ const PharmacyDashboard = () => {
 
       <main className="container mx-auto px-4 py-5 max-w-4xl space-y-5">
         {/* Tab Navigation */}
-        <div className="flex gap-1 p-1 glass-subtle rounded-2xl">
+        <div className="flex gap-1 p-1 glass-subtle rounded-2xl overflow-x-auto">
           {[
             { key: 'overview' as const, label: 'Overview', icon: TrendingUp },
             { key: 'inventory' as const, label: 'Inventory', icon: Package },
             { key: 'orders' as const, label: 'Orders', icon: ShoppingCart },
+            { key: 'analytics' as const, label: 'Analytics', icon: Activity },
+            { key: 'delivery' as const, label: 'Delivery', icon: Truck },
             { key: 'settings' as const, label: 'Settings', icon: Settings },
           ].map(({ key, label, icon: Icon }) => (
             <button key={key}
@@ -534,6 +536,235 @@ const PharmacyDashboard = () => {
                 })}
               </div>
             )}
+          </motion.div>
+        )}
+
+        {/* ─── ANALYTICS ─── */}
+        {activeTab === 'analytics' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+            {/* Revenue Chart */}
+            <div className="glass-card p-5">
+              <h3 className="font-display font-semibold text-foreground text-sm mb-4">Revenue Overview</h3>
+              <div className="grid grid-cols-3 gap-3 mb-5">
+                {[
+                  { label: 'This Week', value: `₹${Math.round(totalRevenue * 0.25).toLocaleString()}`, trend: '+18%', up: true },
+                  { label: 'This Month', value: `₹${totalRevenue.toLocaleString()}`, trend: '+12%', up: true },
+                  { label: 'Avg Order', value: orders.length > 0 ? `₹${Math.round(totalRevenue / Math.max(orders.filter(o => o.status === 'delivered').length, 1))}` : '₹0', trend: '+5%', up: true },
+                ].map(({ label, value, trend, up }) => (
+                  <div key={label} className="text-center p-3 rounded-xl bg-primary/5">
+                    <p className="text-lg font-display font-bold text-foreground">{value}</p>
+                    <p className="text-[10px] text-muted-foreground">{label}</p>
+                    <span className={`text-[10px] font-medium ${up ? 'text-success' : 'text-destructive'}`}>
+                      {up ? <ArrowUpRight className="w-2.5 h-2.5 inline" /> : <ArrowDownRight className="w-2.5 h-2.5 inline" />} {trend}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              {/* Mini bar chart */}
+              <div className="flex items-end gap-1.5 h-24">
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => {
+                  const heights = [45, 65, 55, 80, 70, 90, 40];
+                  return (
+                    <div key={day} className="flex-1 flex flex-col items-center gap-1">
+                      <motion.div
+                        initial={{ height: 0 }} animate={{ height: `${heights[i]}%` }}
+                        transition={{ delay: i * 0.05, duration: 0.4 }}
+                        className="w-full rounded-t-lg bg-gradient-to-t from-primary to-blue-glow"
+                      />
+                      <span className="text-[9px] text-muted-foreground">{day}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Category Breakdown */}
+            <div className="glass-card p-5">
+              <h3 className="font-display font-semibold text-foreground text-sm mb-4">Sales by Category</h3>
+              <div className="space-y-3">
+                {(() => {
+                  const catCounts: Record<string, number> = {};
+                  products.forEach(p => { catCounts[p.category] = (catCounts[p.category] || 0) + 1; });
+                  const total = products.length || 1;
+                  return Object.entries(catCounts).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([cat, count]) => (
+                    <div key={cat}>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-foreground font-medium capitalize">{cat}</span>
+                        <span className="text-muted-foreground">{count} products · {Math.round((count / total) * 100)}%</span>
+                      </div>
+                      <Progress value={(count / total) * 100} className="h-2 rounded-full" />
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
+
+            {/* Top Products */}
+            <div className="glass-card p-5">
+              <h3 className="font-display font-semibold text-foreground text-sm mb-3">Top Products</h3>
+              {products.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">Add products to see analytics</p>
+              ) : (
+                <div className="space-y-2.5">
+                  {products.slice(0, 5).map((p, i) => (
+                    <div key={p.id} className="flex items-center gap-3">
+                      <span className="text-xs font-bold text-muted-foreground w-5">{i + 1}</span>
+                      <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">
+                        <Pill className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                        <p className="text-[10px] text-muted-foreground">{p.category}</p>
+                      </div>
+                      <span className="text-sm font-bold text-foreground">₹{p.price}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Order Stats */}
+            <div className="glass-card p-5">
+              <h3 className="font-display font-semibold text-foreground text-sm mb-4">Order Statistics</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: 'Completed', value: orders.filter(o => o.status === 'delivered').length, color: 'bg-success/10 text-success' },
+                  { label: 'Pending', value: pendingOrders, color: 'bg-warning/10 text-warning' },
+                  { label: 'Cancelled', value: orders.filter(o => o.status === 'cancelled').length, color: 'bg-destructive/10 text-destructive' },
+                  { label: 'In Transit', value: orders.filter(o => o.status === 'out_for_delivery').length, color: 'bg-primary/10 text-primary' },
+                ].map(({ label, value, color }) => (
+                  <div key={label} className={`p-3 rounded-xl ${color} text-center`}>
+                    <p className="text-2xl font-display font-bold">{value}</p>
+                    <p className="text-[10px] font-medium">{label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ─── DELIVERY TRACKING ─── */}
+        {activeTab === 'delivery' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+            {/* Delivery Stats */}
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { icon: Truck, label: 'In Transit', value: String(orders.filter(o => o.status === 'out_for_delivery').length), color: 'text-primary' },
+                { icon: CheckCircle2, label: 'Delivered Today', value: String(orders.filter(o => o.status === 'delivered').length), color: 'text-success' },
+                { icon: Clock, label: 'Ready for Pickup', value: String(orders.filter(o => o.status === 'ready').length), color: 'text-warning' },
+              ].map(({ icon: Icon, label, value, color }) => (
+                <div key={label} className="glass-card p-4 text-center">
+                  <Icon className={`w-5 h-5 ${color} mx-auto mb-2`} />
+                  <p className="text-xl font-display font-bold text-foreground">{value}</p>
+                  <p className="text-[10px] text-muted-foreground">{label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Active Deliveries */}
+            <div>
+              <h3 className="font-display font-semibold text-foreground text-sm mb-3">Active Deliveries</h3>
+              {(() => {
+                const activeDeliveries = orders.filter(o => ['preparing', 'ready', 'out_for_delivery'].includes(o.status));
+                if (activeDeliveries.length === 0) return (
+                  <div className="glass-card p-8 text-center">
+                    <Truck className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">No active deliveries</p>
+                  </div>
+                );
+                return (
+                  <div className="space-y-3">
+                    {activeDeliveries.map((order, i) => {
+                      const steps = ['confirmed', 'preparing', 'ready', 'out_for_delivery', 'delivered'];
+                      const currentStep = steps.indexOf(order.status);
+                      return (
+                        <motion.div key={order.id}
+                          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.05 }}
+                          className="glass-card p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <div>
+                              <p className="font-display font-semibold text-foreground text-sm">{order.order_number}</p>
+                              <p className="text-[10px] text-muted-foreground">{order.delivery_type === 'delivery' ? '🚚 Home Delivery' : '🏪 Store Pickup'}</p>
+                            </div>
+                            <Badge className={`text-[10px] border rounded-full ${statusColor[order.status] || ''}`} variant="outline">
+                              {order.status.replace('_', ' ')}
+                            </Badge>
+                          </div>
+                          {/* Progress Steps */}
+                          <div className="flex items-center gap-1 mb-3">
+                            {steps.map((step, si) => (
+                              <div key={step} className="flex items-center flex-1">
+                                <div className={`w-3 h-3 rounded-full shrink-0 ${si <= currentStep ? 'bg-primary' : 'bg-muted'}`} />
+                                {si < steps.length - 1 && (
+                                  <div className={`flex-1 h-0.5 ${si < currentStep ? 'bg-primary' : 'bg-muted'}`} />
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex justify-between text-[9px] text-muted-foreground mb-3">
+                            <span>Confirmed</span><span>Preparing</span><span>Ready</span><span>Transit</span><span>Delivered</span>
+                          </div>
+                          {order.delivery_address && (
+                            <p className="text-xs text-muted-foreground mb-2">📍 {order.delivery_address}</p>
+                          )}
+                          <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                            <p className="font-bold text-foreground">₹{order.total_amount}</p>
+                            {order.status !== 'out_for_delivery' && (
+                              <Button size="sm" className="text-xs gradient-primary text-white rounded-xl"
+                                onClick={() => {
+                                  const nextIdx = steps.indexOf(order.status) + 1;
+                                  if (nextIdx < steps.length) updateOrderStatus(order.id, steps[nextIdx]);
+                                }}>
+                                Next Step →
+                              </Button>
+                            )}
+                            {order.status === 'out_for_delivery' && (
+                              <Button size="sm" className="text-xs bg-success text-white rounded-xl hover:bg-success/90"
+                                onClick={() => updateOrderStatus(order.id, 'delivered')}>
+                                <CheckCircle2 className="w-3 h-3 mr-1" /> Mark Delivered
+                              </Button>
+                            )}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Delivery History */}
+            <div>
+              <h3 className="font-display font-semibold text-foreground text-sm mb-3">Delivery History</h3>
+              {(() => {
+                const delivered = orders.filter(o => o.status === 'delivered');
+                if (delivered.length === 0) return (
+                  <div className="glass-card p-6 text-center">
+                    <p className="text-sm text-muted-foreground">No completed deliveries yet</p>
+                  </div>
+                );
+                return (
+                  <div className="space-y-2">
+                    {delivered.slice(0, 10).map((order, i) => (
+                      <motion.div key={order.id}
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        transition={{ delay: i * 0.02 }}
+                        className="glass-card p-3.5 flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-success/10 flex items-center justify-center">
+                          <CheckCircle2 className="w-4 h-4 text-success" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-foreground text-sm">{order.order_number}</p>
+                          <p className="text-[10px] text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <span className="text-sm font-bold text-foreground">₹{order.total_amount}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
           </motion.div>
         )}
 
