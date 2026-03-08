@@ -29,6 +29,7 @@ const ResultsPage = () => {
   const [analysis, setAnalysis] = useState<any>(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [language, setLanguage] = useState<Language>('en');
+  const { simpleLanguage } = useSimpleLanguage();
 
   useEffect(() => {
     if (!id || !user) return;
