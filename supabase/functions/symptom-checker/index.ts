@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { symptoms, age, gender, chronicConditions, allergies } = await req.json();
+    const { symptoms, age, gender, chronicConditions, allergies, simpleLanguage = false } = await req.json();
 
     if (!symptoms || !Array.isArray(symptoms) || symptoms.length === 0) {
       return new Response(JSON.stringify({ error: "Please provide at least one symptom" }), {
@@ -20,12 +20,22 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemPrompt = `You are an AI medical symptom analyzer. You are NOT a doctor and must always include a disclaimer.
+    const simpleLanguageModifier = simpleLanguage ? `
+SIMPLIFICATION RULES (Simple Language Mode is ON):
+- Use only the 1000 most common English words
+- Maximum 8 words per sentence in descriptions
+- No medical terms — replace ALL: "Hemoglobin" → "blood health number", "Cholesterol" → "fat in blood", "Glucose" → "sugar in blood"
+- Use traffic light system: 🟢 Good | 🟡 Okay | 🔴 Needs help
+- Include simple emojis
+- After each description, add: "This means: [one simple sentence]"
+` : "";
+
+    const systemPrompt = `${simpleLanguageModifier}You are an AI medical symptom analyzer. You are NOT a doctor and must always include a disclaimer.
 
 Given the user's symptoms and profile, analyze and respond using the following tool.
 
 Consider the user's age, gender, chronic conditions, and allergies when analyzing.
-Be thorough but express appropriate uncertainty. Rank conditions by likelihood.`;
+Be thorough but express appropriate uncertainty. Rank conditions by likelihood.${simpleLanguage ? ' Use very simple, easy-to-understand language in all text fields.' : ''}`;
 
     const userPrompt = `Patient Profile:
 - Age: ${age || 'Unknown'}

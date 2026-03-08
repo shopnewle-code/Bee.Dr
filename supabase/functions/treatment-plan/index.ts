@@ -9,11 +9,21 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { symptoms, diagnosis, healthProfile, labResults } = await req.json();
+    const { symptoms, diagnosis, healthProfile, labResults, simpleLanguage = false } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    const systemPrompt = `You are an AI clinical advisor creating personalized treatment plans. You are NOT replacing a doctor — always include disclaimers. Generate a comprehensive, evidence-based treatment plan.
+    const simpleLanguageModifier = simpleLanguage ? `
+SIMPLIFICATION RULES (Simple Language Mode is ON):
+- Use only the 1000 most common English words
+- Maximum 8 words per sentence
+- No medical terms — replace ALL: "Hemoglobin" → "blood health number", "Cholesterol" → "fat in blood", "Glucose" → "sugar in blood", "Creatinine" → "kidney health number"
+- Use traffic light system: 🟢 Good | 🟡 Okay | 🔴 Needs help
+- Include simple emojis for visual understanding
+- After each finding, add: "This means: [one simple sentence]"
+` : "";
+
+    const systemPrompt = `${simpleLanguageModifier}You are an AI clinical advisor creating personalized treatment plans. You are NOT replacing a doctor — always include disclaimers. Generate a comprehensive, evidence-based treatment plan.${simpleLanguage ? ' Use very simple, easy-to-understand language throughout.' : ''}
 
 Return a structured plan with these sections:
 1. **Condition Summary**: Brief overview of the diagnosed/suspected condition

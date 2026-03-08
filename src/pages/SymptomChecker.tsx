@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { toast } from 'sonner';
+import { useSimpleLanguage } from '@/hooks/use-simple-language';
 
 const COMMON_SYMPTOMS = [
   'Headache', 'Fatigue', 'Fever', 'Cough', 'Nausea', 'Dizziness',
@@ -53,6 +54,7 @@ const SymptomChecker = () => {
   const [healthProfile, setHealthProfile] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [searchResults, setSearchResults] = useState<string[]>([]);
+  const { simpleLanguage } = useSimpleLanguage();
 
   useEffect(() => {
     if (!user) return;
@@ -107,6 +109,7 @@ const SymptomChecker = () => {
           gender: profile?.gender || null,
           chronicConditions: healthProfile?.chronic_conditions || [],
           allergies: healthProfile?.allergies || [],
+          simpleLanguage,
         },
       });
 

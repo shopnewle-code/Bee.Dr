@@ -13,6 +13,7 @@ import type { Tables } from '@/integrations/supabase/types';
 import ReportExplanation from '@/components/report/ReportExplanation';
 import ReportChat from '@/components/report/ReportChat';
 import RiskRadarChart from '@/components/report/RiskRadarChart';
+import { useSimpleLanguage } from '@/hooks/use-simple-language';
 import { toast } from 'sonner';
 
 type Language = 'en' | 'hi';
@@ -28,6 +29,7 @@ const ResultsPage = () => {
   const [analysis, setAnalysis] = useState<any>(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [language, setLanguage] = useState<Language>('en');
+  const { simpleLanguage } = useSimpleLanguage();
 
   useEffect(() => {
     if (!id || !user) return;
@@ -57,6 +59,7 @@ const ResultsPage = () => {
                 raw_data: scan.raw_data,
               },
               language,
+              simpleLanguage,
             }),
           }
         );

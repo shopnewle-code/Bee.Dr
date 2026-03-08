@@ -13,6 +13,7 @@ import {
   ArrowLeft, Loader2, AlertTriangle, ClipboardList, Plus, X,
   Heart, RefreshCw, Sparkles, User, Activity
 } from 'lucide-react';
+import { useSimpleLanguage } from '@/hooks/use-simple-language';
 import BottomNav from '@/components/BottomNav';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -36,6 +37,7 @@ const TreatmentPlan = () => {
   const [medications, setMedications] = useState('');
   const [generating, setGenerating] = useState(false);
   const [plan, setPlan] = useState('');
+  const { simpleLanguage } = useSimpleLanguage();
 
   const addSymptom = (s: string) => {
     const trimmed = s.trim();
@@ -69,6 +71,7 @@ const TreatmentPlan = () => {
             existing_conditions: existingConditions || undefined,
             current_medications: medications || undefined,
           },
+          simpleLanguage,
         }),
       });
 
