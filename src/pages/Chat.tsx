@@ -5,11 +5,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
   Activity, ArrowLeft, Send, Bot, User, Sparkles, AlertCircle,
-  Mic, Stethoscope, BookOpen, Pill, HeartPulse
+  Mic, Stethoscope, BookOpen, Pill, HeartPulse, Type
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
 import BottomNav from '@/components/BottomNav';
+import { useSimpleLanguage } from '@/hooks/use-simple-language';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
