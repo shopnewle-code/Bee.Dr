@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/hooks/use-language';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +19,7 @@ import BottomNav from '@/components/BottomNav';
 const DashboardPage = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { languageInfo } = useLanguage();
   const [scans, setScans] = useState<Tables<'scan_results'>[]>([]);
   const [profile, setProfile] = useState<Tables<'profiles'> | null>(null);
   const [healthProfile, setHealthProfile] = useState<Tables<'health_profiles'> | null>(null);
@@ -60,6 +62,14 @@ const DashboardPage = () => {
             <span className="text-lg font-display font-bold text-foreground">Bee.dr</span>
           </div>
           <div className="flex items-center gap-1">
+            <button
+              onClick={() => navigate('/language')}
+              className="flex items-center gap-1 px-2 py-1 rounded-lg border border-border bg-accent/50 text-xs font-medium text-foreground hover:border-primary/30 transition-all"
+              title={`Language: ${languageInfo.name}`}
+            >
+              <span>{languageInfo.flag}</span>
+              <span className="hidden sm:inline">{languageInfo.native}</span>
+            </button>
             <Button variant="ghost" size="icon" onClick={() => navigate('/notifications')} className="relative">
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive" />
