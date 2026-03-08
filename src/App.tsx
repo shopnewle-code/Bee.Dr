@@ -139,6 +139,8 @@ const App = () => (
               <Route path="/telemedicine" element={<ProtectedRoute><TelemedicineConsultationPage /></ProtectedRoute>} />
               <Route path="/ct-scan" element={<ProtectedRoute><CTScanAnalysisPage /></ProtectedRoute>} />
               <Route path="/melanoma-screener" element={<ProtectedRoute><MelanomaScreenerPage /></ProtectedRoute>} />
+              <Route path="/doctor-dashboard" element={<ProtectedRoute><DoctorDashboardPage /></ProtectedRoute>} />
+              <Route path="/hospital-dashboard" element={<ProtectedRoute><HospitalDashboardPage /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
