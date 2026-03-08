@@ -840,7 +840,200 @@ const PitchPage = () => {
         </div>
       </section>
 
-      {/* Product Growth Loop */}
+      {/* Design System — 80+ Screens */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-primary border border-primary/20 mb-4">
+              <Palette className="w-3 h-3" /> Design System
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">80+ High-Fidelity Screens</h2>
+            <p className="text-muted-foreground">Complete UI system across 4 platform interfaces</p>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto mb-8">
+            {[
+              { icon: Smartphone, title: 'Patient App', screens: '25+ screens', items: ['Onboarding & Auth', 'AI Doctor Chat', 'Report Upload & Analysis', 'Symptom Checker', 'Pharmacy Marketplace', 'Health Analytics'], color: 'from-primary to-blue-glow' },
+              { icon: Monitor, title: 'Doctor Dashboard', screens: '20+ screens', items: ['Patient Management', 'AI Diagnosis Assistant', 'Prescription Generator', 'Telemedicine Interface', 'Report Analysis', 'Analytics'], color: 'from-secondary to-teal' },
+              { icon: Building2, title: 'Hospital Panel', screens: '18+ screens', items: ['Hospital Overview', 'Department Management', 'Patient Flow Analytics', 'Bed Availability', 'Revenue Dashboard', 'System Settings'], color: 'from-amber-400 to-orange-500' },
+              { icon: ShoppingCart, title: 'Pharmacy Dashboard', screens: '15+ screens', items: ['Order Management', 'Rx Verification', 'Inventory Tracking', 'Delivery Management', 'Sales Analytics', 'Product Catalog'], color: 'from-emerald-400 to-green-600' },
+            ].map(({ icon: Icon, title, screens, items, color }, i) => (
+              <motion.div key={title} {...fadeUp} transition={{ delay: i * 0.08 }}
+                className="glass-card p-5 relative overflow-hidden">
+                <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${color} opacity-10 rounded-full -translate-y-6 translate-x-6`} />
+                <div className="flex items-center gap-2.5 mb-3 relative z-10">
+                  <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-foreground">{title}</p>
+                    <p className="text-[10px] text-primary font-medium">{screens}</p>
+                  </div>
+                </div>
+                <ul className="space-y-1.5 relative z-10">
+                  {items.map(item => (
+                    <li key={item} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <CheckCircle2 className="w-3 h-3 text-primary/60 shrink-0" /> {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Design Tokens */}
+          <motion.div {...fadeUp} className="glass-card p-6 max-w-3xl mx-auto">
+            <h4 className="font-display font-semibold text-foreground mb-4 text-center">Design Tokens</h4>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: 'Medical Blue', hex: '#2563EB', style: 'bg-primary' },
+                { label: 'Health Teal', hex: '#14B8A6', style: 'bg-secondary' },
+                { label: 'Accent Gold', hex: '#F59E0B', style: 'bg-amber-500' },
+                { label: 'Background', hex: '#F8FAFC', style: 'bg-muted' },
+              ].map(({ label, hex, style }) => (
+                <div key={label} className="text-center">
+                  <div className={`w-full h-10 ${style} rounded-xl mb-2 border border-white/20`} />
+                  <p className="text-[10px] font-semibold text-foreground">{label}</p>
+                  <p className="text-[9px] text-muted-foreground font-mono">{hex}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 10M User Scalable Architecture */}
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-primary/[0.02]" />
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-secondary border border-secondary/20 mb-4">
+              <Gauge className="w-3 h-3" /> Enterprise Scale
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">10M User Architecture</h2>
+            <p className="text-muted-foreground">Production cloud infrastructure for healthcare at scale</p>
+          </motion.div>
+
+          <div className="max-w-5xl mx-auto space-y-6">
+            {/* Deployment Stack */}
+            <motion.div {...fadeUp} className="grid sm:grid-cols-3 gap-3">
+              {[
+                { layer: 'Frontend', items: [{ name: 'React / Flutter', desc: 'Patient Apps' }, { name: 'Next.js + Tailwind', desc: 'Dashboards' }], icon: Layout },
+                { layer: 'Backend', items: [{ name: '9 Microservices', desc: 'Containerized' }, { name: 'AI Worker Cluster', desc: 'GPU-enabled' }], icon: Server },
+                { layer: 'Data', items: [{ name: 'PostgreSQL + Redis', desc: 'Primary + Cache' }, { name: 'Vector DB + S3', desc: 'AI + Storage' }], icon: Database },
+              ].map(({ layer, items, icon: Icon }, i) => (
+                <motion.div key={layer} {...fadeUp} transition={{ delay: i * 0.08 }}
+                  className="glass-card p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Icon className="w-4 h-4 text-primary" />
+                    <span className="text-xs font-display font-bold text-foreground uppercase tracking-wider">{layer}</span>
+                  </div>
+                  <div className="space-y-2">
+                    {items.map(({ name, desc }) => (
+                      <div key={name} className="glass-subtle border border-white/10 p-2.5 rounded-lg">
+                        <p className="text-xs font-semibold text-foreground">{name}</p>
+                        <p className="text-[10px] text-muted-foreground">{desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Capacity Metrics */}
+            <motion.div {...fadeUp} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { value: '10M+', label: 'Users', icon: Users },
+                { value: '500K', label: 'Daily Active', icon: Activity },
+                { value: '50K', label: 'Doctors', icon: Stethoscope },
+                { value: '10K', label: 'Hospitals', icon: Building2 },
+              ].map(({ value, label, icon: Icon }) => (
+                <div key={label} className="glass-card p-4 text-center group hover:shadow-glow transition-all">
+                  <Icon className="w-4 h-4 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                  <p className="text-2xl font-display font-bold text-foreground">{value}</p>
+                  <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{label}</p>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* Infra Features */}
+            <motion.div {...fadeUp} className="grid sm:grid-cols-2 gap-4">
+              <div className="glass-card p-5">
+                <h4 className="font-display font-semibold text-foreground text-sm mb-3 flex items-center gap-2">
+                  <Video className="w-4 h-4 text-primary" /> Telemedicine Infrastructure
+                </h4>
+                <ul className="space-y-2">
+                  {['WebRTC peer-to-peer video', 'Agora / Twilio fallback', 'Screen sharing & recording', 'HIPAA-compliant streaming'].map(item => (
+                    <li key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <CheckCircle2 className="w-3 h-3 text-primary shrink-0" /> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="glass-card p-5">
+                <h4 className="font-display font-semibold text-foreground text-sm mb-3 flex items-center gap-2">
+                  <Bell className="w-4 h-4 text-primary" /> Background Workers
+                </h4>
+                <ul className="space-y-2">
+                  {['Async AI report analysis', 'Push / email / SMS notifications', 'Medical image processing', 'Scheduled health reminders'].map(item => (
+                    <li key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <CheckCircle2 className="w-3 h-3 text-primary shrink-0" /> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Security & Compliance */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-emerald-500 border border-emerald-500/20 mb-4">
+              <Lock className="w-3 h-3" /> Healthcare Security
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Security & Compliance</h2>
+            <p className="text-muted-foreground">Enterprise-grade protection for sensitive medical data</p>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto mb-6">
+            {[
+              { icon: Lock, title: 'Authentication', items: ['JWT token-based auth', 'Role-based access control', 'Multi-factor authentication', 'Session management'] },
+              { icon: Shield, title: 'Data Protection', items: ['AES-256 encryption at rest', 'TLS 1.3 in transit', 'PHI data isolation', 'Automated backups'] },
+              { icon: Eye, title: 'Monitoring', items: ['Real-time audit logs', 'API rate limiting', 'Anomaly detection', 'Compliance reporting'] },
+            ].map(({ icon: Icon, title, items }, i) => (
+              <motion.div key={title} {...fadeUp} transition={{ delay: i * 0.08 }}
+                className="glass-card p-5 group hover:shadow-glow transition-all">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/8 flex items-center justify-center mb-3 group-hover:bg-emerald-500/15 transition-colors">
+                  <Icon className="w-5 h-5 text-emerald-500" />
+                </div>
+                <h4 className="font-display font-semibold text-foreground text-sm mb-3">{title}</h4>
+                <ul className="space-y-2">
+                  {items.map(item => (
+                    <li key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-500/60 shrink-0" /> {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Global Scaling */}
+          <motion.div {...fadeUp} className="glass-card p-6 max-w-3xl mx-auto">
+            <h4 className="font-display font-semibold text-foreground mb-4 text-center">Global Scaling Strategy</h4>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {['Multi-region deployment', 'Auto-scaling K8s', 'Global CDN', 'DB replication', 'AI worker scaling', 'Edge caching'].map((item) => (
+                <span key={item} className="glass-subtle border border-emerald-500/20 text-foreground text-xs font-medium px-3 py-2 rounded-xl">{item}</span>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+
       <section className="py-20">
         <div className="container mx-auto px-4">
           <motion.div {...fadeUp} className="text-center mb-12">
