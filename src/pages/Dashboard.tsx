@@ -1,20 +1,62 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/hooks/use-language';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
-  Activity, Upload, FileText, LogOut, Plus, Clock, Bot, User,
+  Activity, Upload, FileText, LogOut, Clock, Bot, User,
   Heart, Bell, Scan, TrendingUp, Pill, Shield, ChevronRight, GitCompare,
   Calendar, ShieldAlert, Users, Droplets, HeartPulse, SmilePlus, Target,
   Syringe, AlertTriangle, ScanEye, Mic, Brain, Watch, Stethoscope,
   MapPin, ShoppingCart, Search, FileImage, ClipboardList, Building2,
-  CalendarDays, Zap, Video, ScanLine
+  CalendarDays, Zap, Video, ScanLine, Sparkles, ArrowRight
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
+
+// Feature categories for organized grid
+const quickActions = [
+  { icon: Upload, label: 'Upload Report', desc: 'PDF or Photo', path: '/upload', color: 'from-primary to-blue-glow' },
+  { icon: Bot, label: 'AI Doctor', desc: 'Ask anything', path: '/chat', color: 'from-secondary to-teal' },
+  { icon: SmilePlus, label: 'Check-in', desc: 'Daily tracker', path: '/checkin', color: 'from-amber-400 to-orange-500' },
+  { icon: Target, label: 'Habits', desc: 'Track goals', path: '/habits', color: 'from-emerald-400 to-green-600' },
+];
+
+const aiFeatures = [
+  { icon: Brain, label: 'Predictive Health', desc: 'AI forecasts', path: '/predictive' },
+  { icon: ScanEye, label: 'Skin Scanner', desc: 'AI dermatology', path: '/skin-scanner' },
+  { icon: ShieldAlert, label: 'Melanoma Screen', desc: 'ABCDE check', path: '/melanoma-screener' },
+  { icon: Stethoscope, label: 'Symptom Checker', desc: 'AI diagnosis', path: '/symptom-checker' },
+  { icon: Mic, label: 'Voice Doctor', desc: 'Speak to AI', path: '/voice-doctor' },
+  { icon: ClipboardList, label: 'Treatment Plan', desc: 'AI care plan', path: '/treatment-plan' },
+  { icon: Zap, label: 'AI Triage', desc: 'Urgency check', path: '/triage' },
+];
+
+const medicalTools = [
+  { icon: TrendingUp, label: 'Health Trends', path: '/trends' },
+  { icon: GitCompare, label: 'Compare Reports', path: '/compare' },
+  { icon: Calendar, label: 'Timeline', path: '/timeline' },
+  { icon: Scan, label: 'Prescription Scan', path: '/prescription' },
+  { icon: Heart, label: 'ECG Interpreter', path: '/ecg' },
+  { icon: FileImage, label: 'X-ray AI', path: '/xray' },
+  { icon: Brain, label: 'MRI Analysis', path: '/mri' },
+  { icon: ScanLine, label: 'CT Scan AI', path: '/ct-scan' },
+  { icon: Search, label: 'Medicine Scanner', path: '/medicine-scanner' },
+];
+
+const services = [
+  { icon: CalendarDays, label: 'Book Appointment', path: '/book-appointment' },
+  { icon: Video, label: 'Telemedicine', path: '/telemedicine' },
+  { icon: MapPin, label: 'Health Map', path: '/health-map' },
+  { icon: ShoppingCart, label: 'Medicine Store', path: '/medicine-store' },
+  { icon: Users, label: 'Family Health', path: '/family' },
+  { icon: Watch, label: 'Wearables', path: '/wearables' },
+  { icon: AlertTriangle, label: 'Emergency Card', path: '/emergency-card' },
+  { icon: ShieldAlert, label: 'Emergency Alerts', path: '/alerts' },
+  { icon: Building2, label: 'Pharmacy Panel', path: '/pharmacy-dashboard' },
+];
 
 const DashboardPage = () => {
   const { user, signOut } = useAuth();
@@ -41,7 +83,7 @@ const DashboardPage = () => {
 
   const handleSignOut = async () => { await signOut(); navigate('/'); };
   const displayName = profile?.display_name || user?.email?.split('@')[0] || 'User';
-  // Dynamic health score from latest scan risk_scores
+
   const healthScore = (() => {
     const latestScan = scans.find(s => s.status === 'complete' && s.risk_scores);
     if (!latestScan?.risk_scores) return 78;
@@ -52,167 +94,208 @@ const DashboardPage = () => {
     return Math.round((1 - avgRisk) * 100);
   })();
 
+  const circumference = 2 * Math.PI * 52;
+  const strokeDashoffset = circumference - (healthScore / 100) * circumference;
+
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background gradient-mesh pb-24">
       {/* Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Activity className="w-6 h-6 text-primary" />
-            <span className="text-lg font-display font-bold text-foreground">Bee.dr</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => navigate('/language')}
-              className="flex items-center gap-1 px-2 py-1 rounded-lg border border-border bg-accent/50 text-xs font-medium text-foreground hover:border-primary/30 transition-all"
-              title={`Language: ${languageInfo.name}`}
-            >
-              <span>{languageInfo.flag}</span>
-              <span className="hidden sm:inline">{languageInfo.native}</span>
-            </button>
-            <Button variant="ghost" size="icon" onClick={() => navigate('/notifications')} className="relative">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleSignOut} title="Sign Out">
-              <LogOut className="w-4 h-4" />
-            </Button>
+      <header className="sticky top-0 z-40">
+        <div className="glass border-b border-white/20">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-lg">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
+                <Activity className="w-4 h-4 text-primary-foreground" />
+              </div>
+              <span className="text-lg font-display font-bold text-foreground tracking-tight">Bee.dr</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => navigate('/language')}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl glass-subtle text-xs font-medium text-foreground hover:bg-white/60 transition-all"
+                title={`Language: ${languageInfo.name}`}
+              >
+                <span className="text-sm">{languageInfo.flag}</span>
+                <span className="hidden sm:inline text-muted-foreground">{languageInfo.native}</span>
+              </button>
+              <Button variant="ghost" size="icon" onClick={() => navigate('/notifications')} className="relative rounded-xl">
+                <Bell className="w-4 h-4" />
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-destructive animate-pulse" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={handleSignOut} title="Sign Out" className="rounded-xl">
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6 max-w-lg space-y-6">
-        {/* Greeting + Health Score */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-2xl font-display font-bold text-foreground mb-0.5">
+      <main className="container mx-auto px-4 py-5 max-w-lg space-y-5">
+        {/* Greeting + Health Score Card */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <p className="text-sm text-muted-foreground mb-1">Welcome back</p>
+          <h1 className="text-2xl font-display font-bold text-foreground mb-4 tracking-tight">
             Hello, {displayName} 👋
           </h1>
-          <p className="text-sm text-muted-foreground mb-4">How is your health today?</p>
 
-          <div className="bg-card border border-border rounded-xl p-5 flex items-center gap-4">
-            <div className="relative w-16 h-16">
-              <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
-                <circle cx="32" cy="32" r="28" fill="none" stroke="hsl(var(--muted))" strokeWidth="4" />
-                <circle cx="32" cy="32" r="28" fill="none" stroke="hsl(var(--primary))" strokeWidth="4"
-                  strokeDasharray={`${healthScore * 1.76} 176`} strokeLinecap="round" />
-              </svg>
-              <span className="absolute inset-0 flex items-center justify-center text-lg font-display font-bold text-foreground">
-                {healthScore}
-              </span>
-            </div>
-            <div className="flex-1">
-              <p className="font-display font-semibold text-foreground">Health Score</p>
-              <p className="text-xs text-muted-foreground">Based on your latest reports</p>
-              <div className="flex gap-2 mt-2">
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-success/10 text-success flex items-center gap-0.5">
-                  <Heart className="w-2.5 h-2.5" /> Heart: Low Risk
-                </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-warning/10 text-warning flex items-center gap-0.5">
-                  <Shield className="w-2.5 h-2.5" /> Vitamin D: Low
-                </span>
+          <div className="glass-card p-5 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-8 translate-x-8" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-secondary/5 rounded-full translate-y-6 -translate-x-6" />
+            
+            <div className="flex items-center gap-5 relative z-10">
+              <div className="relative w-[120px] h-[120px] shrink-0">
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="hsl(var(--muted))" strokeWidth="6" />
+                  <circle cx="60" cy="60" r="52" fill="none" 
+                    stroke="url(#scoreGradient)" strokeWidth="6"
+                    strokeDasharray={circumference} 
+                    strokeDashoffset={strokeDashoffset}
+                    strokeLinecap="round"
+                    className="transition-all duration-1000 ease-out" />
+                  <defs>
+                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="hsl(221 83% 53%)" />
+                      <stop offset="100%" stopColor="hsl(168 76% 42%)" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-3xl font-display font-bold text-foreground">{healthScore}</span>
+                  <span className="text-[10px] text-muted-foreground font-medium">HEALTH</span>
+                </div>
+              </div>
+              <div className="flex-1 space-y-2">
+                <p className="font-display font-semibold text-foreground">Your Health Score</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">Based on your latest reports and check-ins</p>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  <span className="text-[10px] px-2.5 py-1 rounded-full bg-success/10 text-success font-medium flex items-center gap-1">
+                    <Heart className="w-2.5 h-2.5" /> Heart: OK
+                  </span>
+                  <span className="text-[10px] px-2.5 py-1 rounded-full bg-warning/10 text-warning font-medium flex items-center gap-1">
+                    <Shield className="w-2.5 h-2.5" /> Vit D: Low
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Health Profile Summary */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
+        {/* Health Profile Card */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           onClick={() => navigate('/health-profile')}
-          className="bg-card border border-border rounded-xl p-4 cursor-pointer hover:border-primary/30 hover:shadow-md transition-all">
+          className="glass-card p-4 cursor-pointer group">
           {healthProfile ? (() => {
             const bmi = healthProfile.height_cm && healthProfile.weight_kg
               ? (Number(healthProfile.weight_kg) / Math.pow(Number(healthProfile.height_cm) / 100, 2)).toFixed(1)
               : null;
-            const allergyCount = healthProfile.allergies?.length || 0;
             return (
               <div className="flex items-center gap-4">
                 <div className="grid grid-cols-3 gap-3 flex-1">
-                  <div className="text-center">
-                    <Droplets className="w-4 h-4 text-primary mx-auto mb-1" />
-                    <p className="text-lg font-bold text-foreground">{healthProfile.blood_group || '—'}</p>
-                    <p className="text-[10px] text-muted-foreground">Blood Group</p>
-                  </div>
-                  <div className="text-center">
-                    <HeartPulse className="w-4 h-4 text-primary mx-auto mb-1" />
-                    <p className="text-lg font-bold text-foreground">{bmi || '—'}</p>
-                    <p className="text-[10px] text-muted-foreground">BMI</p>
-                  </div>
-                  <div className="text-center">
-                    <Shield className="w-4 h-4 text-destructive mx-auto mb-1" />
-                    <p className="text-lg font-bold text-foreground">{allergyCount}</p>
-                    <p className="text-[10px] text-muted-foreground">Allergies</p>
-                  </div>
+                  {[
+                    { icon: Droplets, value: healthProfile.blood_group || '—', label: 'Blood', color: 'text-primary' },
+                    { icon: HeartPulse, value: bmi || '—', label: 'BMI', color: 'text-secondary' },
+                    { icon: Shield, value: String(healthProfile.allergies?.length || 0), label: 'Allergies', color: 'text-destructive' },
+                  ].map(({ icon: Icon, value, label, color }) => (
+                    <div key={label} className="text-center">
+                      <Icon className={`w-4 h-4 ${color} mx-auto mb-1`} />
+                      <p className="text-base font-bold text-foreground">{value}</p>
+                      <p className="text-[10px] text-muted-foreground">{label}</p>
+                    </div>
+                  ))}
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
               </div>
             );
           })() : (
             <div className="flex items-center gap-3">
-              <HeartPulse className="w-5 h-5 text-primary" />
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <HeartPulse className="w-5 h-5 text-primary" />
+              </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-foreground">Set up Health Profile</p>
                 <p className="text-xs text-muted-foreground">Add blood group, height, weight & allergies</p>
               </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
             </div>
           )}
         </motion.div>
 
-        {/* Main Actions */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        {/* Quick Actions — 2x2 gradient cards */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <div className="grid grid-cols-2 gap-3">
-            {[
-              { icon: Upload, label: 'Upload Report', desc: 'PDF or Photo', path: '/upload', gradient: true },
-              { icon: Bot, label: 'AI Doctor Chat', desc: 'Ask anything', path: '/chat', gradient: false },
-              { icon: SmilePlus, label: 'Daily Check-in', desc: 'Track daily', path: '/checkin', gradient: false },
-              { icon: Target, label: 'Health Habits', desc: 'Water, exercise', path: '/habits', gradient: false },
-              { icon: TrendingUp, label: 'Health Trends', desc: 'Track biomarkers', path: '/trends', gradient: false },
-              { icon: Brain, label: 'Predictive Health', desc: 'AI forecasts', path: '/predictive', gradient: false },
-              { icon: Scan, label: 'Scan Prescription', desc: 'Camera OCR', path: '/prescription', gradient: false },
-              { icon: ScanEye, label: 'Skin Scanner', desc: 'AI dermatology', path: '/skin-scanner', gradient: false },
-              { icon: ShieldAlert, label: 'Melanoma Screen', desc: 'ABCDE check', path: '/melanoma-screener', gradient: false },
-              { icon: Mic, label: 'Voice Doctor', desc: 'Speak to AI', path: '/voice-doctor', gradient: false },
-              { icon: GitCompare, label: 'Compare Reports', desc: 'Old vs New', path: '/compare', gradient: false },
-              { icon: Calendar, label: 'Health Timeline', desc: 'Medical history', path: '/timeline', gradient: false },
-              { icon: AlertTriangle, label: 'Emergency Card', desc: 'Quick health info', path: '/emergency-card', gradient: false },
-              { icon: ShieldAlert, label: 'Emergency Alerts', desc: 'Critical values', path: '/alerts', gradient: false },
-              { icon: Users, label: 'Family Health', desc: 'Track family', path: '/family', gradient: false },
-              { icon: Watch, label: 'Wearables', desc: 'Sync devices', path: '/wearables', gradient: false },
-              { icon: Stethoscope, label: 'Symptom Checker', desc: 'AI diagnosis', path: '/symptom-checker', gradient: false },
-              { icon: Search, label: 'Medicine Scanner', desc: 'Drug info & AI', path: '/medicine-scanner', gradient: false },
-              { icon: MapPin, label: 'Health Map', desc: 'Nearby services', path: '/health-map', gradient: false },
-              { icon: ShoppingCart, label: 'Medicine Store', desc: 'Buy medicines', path: '/medicine-store', gradient: false },
-              { icon: Heart, label: 'ECG Interpreter', desc: 'AI ECG analysis', path: '/ecg', gradient: false },
-              { icon: FileImage, label: 'X-ray AI', desc: 'Radiology AI', path: '/xray', gradient: false },
-              { icon: Brain, label: 'MRI Analysis', desc: 'MRI AI reader', path: '/mri', gradient: false },
-              { icon: ScanLine, label: 'CT Scan AI', desc: 'CT scan analysis', path: '/ct-scan', gradient: false },
-              { icon: ClipboardList, label: 'Treatment Plan', desc: 'AI care plan', path: '/treatment-plan', gradient: false },
-              { icon: Building2, label: 'Pharmacy Panel', desc: 'Partner dashboard', path: '/pharmacy-dashboard', gradient: false },
-              { icon: CalendarDays, label: 'Book Appointment', desc: 'AI scheduling', path: '/book-appointment', gradient: false },
-              { icon: Zap, label: 'AI Triage', desc: 'Urgency check', path: '/triage', gradient: false },
-              { icon: Video, label: 'Telemedicine', desc: 'Virtual consult', path: '/telemedicine', gradient: false },
-            ].map(({ icon: Icon, label, desc, path, gradient }, i) => (
+            {quickActions.map(({ icon: Icon, label, desc, path, color }, i) => (
               <motion.button key={label}
-                initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.15 + i * 0.05 }}
-                whileTap={{ scale: 0.97 }}
+                initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 + i * 0.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => navigate(path)}
-                className={`rounded-xl p-4 text-left transition-all border ${
-                  gradient
-                    ? 'gradient-primary text-primary-foreground border-transparent shadow-glow'
-                    : 'bg-card border-border hover:border-primary/30 hover:shadow-md text-foreground'
-                }`}>
-                <Icon className="w-6 h-6 mb-2" />
-                <span className="text-sm font-semibold block">{label}</span>
-                <span className={`text-[11px] ${gradient ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{desc}</span>
+                className={`relative overflow-hidden rounded-2xl p-4 text-left bg-gradient-to-br ${color} text-white shadow-lg hover:shadow-xl transition-all`}>
+                <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full -translate-y-4 translate-x-4" />
+                <Icon className="w-7 h-7 mb-3 relative z-10" />
+                <span className="text-sm font-semibold block relative z-10">{label}</span>
+                <span className="text-[11px] text-white/70 relative z-10">{desc}</span>
               </motion.button>
             ))}
           </div>
         </motion.div>
 
-        {/* Quick Links */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="flex gap-2 overflow-x-auto pb-1">
+        {/* AI-Powered Section */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <h2 className="text-sm font-display font-semibold text-foreground">AI-Powered</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-2.5">
+            {aiFeatures.map(({ icon: Icon, label, desc, path }, i) => (
+              <motion.button key={label}
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + i * 0.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => navigate(path)}
+                className="glass-card p-3.5 text-left group">
+                <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center mb-2 group-hover:bg-primary/15 transition-colors">
+                  <Icon className="w-4.5 h-4.5 text-primary" />
+                </div>
+                <span className="text-xs font-semibold block text-foreground">{label}</span>
+                <span className="text-[10px] text-muted-foreground">{desc}</span>
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Medical Tools Horizontal Scroll */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+          <h2 className="text-sm font-display font-semibold text-foreground mb-3">Medical Tools</h2>
+          <div className="flex gap-2.5 overflow-x-auto pb-2 -mx-4 px-4 custom-scrollbar">
+            {medicalTools.map(({ icon: Icon, label, path }) => (
+              <button key={label} onClick={() => navigate(path)}
+                className="flex flex-col items-center gap-2 min-w-[72px] p-3 rounded-2xl glass-subtle hover:glass-card transition-all shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center">
+                  <Icon className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-[10px] font-medium text-foreground text-center leading-tight">{label}</span>
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Services Grid */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+          <h2 className="text-sm font-display font-semibold text-foreground mb-3">Services</h2>
+          <div className="grid grid-cols-3 gap-2.5">
+            {services.map(({ icon: Icon, label, path }) => (
+              <button key={label} onClick={() => navigate(path)}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl glass-subtle hover:glass-card transition-all text-center">
+                <Icon className="w-5 h-5 text-primary" />
+                <span className="text-[10px] font-medium text-foreground leading-tight">{label}</span>
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Quick Links Bar */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}
+          className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4">
           {[
             { icon: Pill, label: 'Med Reminders', path: '/med-reminders' },
             { icon: Syringe, label: 'Vaccinations', path: '/vaccinations' },
@@ -220,51 +303,58 @@ const DashboardPage = () => {
             { icon: Bell, label: 'Alerts', path: '/notifications' },
           ].map(({ icon: Icon, label, path }) => (
             <button key={label} onClick={() => navigate(path)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-sm text-foreground whitespace-nowrap hover:border-primary/30 transition-all shrink-0">
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full glass-subtle text-xs font-medium text-foreground whitespace-nowrap hover:glass-card transition-all shrink-0">
               <Icon className="w-3.5 h-3.5 text-primary" /> {label}
             </button>
           ))}
         </motion.div>
 
-        {/* AI Doctor Promo */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
+        {/* AI Doctor Promo Card */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
           onClick={() => navigate('/chat')}
-          className="bg-card border border-border rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-primary/30 hover:shadow-md transition-all">
-          <div className="w-11 h-11 rounded-xl gradient-primary flex items-center justify-center shrink-0">
-            <Bot className="w-5 h-5 text-primary-foreground" />
+          className="relative overflow-hidden rounded-2xl gradient-hero p-5 cursor-pointer hover:shadow-glow transition-all">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-16 translate-x-16" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-12 -translate-x-12" />
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0">
+              <Bot className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-display font-bold text-white text-sm">AI Doctor Chat</h3>
+              <p className="text-xs text-white/70 mt-0.5">Ask about health, lab results, medications</p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-white/60" />
           </div>
-          <div className="flex-1">
-            <h3 className="font-display font-semibold text-foreground text-sm">AI Doctor Chat</h3>
-            <p className="text-xs text-muted-foreground">Ask about your health, lab results, medications</p>
-          </div>
-          <ChevronRight className="w-4 h-4 text-muted-foreground" />
         </motion.div>
 
-        {/* Recent Scans */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        {/* Recent Reports */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-display font-semibold text-foreground">Recent Reports</h2>
+            <h2 className="text-sm font-display font-semibold text-foreground">Recent Reports</h2>
             {scans.length > 0 && (
-              <Button variant="ghost" size="sm" onClick={() => navigate('/history')} className="text-primary text-xs h-7">
-                View All
+              <Button variant="ghost" size="sm" onClick={() => navigate('/history')} className="text-primary text-xs h-7 rounded-lg">
+                View All <ChevronRight className="w-3 h-3 ml-1" />
               </Button>
             )}
           </div>
           {scans.length === 0 ? (
-            <div className="text-center py-10 text-muted-foreground">
-              <FileText className="w-10 h-10 mx-auto mb-2 opacity-30" />
-              <p className="text-sm">No reports yet. Upload your first one!</p>
+            <div className="glass-card text-center py-10">
+              <FileText className="w-10 h-10 mx-auto mb-2 text-muted-foreground/30" />
+              <p className="text-sm text-muted-foreground">No reports yet</p>
+              <Button variant="outline" size="sm" className="mt-3 rounded-xl" onClick={() => navigate('/upload')}>
+                Upload your first report
+              </Button>
             </div>
           ) : (
             <div className="space-y-2">
               {scans.map((scan, i) => (
                 <motion.div key={scan.id}
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35 + i * 0.05 }}
+                  transition={{ delay: 0.6 + i * 0.05 }}
                   onClick={() => scan.status === 'complete' ? navigate(`/results/${scan.id}`) : null}
-                  className="bg-card border border-border rounded-xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-sm transition-shadow">
-                  <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shrink-0">
-                    <FileText className="w-4 h-4 text-accent-foreground" />
+                  className="glass-card p-3.5 flex items-center gap-3 cursor-pointer">
+                  <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center shrink-0">
+                    <FileText className="w-4.5 h-4.5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-foreground text-sm truncate">{scan.file_name}</p>
@@ -272,7 +362,7 @@ const DashboardPage = () => {
                       <Clock className="w-3 h-3" /> {new Date(scan.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                  <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${
                     scan.status === 'complete' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'
                   }`}>
                     {scan.status === 'complete' ? 'Complete' : 'Processing'}
