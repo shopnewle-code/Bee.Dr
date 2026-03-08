@@ -301,6 +301,7 @@ const ChatPage = () => {
                     <MedicalResponseRenderer
                       content={msg.content}
                       isStreaming={isLoading && i === messages.length - 1}
+                      onFollowUp={(text) => sendMessage(text)}
                     />
                   ) : (
                     <p className="text-sm">{msg.content}</p>
