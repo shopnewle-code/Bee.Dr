@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { getLanguageModifier } from "../_shared/language-modifier.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,9 +14,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const langInstruction = language === "hi"
-      ? "Respond entirely in Hindi (Devanagari script). Use simple Hindi that a common person can understand."
-      : "Respond in simple English that a non-medical person can easily understand.";
+    const langModifier = getLanguageModifier(language);
 
     const simpleLanguageModifier = simpleLanguage ? `
 SIMPLIFICATION RULES (Simple Language Mode is ON):
@@ -43,7 +42,7 @@ SIMPLIFICATION RULES (Simple Language Mode is ON):
         messages: [
           {
             role: "system",
-            content: `${simpleLanguageModifier}You are a medical report analysis AI for the Bee.dr health platform. ${langInstruction}
+            content: `${simpleLanguageModifier}${langModifier}You are a medical report analysis AI for the Bee.dr health platform. Respond in the language specified above if a language instruction is provided, otherwise respond in simple English that a non-medical person can easily understand.
 
 Given medical report data, generate a detailed JSON response with this EXACT structure:
 {

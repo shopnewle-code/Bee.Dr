@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/hooks/use-language';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,6 +28,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const MedicalImaging = ({ title, subtitle, modality, icon: Icon, color, tips }: MedicalImagingProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { language } = useLanguage();
   const fileRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -73,6 +75,7 @@ const MedicalImaging = ({ title, subtitle, modality, icon: Icon, color, tips }: 
           imageBase64: base64,
           modality,
           patientContext: context || undefined,
+          language,
         }),
       });
 

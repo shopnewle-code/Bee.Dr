@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
+import { getLanguageModifier } from "../_shared/language-modifier.ts";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { symptoms, age, gender, chronicConditions, allergies, simpleLanguage = false } = await req.json();
+    const { symptoms, age, gender, chronicConditions, allergies, simpleLanguage = false, language = "en" } = await req.json();
 
     if (!symptoms || !Array.isArray(symptoms) || symptoms.length === 0) {
       return new Response(JSON.stringify({ error: "Please provide at least one symptom" }), {
@@ -30,7 +30,9 @@ SIMPLIFICATION RULES (Simple Language Mode is ON):
 - After each description, add: "This means: [one simple sentence]"
 ` : "";
 
-    const systemPrompt = `${simpleLanguageModifier}You are an AI medical symptom analyzer. You are NOT a doctor and must always include a disclaimer.
+    const langModifier = getLanguageModifier(language);
+
+    const systemPrompt = `${simpleLanguageModifier}${langModifier}You are an AI medical symptom analyzer. You are NOT a doctor and must always include a disclaimer.
 
 Given the user's symptoms and profile, analyze and respond using the following tool.
 

@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/hooks/use-language';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ import ReactMarkdown from 'react-markdown';
 /* ─── Single Scan Tab ─── */
 const ScanTab = () => {
   const { user } = useAuth();
+  const { language } = useLanguage();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
@@ -50,7 +52,7 @@ const ScanTab = () => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({ imageBase64: base64, fileName: file.name }),
+          body: JSON.stringify({ imageBase64: base64, fileName: file.name, language }),
         }
       );
       if (!resp.ok) throw new Error('Analysis failed');

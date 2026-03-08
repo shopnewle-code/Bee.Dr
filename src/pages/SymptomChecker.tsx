@@ -13,6 +13,7 @@ import {
 import BottomNav from '@/components/BottomNav';
 import { toast } from 'sonner';
 import { useSimpleLanguage } from '@/hooks/use-simple-language';
+import { useLanguage } from '@/hooks/use-language';
 
 const COMMON_SYMPTOMS = [
   'Headache', 'Fatigue', 'Fever', 'Cough', 'Nausea', 'Dizziness',
@@ -55,6 +56,7 @@ const SymptomChecker = () => {
   const [profile, setProfile] = useState<any>(null);
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const { simpleLanguage } = useSimpleLanguage();
+  const { language } = useLanguage();
 
   useEffect(() => {
     if (!user) return;
@@ -110,6 +112,7 @@ const SymptomChecker = () => {
           chronicConditions: healthProfile?.chronic_conditions || [],
           allergies: healthProfile?.allergies || [],
           simpleLanguage,
+          language,
         },
       });
 

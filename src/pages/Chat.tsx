@@ -11,6 +11,7 @@ import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
 import BottomNav from '@/components/BottomNav';
 import { useSimpleLanguage } from '@/hooks/use-simple-language';
+import { useLanguage } from '@/hooks/use-language';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -97,6 +98,7 @@ const ChatPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<ChatMode>('general');
   const { simpleLanguage, toggleSimpleLanguage } = useSimpleLanguage();
+  const { language } = useLanguage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -137,7 +139,7 @@ const ChatPage = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: [...messages, apiMsg], simpleLanguage }),
+        body: JSON.stringify({ messages: [...messages, apiMsg], simpleLanguage, language }),
       });
 
       if (!resp.ok) {

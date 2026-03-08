@@ -14,6 +14,7 @@ import {
   Heart, RefreshCw, Sparkles, User, Activity
 } from 'lucide-react';
 import { useSimpleLanguage } from '@/hooks/use-simple-language';
+import { useLanguage } from '@/hooks/use-language';
 import BottomNav from '@/components/BottomNav';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -38,6 +39,7 @@ const TreatmentPlan = () => {
   const [generating, setGenerating] = useState(false);
   const [plan, setPlan] = useState('');
   const { simpleLanguage } = useSimpleLanguage();
+  const { language } = useLanguage();
 
   const addSymptom = (s: string) => {
     const trimmed = s.trim();
@@ -72,6 +74,7 @@ const TreatmentPlan = () => {
             current_medications: medications || undefined,
           },
           simpleLanguage,
+          language,
         }),
       });
 

@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
+import { getLanguageModifier } from "../_shared/language-modifier.ts";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { symptoms, diagnosis, healthProfile, labResults, simpleLanguage = false } = await req.json();
+    const { symptoms, diagnosis, healthProfile, labResults, simpleLanguage = false, language = "en" } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
@@ -23,7 +23,9 @@ SIMPLIFICATION RULES (Simple Language Mode is ON):
 - After each finding, add: "This means: [one simple sentence]"
 ` : "";
 
-    const systemPrompt = `${simpleLanguageModifier}You are an AI clinical advisor creating personalized treatment plans. You are NOT replacing a doctor — always include disclaimers. Generate a comprehensive, evidence-based treatment plan.${simpleLanguage ? ' Use very simple, easy-to-understand language throughout.' : ''}
+    const langModifier = getLanguageModifier(language);
+
+    const systemPrompt = `${simpleLanguageModifier}${langModifier}You are an AI clinical advisor creating personalized treatment plans. You are NOT replacing a doctor — always include disclaimers. Generate a comprehensive, evidence-based treatment plan.${simpleLanguage ? ' Use very simple, easy-to-understand language throughout.' : ''}
 
 Return a structured plan with these sections:
 1. **Condition Summary**: Brief overview of the diagnosed/suspected condition

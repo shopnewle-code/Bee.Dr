@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { getLanguageModifier } from "../_shared/language-modifier.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,9 +10,10 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { imageBase64, modality, patientContext } = await req.json();
+    const { imageBase64, modality, patientContext, language = "en" } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+    const langModifier = getLanguageModifier(language);
 
     const modalityPrompts: Record<string, string> = {
       ecg: `You are a senior cardiologist AI analyzing an ECG/EKG strip. Provide:
@@ -71,7 +73,7 @@ Include specific measurements and anatomical landmarks.`,
 Use standard radiology reporting terminology (BIRADS, LIRADS, Lung-RADS where applicable).`,
     };
 
-    const systemPrompt = modalityPrompts[modality] || modalityPrompts.xray;
+    const systemPrompt = langModifier + (modalityPrompts[modality] || modalityPrompts.xray);
     const userContent: any[] = [
       { type: "text", text: `Analyze this ${modality.toUpperCase()} image.${patientContext ? ` Patient context: ${patientContext}` : ''} Provide a thorough clinical analysis.` },
     ];
