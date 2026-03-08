@@ -298,9 +298,10 @@ const ChatPage = () => {
                   msg.role === 'user' ? 'gradient-primary text-primary-foreground' : 'bg-card border border-border text-foreground'
                 }`}>
                   {msg.role === 'assistant' ? (
-                    <div className="prose prose-sm prose-emerald max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
-                    </div>
+                    <MedicalResponseRenderer
+                      content={msg.content}
+                      isStreaming={isLoading && i === messages.length - 1}
+                    />
                   ) : (
                     <p className="text-sm">{msg.content}</p>
                   )}
