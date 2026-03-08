@@ -36,6 +36,9 @@ import VaccinationTrackerPage from "./pages/VaccinationTracker";
 import EmergencyCardPage from "./pages/EmergencyCard";
 import SkinScannerPage from "./pages/SkinScanner";
 import PredictiveHealthPage from "./pages/PredictiveHealth";
+import DoctorDiscoveryPage from "./pages/DoctorDiscovery";
+import BookConsultationPage from "./pages/BookConsultation";
+import ConsultationHistoryPage from "./pages/ConsultationHistory";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -86,6 +89,9 @@ const App = () => (
             <Route path="/emergency-card" element={<ProtectedRoute><EmergencyCardPage /></ProtectedRoute>} />
             <Route path="/skin-scanner" element={<ProtectedRoute><SkinScannerPage /></ProtectedRoute>} />
             <Route path="/predictive" element={<ProtectedRoute><PredictiveHealthPage /></ProtectedRoute>} />
+            <Route path="/doctors" element={<ProtectedRoute><DoctorDiscoveryPage /></ProtectedRoute>} />
+            <Route path="/book-consultation/:doctorId" element={<ProtectedRoute><BookConsultationPage /></ProtectedRoute>} />
+            <Route path="/consultations" element={<ProtectedRoute><ConsultationHistoryPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

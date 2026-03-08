@@ -8,11 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Heart, Ruler, Weight, Droplets, AlertTriangle, Plus, X, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Heart, Ruler, Weight, Droplets, AlertTriangle, Plus, X, Save, Loader2, Cigarette, Wine, Dumbbell, UtensilsCrossed, Moon, Users } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { toast } from 'sonner';
 
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+const SMOKING_OPTIONS = [{ v: 'none', l: 'Never' }, { v: 'former', l: 'Former smoker' }, { v: 'occasional', l: 'Occasionally' }, { v: 'regular', l: 'Regularly' }];
+const ALCOHOL_OPTIONS = [{ v: 'none', l: 'Never' }, { v: 'occasional', l: 'Occasionally' }, { v: 'moderate', l: 'Moderate' }, { v: 'heavy', l: 'Heavy' }];
+const EXERCISE_OPTIONS = [{ v: 'sedentary', l: 'Sedentary' }, { v: 'light', l: 'Light (1-2x/week)' }, { v: 'moderate', l: 'Moderate (3-4x/week)' }, { v: 'active', l: 'Active (5+/week)' }];
+const DIET_OPTIONS = [{ v: 'mixed', l: 'Mixed / Non-veg' }, { v: 'vegetarian', l: 'Vegetarian' }, { v: 'vegan', l: 'Vegan' }, { v: 'keto', l: 'Keto' }, { v: 'other', l: 'Other' }];
+const SLEEP_OPTIONS = [{ v: 'poor', l: 'Poor (<5h)' }, { v: 'fair', l: 'Fair (5-6h)' }, { v: 'normal', l: 'Normal (7-8h)' }, { v: 'good', l: 'Good (8+h)' }];
 
 const HealthProfilePage = () => {
   const { user } = useAuth();
@@ -24,10 +29,21 @@ const HealthProfilePage = () => {
   const [bloodGroup, setBloodGroup] = useState('');
   const [heightCm, setHeightCm] = useState('');
   const [weightKg, setWeightKg] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
+  const [smoking, setSmoking] = useState('none');
+  const [alcohol, setAlcohol] = useState('none');
+  const [exerciseFrequency, setExerciseFrequency] = useState('moderate');
+  const [dietType, setDietType] = useState('mixed');
+  const [sleepPattern, setSleepPattern] = useState('normal');
   const [allergies, setAllergies] = useState<string[]>([]);
   const [conditions, setConditions] = useState<string[]>([]);
+  const [familyHistory, setFamilyHistory] = useState<string[]>([]);
   const [newAllergy, setNewAllergy] = useState('');
   const [newCondition, setNewCondition] = useState('');
+  const [newFamilyDisease, setNewFamilyDisease] = useState('');
 
   useEffect(() => {
     if (!user) return;
@@ -40,6 +56,16 @@ const HealthProfilePage = () => {
           setWeightKg(data.weight_kg?.toString() || '');
           setAllergies(data.allergies || []);
           setConditions(data.chronic_conditions || []);
+          setPhone((data as any).phone || '');
+          setAddress((data as any).address || '');
+          setCity((data as any).city || '');
+          setCountry((data as any).country || '');
+          setSmoking((data as any).smoking || 'none');
+          setAlcohol((data as any).alcohol || 'none');
+          setExerciseFrequency((data as any).exercise_frequency || 'moderate');
+          setDietType((data as any).diet_type || 'mixed');
+          setSleepPattern((data as any).sleep_pattern || 'normal');
+          setFamilyHistory((data as any).family_disease_history || []);
         }
         setLoading(false);
       });
@@ -48,13 +74,23 @@ const HealthProfilePage = () => {
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
-    const payload = {
+    const payload: any = {
       user_id: user.id,
       blood_group: bloodGroup || null,
       height_cm: heightCm ? parseFloat(heightCm) : null,
       weight_kg: weightKg ? parseFloat(weightKg) : null,
       allergies,
       chronic_conditions: conditions,
+      phone: phone || null,
+      address: address || null,
+      city: city || null,
+      country: country || null,
+      smoking,
+      alcohol,
+      exercise_frequency: exerciseFrequency,
+      diet_type: dietType,
+      sleep_pattern: sleepPattern,
+      family_disease_history: familyHistory,
     };
 
     const { error } = profileId
@@ -92,6 +128,50 @@ const HealthProfilePage = () => {
     );
   }
 
+  const Section = ({ title, icon: Icon, iconColor = 'text-primary', delay = 0, children }: any) => (
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }}
+      className="bg-card border border-border rounded-xl p-4 space-y-3">
+      <div className="flex items-center gap-2 mb-1">
+        <Icon className={`w-4 h-4 ${iconColor}`} />
+        <Label className="text-sm font-semibold text-foreground">{title}</Label>
+      </div>
+      {children}
+    </motion.div>
+  );
+
+  const SelectField = ({ label, value, onValueChange, options }: { label: string; value: string; onValueChange: (v: string) => void; options: { v: string; l: string }[] }) => (
+    <div className="space-y-1.5">
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <Select value={value} onValueChange={onValueChange}>
+        <SelectTrigger><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {options.map(o => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
+  const TagList = ({ items, setItems, inputValue, setInput, placeholder }: any) => (
+    <>
+      <div className="flex flex-wrap gap-2">
+        {items.map((a: string, i: number) => (
+          <Badge key={i} variant="secondary" className="gap-1 pr-1">
+            {a}
+            <button onClick={() => removeItem(items, setItems, i)} className="ml-1 hover:text-destructive"><X className="w-3 h-3" /></button>
+          </Badge>
+        ))}
+      </div>
+      <div className="flex gap-2">
+        <Input placeholder={placeholder} value={inputValue}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && addItem(items, setItems, inputValue, setInput)} />
+        <Button size="icon" variant="outline" onClick={() => addItem(items, setItems, inputValue, setInput)}>
+          <Plus className="w-4 h-4" />
+        </Button>
+      </div>
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <header className="border-b border-border bg-card sticky top-0 z-40">
@@ -106,39 +186,25 @@ const HealthProfilePage = () => {
 
       <main className="container mx-auto px-4 py-6 max-w-lg space-y-5">
         {/* Blood Group */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-card border border-border rounded-xl p-4 space-y-3">
-          <div className="flex items-center gap-2 mb-1">
-            <Droplets className="w-4 h-4 text-primary" />
-            <Label className="text-sm font-semibold text-foreground">Blood Group</Label>
-          </div>
+        <Section title="Blood Group" icon={Droplets} delay={0}>
           <Select value={bloodGroup} onValueChange={setBloodGroup}>
             <SelectTrigger><SelectValue placeholder="Select blood group" /></SelectTrigger>
             <SelectContent>
               {BLOOD_GROUPS.map(bg => <SelectItem key={bg} value={bg}>{bg}</SelectItem>)}
             </SelectContent>
           </Select>
-        </motion.div>
+        </Section>
 
         {/* Height & Weight */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
-          className="bg-card border border-border rounded-xl p-4 space-y-4">
+        <Section title="Body Measurements" icon={Ruler} delay={0.05}>
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Ruler className="w-4 h-4 text-primary" />
-                <Label className="text-sm font-semibold text-foreground">Height (cm)</Label>
-              </div>
-              <Input type="number" placeholder="170" value={heightCm}
-                onChange={e => setHeightCm(e.target.value)} />
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">Height (cm)</Label>
+              <Input type="number" placeholder="170" value={heightCm} onChange={e => setHeightCm(e.target.value)} />
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Weight className="w-4 h-4 text-primary" />
-                <Label className="text-sm font-semibold text-foreground">Weight (kg)</Label>
-              </div>
-              <Input type="number" placeholder="70" value={weightKg}
-                onChange={e => setWeightKg(e.target.value)} />
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">Weight (kg)</Label>
+              <Input type="number" placeholder="70" value={weightKg} onChange={e => setWeightKg(e.target.value)} />
             </div>
           </div>
           {bmi && (
@@ -150,61 +216,55 @@ const HealthProfilePage = () => {
               </span>
             </div>
           )}
-        </motion.div>
+        </Section>
+
+        {/* Contact Info */}
+        <Section title="Contact Info" icon={Heart} delay={0.08}>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5 col-span-2">
+              <Label className="text-xs text-muted-foreground">Phone</Label>
+              <Input placeholder="+91 98765 43210" value={phone} onChange={e => setPhone(e.target.value)} />
+            </div>
+            <div className="space-y-1.5 col-span-2">
+              <Label className="text-xs text-muted-foreground">Address</Label>
+              <Input placeholder="Street address" value={address} onChange={e => setAddress(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">City</Label>
+              <Input placeholder="Mumbai" value={city} onChange={e => setCity(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">Country</Label>
+              <Input placeholder="India" value={country} onChange={e => setCountry(e.target.value)} />
+            </div>
+          </div>
+        </Section>
+
+        {/* Lifestyle */}
+        <Section title="Lifestyle" icon={Dumbbell} delay={0.1}>
+          <div className="grid grid-cols-2 gap-3">
+            <SelectField label="Smoking" value={smoking} onValueChange={setSmoking} options={SMOKING_OPTIONS} />
+            <SelectField label="Alcohol" value={alcohol} onValueChange={setAlcohol} options={ALCOHOL_OPTIONS} />
+            <SelectField label="Exercise" value={exerciseFrequency} onValueChange={setExerciseFrequency} options={EXERCISE_OPTIONS} />
+            <SelectField label="Diet Type" value={dietType} onValueChange={setDietType} options={DIET_OPTIONS} />
+            <SelectField label="Sleep Pattern" value={sleepPattern} onValueChange={setSleepPattern} options={SLEEP_OPTIONS} />
+          </div>
+        </Section>
 
         {/* Allergies */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="bg-card border border-border rounded-xl p-4 space-y-3">
-          <div className="flex items-center gap-2 mb-1">
-            <AlertTriangle className="w-4 h-4 text-destructive" />
-            <Label className="text-sm font-semibold text-foreground">Allergies</Label>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {allergies.map((a, i) => (
-              <Badge key={i} variant="secondary" className="gap-1 pr-1">
-                {a}
-                <button onClick={() => removeItem(allergies, setAllergies, i)}
-                  className="ml-1 hover:text-destructive"><X className="w-3 h-3" /></button>
-              </Badge>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <Input placeholder="e.g. Penicillin" value={newAllergy}
-              onChange={e => setNewAllergy(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && addItem(allergies, setAllergies, newAllergy, setNewAllergy)} />
-            <Button size="icon" variant="outline"
-              onClick={() => addItem(allergies, setAllergies, newAllergy, setNewAllergy)}>
-              <Plus className="w-4 h-4" />
-            </Button>
-          </div>
-        </motion.div>
+        <Section title="Allergies" icon={AlertTriangle} iconColor="text-destructive" delay={0.12}>
+          <TagList items={allergies} setItems={setAllergies} inputValue={newAllergy} setInput={setNewAllergy} placeholder="e.g. Penicillin" />
+        </Section>
 
         {/* Chronic Conditions */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-          className="bg-card border border-border rounded-xl p-4 space-y-3">
-          <div className="flex items-center gap-2 mb-1">
-            <Heart className="w-4 h-4 text-primary" />
-            <Label className="text-sm font-semibold text-foreground">Chronic Conditions</Label>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {conditions.map((c, i) => (
-              <Badge key={i} variant="secondary" className="gap-1 pr-1">
-                {c}
-                <button onClick={() => removeItem(conditions, setConditions, i)}
-                  className="ml-1 hover:text-destructive"><X className="w-3 h-3" /></button>
-              </Badge>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <Input placeholder="e.g. Diabetes" value={newCondition}
-              onChange={e => setNewCondition(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && addItem(conditions, setConditions, newCondition, setNewCondition)} />
-            <Button size="icon" variant="outline"
-              onClick={() => addItem(conditions, setConditions, newCondition, setNewCondition)}>
-              <Plus className="w-4 h-4" />
-            </Button>
-          </div>
-        </motion.div>
+        <Section title="Chronic Conditions" icon={Heart} delay={0.15}>
+          <TagList items={conditions} setItems={setConditions} inputValue={newCondition} setInput={setNewCondition} placeholder="e.g. Diabetes" />
+        </Section>
+
+        {/* Family Disease History */}
+        <Section title="Family Disease History" icon={Users} delay={0.18}>
+          <TagList items={familyHistory} setItems={setFamilyHistory} inputValue={newFamilyDisease} setInput={setNewFamilyDisease} placeholder="e.g. Heart disease (father)" />
+        </Section>
 
         <Button onClick={handleSave} disabled={saving} className="w-full">
           {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
