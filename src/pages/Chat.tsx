@@ -7,11 +7,12 @@ import {
   Activity, ArrowLeft, Send, Bot, User, Sparkles, AlertCircle,
   Mic, Stethoscope, BookOpen, Pill, HeartPulse, Type
 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
 import BottomNav from '@/components/BottomNav';
 import { useSimpleLanguage } from '@/hooks/use-simple-language';
 import { useLanguage } from '@/hooks/use-language';
+import { MedicalResponseRenderer } from '@/components/chat/MedicalResponseRenderer';
+import { AIBrainWave } from '@/components/ai/AIThinkingAnimation';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -297,9 +298,10 @@ const ChatPage = () => {
                   msg.role === 'user' ? 'gradient-primary text-primary-foreground' : 'bg-card border border-border text-foreground'
                 }`}>
                   {msg.role === 'assistant' ? (
-                    <div className="prose prose-sm prose-emerald max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
-                    </div>
+                    <MedicalResponseRenderer
+                      content={msg.content}
+                      isStreaming={isLoading && i === messages.length - 1}
+                    />
                   ) : (
                     <p className="text-sm">{msg.content}</p>
                   )}
@@ -318,11 +320,10 @@ const ChatPage = () => {
               <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center shrink-0">
                 <Bot className="w-4 h-4 text-primary-foreground" />
               </div>
-              <div className="bg-card border border-border rounded-2xl px-4 py-3">
-                <div className="flex gap-1">
-                  <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="bg-card border border-border rounded-2xl px-4 py-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <AIBrainWave />
+                  <span className="text-[11px] text-muted-foreground font-medium animate-pulse">Analyzing...</span>
                 </div>
               </div>
             </motion.div>
