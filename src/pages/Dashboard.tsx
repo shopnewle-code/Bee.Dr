@@ -187,7 +187,8 @@ const DashboardPage = () => {
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="flex gap-2 overflow-x-auto pb-1">
           {[
-            { icon: Pill, label: 'Medications', path: '/medications' },
+            { icon: Pill, label: 'Med Reminders', path: '/med-reminders' },
+            { icon: Syringe, label: 'Vaccinations', path: '/vaccinations' },
             { icon: Shield, label: 'Privacy', path: '/settings' },
             { icon: Bell, label: 'Alerts', path: '/notifications' },
           ].map(({ icon: Icon, label, path }) => (
