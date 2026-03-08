@@ -41,6 +41,9 @@ import BookConsultationPage from "./pages/BookConsultation";
 import ConsultationHistoryPage from "./pages/ConsultationHistory";
 import WearableIntegrationPage from "./pages/WearableIntegration";
 import SymptomCheckerPage from "./pages/SymptomChecker";
+import MedicineScannerPage from "./pages/MedicineScanner";
+import HealthMapPage from "./pages/HealthMap";
+import MedicineMarketplacePage from "./pages/MedicineMarketplace";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
