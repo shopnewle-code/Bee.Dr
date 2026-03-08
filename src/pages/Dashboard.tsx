@@ -36,7 +36,16 @@ const DashboardPage = () => {
 
   const handleSignOut = async () => { await signOut(); navigate('/'); };
   const displayName = profile?.display_name || user?.email?.split('@')[0] || 'User';
-  const healthScore = 78; // Calculated from scan results in production
+  // Dynamic health score from latest scan risk_scores
+  const healthScore = (() => {
+    const latestScan = scans.find(s => s.status === 'complete' && s.risk_scores);
+    if (!latestScan?.risk_scores) return 78;
+    const scores = latestScan.risk_scores as Record<string, { score?: number }>;
+    const values = Object.values(scores).map(s => s.score ?? 0.3);
+    if (values.length === 0) return 78;
+    const avgRisk = values.reduce((a, b) => a + b, 0) / values.length;
+    return Math.round((1 - avgRisk) * 100);
+  })();
 
   return (
     <div className="min-h-screen bg-background pb-20">
