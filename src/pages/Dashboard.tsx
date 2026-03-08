@@ -19,6 +19,7 @@ import BottomNav from '@/components/BottomNav';
 const DashboardPage = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { languageInfo } = useLanguage();
   const [scans, setScans] = useState<Tables<'scan_results'>[]>([]);
   const [profile, setProfile] = useState<Tables<'profiles'> | null>(null);
   const [healthProfile, setHealthProfile] = useState<Tables<'health_profiles'> | null>(null);
