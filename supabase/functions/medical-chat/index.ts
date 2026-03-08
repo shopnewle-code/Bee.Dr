@@ -9,22 +9,32 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages } = await req.json();
+    const { messages, simpleLanguage } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          {
-            role: "system",
-            content: `You are Bee.dr AI — a medical AI assistant built into the Bee.dr health platform. You help users understand their medical reports, lab results, prescriptions, and health conditions.
+    const SIMPLE_LANGUAGE_MODIFIER = `
+SIMPLIFICATION RULES (Simple Language Mode is ON):
+- Use only the 1000 most common English words
+- Maximum 8 words per sentence
+- No medical terms — replace ALL of them:
+  - "Hemoglobin" → "blood health number"
+  - "Cholesterol" → "fat in blood"
+  - "Glucose" → "sugar in blood"
+  - "Creatinine" → "kidney health number"
+  - "Thyroid" → "neck gland"
+- Use traffic light system: 🟢 Good | 🟡 Okay | 🔴 Needs help
+- Include simple emojis for visual understanding
+- After each finding, add: "This means: [one simple sentence]"
+
+Example:
+"Your blood health number is low. 🔴
+This means: Your body needs more iron.
+Eat green leafy vegetables. 🥬"
+
+`;
+
+    const baseSystemPrompt = `You are Bee.dr AI — a medical AI assistant built into the Bee.dr health platform. You help users understand their medical reports, lab results, prescriptions, and health conditions.
 
 Your capabilities:
 - Interpret blood test results, CBC, metabolic panels, lipid profiles, etc.
@@ -40,8 +50,11 @@ Important guidelines:
 - Use bullet points and structured formatting for readability
 - When discussing abnormal values, explain the normal range and what deviations mean
 - If asked about something outside your scope, recommend consulting a healthcare provider
-- Use markdown formatting for better readability`
-          },
+- Use markdown formatting for better readability`;
+
+    const systemContent = simpleLanguage
+      ? SIMPLE_LANGUAGE_MODIFIER + baseSystemPrompt
+      : baseSystemPrompt;
           ...messages,
         ],
         stream: true,
