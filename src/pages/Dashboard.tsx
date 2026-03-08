@@ -46,6 +46,12 @@ const medicalTools = [
   { icon: Search, label: 'Medicine Scanner', path: '/medicine-scanner' },
 ];
 
+const adminDashboards = [
+  { icon: Stethoscope, label: 'Doctor Dashboard', desc: 'Manage patients & appointments', path: '/doctor-dashboard', color: 'from-primary to-blue-glow' },
+  { icon: Building2, label: 'Hospital Admin', desc: 'Operations & analytics', path: '/hospital-dashboard', color: 'from-secondary to-teal' },
+  { icon: ShoppingCart, label: 'Pharmacy Panel', desc: 'Inventory & orders', path: '/pharmacy-dashboard', color: 'from-amber-400 to-orange-500' },
+];
+
 const services = [
   { icon: CalendarDays, label: 'Book Appointment', path: '/book-appointment' },
   { icon: Video, label: 'Telemedicine', path: '/telemedicine' },
@@ -55,7 +61,6 @@ const services = [
   { icon: Watch, label: 'Wearables', path: '/wearables' },
   { icon: AlertTriangle, label: 'Emergency Card', path: '/emergency-card' },
   { icon: ShieldAlert, label: 'Emergency Alerts', path: '/alerts' },
-  { icon: Building2, label: 'Pharmacy Panel', path: '/pharmacy-dashboard' },
 ];
 
 const DashboardPage = () => {
@@ -279,8 +284,33 @@ const DashboardPage = () => {
           </div>
         </motion.div>
 
-        {/* Services Grid */}
+        {/* Admin Dashboards */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+          <h2 className="text-sm font-display font-semibold text-foreground mb-3">Admin Panels</h2>
+          <div className="space-y-2.5">
+            {adminDashboards.map(({ icon: Icon, label, desc, path, color }, i) => (
+              <motion.button key={label}
+                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.42 + i * 0.05 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => navigate(path)}
+                className={`w-full relative overflow-hidden rounded-2xl p-4 text-left bg-gradient-to-r ${color} text-white shadow-lg hover:shadow-xl transition-all flex items-center gap-4`}>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8" />
+                <div className="w-11 h-11 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div className="flex-1 relative z-10">
+                  <span className="text-sm font-semibold block">{label}</span>
+                  <span className="text-[11px] text-white/70">{desc}</span>
+                </div>
+                <ArrowRight className="w-4 h-4 text-white/60" />
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Services Grid */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
           <h2 className="text-sm font-display font-semibold text-foreground mb-3">Services</h2>
           <div className="grid grid-cols-3 gap-2.5">
             {services.map(({ icon: Icon, label, path }) => (
