@@ -13,6 +13,7 @@ import {
   ArrowLeft, Loader2, AlertTriangle, ClipboardList, Plus, X,
   Heart, RefreshCw, Sparkles, User, Activity
 } from 'lucide-react';
+import { useSimpleLanguage } from '@/hooks/use-simple-language';
 import BottomNav from '@/components/BottomNav';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;

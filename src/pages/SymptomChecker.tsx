@@ -109,6 +109,7 @@ const SymptomChecker = () => {
           gender: profile?.gender || null,
           chronicConditions: healthProfile?.chronic_conditions || [],
           allergies: healthProfile?.allergies || [],
+          simpleLanguage,
         },
       });
 
