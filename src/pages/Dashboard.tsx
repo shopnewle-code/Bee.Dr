@@ -160,6 +160,7 @@ const DashboardPage = () => {
               { icon: Brain, label: 'Predictive Health', desc: 'AI forecasts', path: '/predictive', gradient: false },
               { icon: Scan, label: 'Scan Prescription', desc: 'Camera OCR', path: '/prescription', gradient: false },
               { icon: ScanEye, label: 'Skin Scanner', desc: 'AI dermatology', path: '/skin-scanner', gradient: false },
+              { icon: ShieldAlert, label: 'Melanoma Screen', desc: 'ABCDE check', path: '/melanoma-screener', gradient: false },
               { icon: Mic, label: 'Voice Doctor', desc: 'Speak to AI', path: '/voice-doctor', gradient: false },
               { icon: GitCompare, label: 'Compare Reports', desc: 'Old vs New', path: '/compare', gradient: false },
               { icon: Calendar, label: 'Health Timeline', desc: 'Medical history', path: '/timeline', gradient: false },
