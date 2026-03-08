@@ -46,6 +46,10 @@ import HealthMapPage from "./pages/HealthMap";
 import MedicineMarketplacePage from "./pages/MedicineMarketplace";
 import InvestorDeckPage from "./pages/InvestorDeck";
 import PharmacyDashboardPage from "./pages/PharmacyDashboard";
+import ECGInterpreterPage from "./pages/ECGInterpreter";
+import XrayAnalysisPage from "./pages/XrayAnalysis";
+import MRIAnalysisPage from "./pages/MRIAnalysis";
+import TreatmentPlanPage from "./pages/TreatmentPlan";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -106,6 +110,10 @@ const App = () => (
             <Route path="/health-map" element={<ProtectedRoute><HealthMapPage /></ProtectedRoute>} />
             <Route path="/medicine-store" element={<ProtectedRoute><MedicineMarketplacePage /></ProtectedRoute>} />
             <Route path="/pharmacy-dashboard" element={<ProtectedRoute><PharmacyDashboardPage /></ProtectedRoute>} />
+            <Route path="/ecg" element={<ProtectedRoute><ECGInterpreterPage /></ProtectedRoute>} />
+            <Route path="/xray" element={<ProtectedRoute><XrayAnalysisPage /></ProtectedRoute>} />
+            <Route path="/mri" element={<ProtectedRoute><MRIAnalysisPage /></ProtectedRoute>} />
+            <Route path="/treatment-plan" element={<ProtectedRoute><TreatmentPlanPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
