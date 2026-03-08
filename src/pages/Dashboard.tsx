@@ -8,7 +8,7 @@ import {
   Activity, Upload, FileText, LogOut, Plus, Clock, Bot, User,
   Heart, Bell, Scan, TrendingUp, Pill, Shield, ChevronRight, GitCompare,
   Calendar, ShieldAlert, Users, Droplets, HeartPulse, SmilePlus, Target,
-  Syringe, AlertTriangle, ScanEye, Mic, Brain, Watch
+  Syringe, AlertTriangle, ScanEye, Mic, Brain, Watch, Stethoscope
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
