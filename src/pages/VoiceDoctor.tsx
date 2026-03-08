@@ -11,7 +11,7 @@ import {
 import BottomNav from '@/components/BottomNav';
 import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
-import { useScribe } from '@elevenlabs/react';
+import { useScribe, CommitStrategy } from '@elevenlabs/react';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
