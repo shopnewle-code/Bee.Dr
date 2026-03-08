@@ -50,6 +50,9 @@ import ECGInterpreterPage from "./pages/ECGInterpreter";
 import XrayAnalysisPage from "./pages/XrayAnalysis";
 import MRIAnalysisPage from "./pages/MRIAnalysis";
 import TreatmentPlanPage from "./pages/TreatmentPlan";
+import AIAppointmentBookingPage from "./pages/AIAppointmentBooking";
+import AITriagePage from "./pages/AITriage";
+import TelemedicineConsultationPage from "./pages/TelemedicineConsultation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
