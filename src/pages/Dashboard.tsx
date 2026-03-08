@@ -16,8 +16,12 @@ import {
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
+import { HealthScoreRing } from '@/components/ai/HealthScoreRing';
+import { AIThinkingPulse, AIBrainWave } from '@/components/ai/AIThinkingAnimation';
+import { ECGLine } from '@/components/ai/ECGLine';
+import { AIGlowCard, AIBadge } from '@/components/ai/AIGlowCard';
 
-// Feature categories for organized grid
+// Feature categories
 const quickActions = [
   { icon: Upload, label: 'Upload Report', desc: 'PDF or Photo', path: '/upload', color: 'from-primary to-blue-glow' },
   { icon: Bot, label: 'AI Doctor', desc: 'Ask anything', path: '/chat', color: 'from-secondary to-teal' },
@@ -64,6 +68,11 @@ const services = [
   { icon: ShieldAlert, label: 'Emergency Alerts', path: '/alerts' },
 ];
 
+const stagger = {
+  container: { hidden: {}, show: { transition: { staggerChildren: 0.06 } } },
+  item: { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } } },
+};
+
 const DashboardPage = () => {
   const { user, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -101,20 +110,27 @@ const DashboardPage = () => {
     return Math.round((1 - avgRisk) * 100);
   })();
 
-  const circumference = 2 * Math.PI * 52;
-  const strokeDashoffset = circumference - (healthScore / 100) * circumference;
-
   return (
-    <div className="min-h-screen bg-background gradient-mesh pb-24">
+    <div className="min-h-screen bg-background pb-24">
+      {/* Ambient background mesh */}
+      <div className="fixed inset-0 gradient-mesh pointer-events-none z-0" />
+
       {/* Header */}
       <header className="sticky top-0 z-40">
         <div className="glass border-b border-white/20">
           <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-lg">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
-                <Activity className="w-4 h-4 text-primary-foreground" />
-              </div>
+              <motion.div
+                className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                style={{ boxShadow: '0 0 20px hsl(var(--primary) / 0.3)' }}
+              >
+                <Activity className="w-4.5 h-4.5 text-primary-foreground" />
+              </motion.div>
               <span className="text-lg font-display font-bold text-foreground tracking-tight">Bee.dr</span>
+              <AIBadge variant="pulse" className="ml-1">
+                <Sparkles className="w-2.5 h-2.5" /> AI
+              </AIBadge>
             </div>
             <div className="flex items-center gap-1">
               <button
@@ -129,7 +145,6 @@ const DashboardPage = () => {
                 onClick={toggleTheme}
                 whileTap={{ scale: 0.85 }}
                 className="relative w-8 h-8 rounded-xl glass-subtle flex items-center justify-center hover:bg-white/60 dark:hover:bg-white/10 transition-all overflow-hidden"
-                title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
               >
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
@@ -145,7 +160,11 @@ const DashboardPage = () => {
               </motion.button>
               <Button variant="ghost" size="icon" onClick={() => navigate('/notifications')} className="relative rounded-xl">
                 <Bell className="w-4 h-4" />
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-destructive animate-pulse" />
+                <motion.span
+                  className="absolute top-2 right-2 w-2 h-2 rounded-full bg-destructive"
+                  animate={{ scale: [1, 1.4, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
               </Button>
               <Button variant="ghost" size="icon" onClick={handleSignOut} title="Sign Out" className="rounded-xl">
                 <LogOut className="w-4 h-4" />
@@ -155,107 +174,130 @@ const DashboardPage = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-5 max-w-lg space-y-5">
-        {/* Greeting + Health Score Card */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <main className="container mx-auto px-4 py-5 max-w-lg space-y-6 relative z-10">
+        {/* Greeting + AI Health Score */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
           <p className="text-sm text-muted-foreground mb-1">Welcome back</p>
-          <h1 className="text-2xl font-display font-bold text-foreground mb-4 tracking-tight">
+          <h1 className="text-2xl font-display font-bold text-foreground mb-5 tracking-tight">
             Hello, {displayName} 👋
           </h1>
 
-          <div className="glass-card p-5 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-8 translate-x-8" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-secondary/5 rounded-full translate-y-6 -translate-x-6" />
-            
+          <AIGlowCard glowColor="primary" className="relative" animated={false}>
+            <div className="absolute top-0 right-0 w-40 h-20 opacity-30 pointer-events-none">
+              <ECGLine />
+            </div>
+
             <div className="flex items-center gap-5 relative z-10">
-              <div className="relative w-[120px] h-[120px] shrink-0">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                  <circle cx="60" cy="60" r="52" fill="none" stroke="hsl(var(--muted))" strokeWidth="6" />
-                  <circle cx="60" cy="60" r="52" fill="none" 
-                    stroke="url(#scoreGradient)" strokeWidth="6"
-                    strokeDasharray={circumference} 
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                    className="transition-all duration-1000 ease-out" />
-                  <defs>
-                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="hsl(221 83% 53%)" />
-                      <stop offset="100%" stopColor="hsl(168 76% 42%)" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-3xl font-display font-bold text-foreground">{healthScore}</span>
-                  <span className="text-[10px] text-muted-foreground font-medium">HEALTH</span>
-                </div>
-              </div>
-              <div className="flex-1 space-y-2">
-                <p className="font-display font-semibold text-foreground">Your Health Score</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">Based on your latest reports and check-ins</p>
+              <HealthScoreRing score={healthScore} size={130} />
+              <div className="flex-1 space-y-2.5">
+                <p className="font-display font-semibold text-foreground text-lg">Your Health Score</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">Based on your latest reports and daily check-ins</p>
                 <div className="flex flex-wrap gap-1.5 mt-2">
-                  <span className="text-[10px] px-2.5 py-1 rounded-full bg-success/10 text-success font-medium flex items-center gap-1">
+                  <AIBadge variant="glow" className="bg-success/10 text-success">
                     <Heart className="w-2.5 h-2.5" /> Heart: OK
-                  </span>
-                  <span className="text-[10px] px-2.5 py-1 rounded-full bg-warning/10 text-warning font-medium flex items-center gap-1">
+                  </AIBadge>
+                  <AIBadge variant="pulse" className="bg-warning/10 text-warning">
                     <Shield className="w-2.5 h-2.5" /> Vit D: Low
-                  </span>
+                  </AIBadge>
                 </div>
               </div>
             </div>
-          </div>
+          </AIGlowCard>
+        </motion.div>
+
+        {/* AI Copilot Prompt */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <motion.button
+            onClick={() => navigate('/chat')}
+            className="w-full relative overflow-hidden rounded-2xl gradient-hero p-5 text-left group"
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            style={{ boxShadow: '0 0 40px hsl(var(--primary) / 0.2)' }}
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_60%)]" />
+            <div className="absolute top-3 right-3 opacity-40">
+              <AIBrainWave />
+            </div>
+            <div className="flex items-center gap-4 relative z-10">
+              <div className="relative">
+                <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center">
+                  <Bot className="w-6 h-6 text-white" />
+                </div>
+                <motion.div
+                  className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-green-400"
+                  animate={{ scale: [1, 1.3, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-display font-bold text-white text-base">Ask Bee.dr AI</h3>
+                <p className="text-xs text-white/60 mt-0.5">Symptoms, reports, medications — I'm here 24/7</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-white/60 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </motion.button>
         </motion.div>
 
         {/* Health Profile Card */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          onClick={() => navigate('/health-profile')}
-          className="glass-card p-4 cursor-pointer group">
-          {healthProfile ? (() => {
-            const bmi = healthProfile.height_cm && healthProfile.weight_kg
-              ? (Number(healthProfile.weight_kg) / Math.pow(Number(healthProfile.height_cm) / 100, 2)).toFixed(1)
-              : null;
-            return (
-              <div className="flex items-center gap-4">
-                <div className="grid grid-cols-3 gap-3 flex-1">
-                  {[
-                    { icon: Droplets, value: healthProfile.blood_group || '—', label: 'Blood', color: 'text-primary' },
-                    { icon: HeartPulse, value: bmi || '—', label: 'BMI', color: 'text-secondary' },
-                    { icon: Shield, value: String(healthProfile.allergies?.length || 0), label: 'Allergies', color: 'text-destructive' },
-                  ].map(({ icon: Icon, value, label, color }) => (
-                    <div key={label} className="text-center">
-                      <Icon className={`w-4 h-4 ${color} mx-auto mb-1`} />
-                      <p className="text-base font-bold text-foreground">{value}</p>
-                      <p className="text-[10px] text-muted-foreground">{label}</p>
-                    </div>
-                  ))}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <AIGlowCard onClick={() => navigate('/health-profile')} glowColor="secondary">
+            {healthProfile ? (() => {
+              const bmi = healthProfile.height_cm && healthProfile.weight_kg
+                ? (Number(healthProfile.weight_kg) / Math.pow(Number(healthProfile.height_cm) / 100, 2)).toFixed(1)
+                : null;
+              return (
+                <div className="flex items-center gap-4">
+                  <div className="grid grid-cols-3 gap-3 flex-1">
+                    {[
+                      { icon: Droplets, value: healthProfile.blood_group || '—', label: 'Blood', color: 'text-primary' },
+                      { icon: HeartPulse, value: bmi || '—', label: 'BMI', color: 'text-secondary' },
+                      { icon: Shield, value: String(healthProfile.allergies?.length || 0), label: 'Allergies', color: 'text-destructive' },
+                    ].map(({ icon: Icon, value, label, color }) => (
+                      <div key={label} className="text-center">
+                        <Icon className={`w-4 h-4 ${color} mx-auto mb-1`} />
+                        <p className="text-base font-bold text-foreground">{value}</p>
+                        <p className="text-[10px] text-muted-foreground">{label}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              );
+            })() : (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <HeartPulse className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-foreground">Set up Health Profile</p>
+                  <p className="text-xs text-muted-foreground">Add blood group, height, weight & allergies</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </div>
-            );
-          })() : (
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <HeartPulse className="w-5 h-5 text-primary" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-foreground">Set up Health Profile</p>
-                <p className="text-xs text-muted-foreground">Add blood group, height, weight & allergies</p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-            </div>
-          )}
+            )}
+          </AIGlowCard>
         </motion.div>
 
         {/* Quick Actions — 2x2 gradient cards */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+        <motion.div variants={stagger.container} initial="hidden" animate="show">
           <div className="grid grid-cols-2 gap-3">
-            {quickActions.map(({ icon: Icon, label, desc, path, color }, i) => (
+            {quickActions.map(({ icon: Icon, label, desc, path, color }) => (
               <motion.button key={label}
-                initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 + i * 0.05 }}
+                variants={stagger.item}
                 whileTap={{ scale: 0.95 }}
+                whileHover={{ y: -3 }}
                 onClick={() => navigate(path)}
-                className={`relative overflow-hidden rounded-2xl p-4 text-left bg-gradient-to-br ${color} text-white shadow-lg hover:shadow-xl transition-all`}>
-                <div className="absolute top-0 right-0 w-16 h-16 bg-white/10 rounded-full -translate-y-4 translate-x-4" />
+                className={`relative overflow-hidden rounded-2xl p-4 text-left bg-gradient-to-br ${color} text-white shadow-lg hover:shadow-xl transition-shadow`}>
+                <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-6 translate-x-6" />
+                <div className="absolute bottom-0 left-0 w-14 h-14 bg-white/5 rounded-full translate-y-4 -translate-x-4" />
                 <Icon className="w-7 h-7 mb-3 relative z-10" />
                 <span className="text-sm font-semibold block relative z-10">{label}</span>
                 <span className="text-[11px] text-white/70 relative z-10">{desc}</span>
@@ -267,25 +309,33 @@ const DashboardPage = () => {
         {/* AI-Powered Section */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
           <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="w-4 h-4 text-primary" />
+            <motion.div
+              animate={{ rotate: [0, 15, -15, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <Sparkles className="w-4 h-4 text-primary" />
+            </motion.div>
             <h2 className="text-sm font-display font-semibold text-foreground">AI-Powered</h2>
+            <AIBadge variant="glow">
+              <Zap className="w-2 h-2" /> Smart
+            </AIBadge>
           </div>
-          <div className="grid grid-cols-2 gap-2.5">
-            {aiFeatures.map(({ icon: Icon, label, desc, path }, i) => (
+          <motion.div variants={stagger.container} initial="hidden" animate="show" className="grid grid-cols-2 gap-2.5">
+            {aiFeatures.map(({ icon: Icon, label, desc, path }) => (
               <motion.button key={label}
-                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + i * 0.03 }}
+                variants={stagger.item}
                 whileTap={{ scale: 0.97 }}
+                whileHover={{ y: -2 }}
                 onClick={() => navigate(path)}
                 className="glass-card p-3.5 text-left group">
-                <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center mb-2 group-hover:bg-primary/15 transition-colors">
+                <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center mb-2 group-hover:bg-primary/15 transition-colors group-hover:shadow-[0_0_12px_hsl(var(--primary)/0.15)]">
                   <Icon className="w-4.5 h-4.5 text-primary" />
                 </div>
                 <span className="text-xs font-semibold block text-foreground">{label}</span>
                 <span className="text-[10px] text-muted-foreground">{desc}</span>
               </motion.button>
             ))}
-          </div>
+          </motion.div>
         </motion.div>
 
         {/* Medical Tools Horizontal Scroll */}
@@ -293,13 +343,15 @@ const DashboardPage = () => {
           <h2 className="text-sm font-display font-semibold text-foreground mb-3">Medical Tools</h2>
           <div className="flex gap-2.5 overflow-x-auto pb-2 -mx-4 px-4 custom-scrollbar">
             {medicalTools.map(({ icon: Icon, label, path }) => (
-              <button key={label} onClick={() => navigate(path)}
+              <motion.button key={label} onClick={() => navigate(path)}
+                whileHover={{ y: -3, scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 className="flex flex-col items-center gap-2 min-w-[72px] p-3 rounded-2xl glass-subtle hover:glass-card transition-all shrink-0">
                 <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center">
                   <Icon className="w-5 h-5 text-primary" />
                 </div>
                 <span className="text-[10px] font-medium text-foreground text-center leading-tight">{label}</span>
-              </button>
+              </motion.button>
             ))}
           </div>
         </motion.div>
@@ -313,8 +365,9 @@ const DashboardPage = () => {
                 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.42 + i * 0.05 }}
                 whileTap={{ scale: 0.97 }}
+                whileHover={{ x: 4 }}
                 onClick={() => navigate(path)}
-                className={`w-full relative overflow-hidden rounded-2xl p-4 text-left bg-gradient-to-r ${color} text-white shadow-lg hover:shadow-xl transition-all flex items-center gap-4`}>
+                className={`w-full relative overflow-hidden rounded-2xl p-4 text-left bg-gradient-to-r ${color} text-white shadow-lg hover:shadow-xl transition-shadow flex items-center gap-4`}>
                 <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8" />
                 <div className="w-11 h-11 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0">
                   <Icon className="w-5 h-5" />
@@ -332,18 +385,22 @@ const DashboardPage = () => {
         {/* Services Grid */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
           <h2 className="text-sm font-display font-semibold text-foreground mb-3">Services</h2>
-          <div className="grid grid-cols-3 gap-2.5">
+          <motion.div variants={stagger.container} initial="hidden" animate="show" className="grid grid-cols-3 gap-2.5">
             {services.map(({ icon: Icon, label, path }) => (
-              <button key={label} onClick={() => navigate(path)}
-                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl glass-subtle hover:glass-card transition-all text-center">
+              <motion.button key={label}
+                variants={stagger.item}
+                whileHover={{ y: -2, scale: 1.03 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate(path)}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-2xl glass-subtle hover:glass-card hover:shadow-[0_0_15px_hsl(var(--primary)/0.08)] transition-all text-center">
                 <Icon className="w-5 h-5 text-primary" />
                 <span className="text-[10px] font-medium text-foreground leading-tight">{label}</span>
-              </button>
+              </motion.button>
             ))}
-          </div>
+          </motion.div>
         </motion.div>
 
-        {/* Quick Links Bar */}
+        {/* Quick Links */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}
           className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4">
           {[
@@ -359,24 +416,6 @@ const DashboardPage = () => {
           ))}
         </motion.div>
 
-        {/* AI Doctor Promo Card */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-          onClick={() => navigate('/chat')}
-          className="relative overflow-hidden rounded-2xl gradient-hero p-5 cursor-pointer hover:shadow-glow transition-all">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-16 translate-x-16" />
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-12 -translate-x-12" />
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center shrink-0">
-              <Bot className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-display font-bold text-white text-sm">AI Doctor Chat</h3>
-              <p className="text-xs text-white/70 mt-0.5">Ask about health, lab results, medications</p>
-            </div>
-            <ArrowRight className="w-5 h-5 text-white/60" />
-          </div>
-        </motion.div>
-
         {/* Recent Reports */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
           <div className="flex items-center justify-between mb-3">
@@ -388,21 +427,22 @@ const DashboardPage = () => {
             )}
           </div>
           {scans.length === 0 ? (
-            <div className="glass-card text-center py-10">
+            <AIGlowCard className="text-center py-10" animated={false}>
               <FileText className="w-10 h-10 mx-auto mb-2 text-muted-foreground/30" />
               <p className="text-sm text-muted-foreground">No reports yet</p>
               <Button variant="outline" size="sm" className="mt-3 rounded-xl" onClick={() => navigate('/upload')}>
                 Upload your first report
               </Button>
-            </div>
+            </AIGlowCard>
           ) : (
             <div className="space-y-2">
               {scans.map((scan, i) => (
                 <motion.div key={scan.id}
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 + i * 0.05 }}
+                  whileHover={{ x: 4 }}
                   onClick={() => scan.status === 'complete' ? navigate(`/results/${scan.id}`) : null}
-                  className="glass-card p-3.5 flex items-center gap-3 cursor-pointer">
+                  className="glass-card p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-[0_0_15px_hsl(var(--primary)/0.08)] transition-all">
                   <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center shrink-0">
                     <FileText className="w-4.5 h-4.5 text-primary" />
                   </div>
