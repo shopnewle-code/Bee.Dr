@@ -49,6 +49,54 @@ export type Database = {
           },
         ]
       }
+      daily_checkins: {
+        Row: {
+          created_at: string
+          date: string
+          energy: number | null
+          exercise_minutes: number | null
+          id: string
+          mood: number | null
+          notes: string | null
+          sleep_hours: number | null
+          sleep_quality: number | null
+          stress_level: number | null
+          symptoms: string[] | null
+          user_id: string
+          water_glasses: number | null
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          energy?: number | null
+          exercise_minutes?: number | null
+          id?: string
+          mood?: number | null
+          notes?: string | null
+          sleep_hours?: number | null
+          sleep_quality?: number | null
+          stress_level?: number | null
+          symptoms?: string[] | null
+          user_id: string
+          water_glasses?: number | null
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          energy?: number | null
+          exercise_minutes?: number | null
+          id?: string
+          mood?: number | null
+          notes?: string | null
+          sleep_hours?: number | null
+          sleep_quality?: number | null
+          stress_level?: number | null
+          symptoms?: string[] | null
+          user_id?: string
+          water_glasses?: number | null
+        }
+        Relationships: []
+      }
       emergency_alerts: {
         Row: {
           alert_type: string
@@ -138,6 +186,39 @@ export type Database = {
         }
         Relationships: []
       }
+      health_habits: {
+        Row: {
+          created_at: string
+          date: string
+          habit_type: string
+          id: string
+          target: number | null
+          unit: string | null
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          habit_type: string
+          id?: string
+          target?: number | null
+          unit?: string | null
+          user_id: string
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          habit_type?: string
+          id?: string
+          target?: number | null
+          unit?: string | null
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
       health_insights: {
         Row: {
           details: Json | null
@@ -198,6 +279,51 @@ export type Database = {
           updated_at?: string
           user_id?: string
           weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      medications: {
+        Row: {
+          created_at: string
+          dosage: string | null
+          end_date: string | null
+          frequency: string
+          id: string
+          is_active: boolean | null
+          name: string
+          notes: string | null
+          start_date: string | null
+          time_of_day: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dosage?: string | null
+          end_date?: string | null
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          notes?: string | null
+          start_date?: string | null
+          time_of_day?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dosage?: string | null
+          end_date?: string | null
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          notes?: string | null
+          start_date?: string | null
+          time_of_day?: string[] | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -273,6 +399,33 @@ export type Database = {
         }
         Relationships: []
       }
+      skin_scans: {
+        Row: {
+          analysis: Json | null
+          created_at: string
+          id: string
+          image_path: string
+          risk_level: string | null
+          user_id: string
+        }
+        Insert: {
+          analysis?: Json | null
+          created_at?: string
+          id?: string
+          image_path: string
+          risk_level?: string | null
+          user_id: string
+        }
+        Update: {
+          analysis?: Json | null
+          created_at?: string
+          id?: string
+          image_path?: string
+          risk_level?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       test_results: {
         Row: {
           created_at: string
@@ -319,6 +472,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      vaccinations: {
+        Row: {
+          batch_number: string | null
+          created_at: string
+          date_administered: string | null
+          id: string
+          is_completed: boolean | null
+          next_due_date: string | null
+          notes: string | null
+          provider: string | null
+          user_id: string
+          vaccine_name: string
+        }
+        Insert: {
+          batch_number?: string | null
+          created_at?: string
+          date_administered?: string | null
+          id?: string
+          is_completed?: boolean | null
+          next_due_date?: string | null
+          notes?: string | null
+          provider?: string | null
+          user_id: string
+          vaccine_name: string
+        }
+        Update: {
+          batch_number?: string | null
+          created_at?: string
+          date_administered?: string | null
+          id?: string
+          is_completed?: boolean | null
+          next_due_date?: string | null
+          notes?: string | null
+          provider?: string | null
+          user_id?: string
+          vaccine_name?: string
+        }
+        Relationships: []
       }
     }
     Views: {
