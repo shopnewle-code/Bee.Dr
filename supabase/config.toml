@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.predictive-health]
 verify_jwt = false
+
+[functions.symptom-checker]
+verify_jwt = false

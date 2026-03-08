@@ -8,7 +8,7 @@ import {
   Activity, Upload, FileText, LogOut, Plus, Clock, Bot, User,
   Heart, Bell, Scan, TrendingUp, Pill, Shield, ChevronRight, GitCompare,
   Calendar, ShieldAlert, Users, Droplets, HeartPulse, SmilePlus, Target,
-  Syringe, AlertTriangle, ScanEye, Mic, Brain, Watch
+  Syringe, AlertTriangle, ScanEye, Mic, Brain, Watch, Stethoscope
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
@@ -165,6 +165,7 @@ const DashboardPage = () => {
               { icon: ShieldAlert, label: 'Emergency Alerts', desc: 'Critical values', path: '/alerts', gradient: false },
               { icon: Users, label: 'Family Health', desc: 'Track family', path: '/family', gradient: false },
               { icon: Watch, label: 'Wearables', desc: 'Sync devices', path: '/wearables', gradient: false },
+              { icon: Stethoscope, label: 'Symptom Checker', desc: 'AI diagnosis', path: '/symptom-checker', gradient: false },
             ].map(({ icon: Icon, label, desc, path, gradient }, i) => (
               <motion.button key={label}
                 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
