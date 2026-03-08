@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/hooks/use-language';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,7 @@ import {
   Calendar, ShieldAlert, Users, Droplets, HeartPulse, SmilePlus, Target,
   Syringe, AlertTriangle, ScanEye, Mic, Brain, Watch, Stethoscope,
   MapPin, ShoppingCart, Search, FileImage, ClipboardList, Building2,
-  CalendarDays, Zap, Video, ScanLine, Sparkles, ArrowRight
+  CalendarDays, Zap, Video, ScanLine, Sparkles, ArrowRight, Sun, Moon
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
@@ -65,6 +66,7 @@ const services = [
 
 const DashboardPage = () => {
   const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { languageInfo } = useLanguage();
   const [scans, setScans] = useState<Tables<'scan_results'>[]>([]);
@@ -123,6 +125,24 @@ const DashboardPage = () => {
                 <span className="text-sm">{languageInfo.flag}</span>
                 <span className="hidden sm:inline text-muted-foreground">{languageInfo.native}</span>
               </button>
+              <motion.button
+                onClick={toggleTheme}
+                whileTap={{ scale: 0.85 }}
+                className="relative w-8 h-8 rounded-xl glass-subtle flex items-center justify-center hover:bg-white/60 dark:hover:bg-white/10 transition-all overflow-hidden"
+                title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+              >
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={theme}
+                    initial={{ y: -20, opacity: 0, rotate: -90 }}
+                    animate={{ y: 0, opacity: 1, rotate: 0 }}
+                    exit={{ y: 20, opacity: 0, rotate: 90 }}
+                    transition={{ duration: 0.2, ease: 'easeInOut' }}
+                  >
+                    {theme === 'light' ? <Moon className="w-4 h-4 text-foreground" /> : <Sun className="w-4 h-4 text-amber-400" />}
+                  </motion.div>
+                </AnimatePresence>
+              </motion.button>
               <Button variant="ghost" size="icon" onClick={() => navigate('/notifications')} className="relative rounded-xl">
                 <Bell className="w-4 h-4" />
                 <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-destructive animate-pulse" />
