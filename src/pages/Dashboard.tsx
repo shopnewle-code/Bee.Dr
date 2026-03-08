@@ -17,16 +17,19 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const [scans, setScans] = useState<Tables<'scan_results'>[]>([]);
   const [profile, setProfile] = useState<Tables<'profiles'> | null>(null);
+  const [healthProfile, setHealthProfile] = useState<Tables<'health_profiles'> | null>(null);
 
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const [scansRes, profileRes] = await Promise.all([
+      const [scansRes, profileRes, hpRes] = await Promise.all([
         supabase.from('scan_results').select('*').order('created_at', { ascending: false }).limit(5),
         supabase.from('profiles').select('*').eq('user_id', user.id).single(),
+        supabase.from('health_profiles').select('*').eq('user_id', user.id).maybeSingle(),
       ]);
       if (scansRes.data) setScans(scansRes.data);
       if (profileRes.data) setProfile(profileRes.data);
+      if (hpRes.data) setHealthProfile(hpRes.data);
     };
     fetchData();
   }, [user]);
