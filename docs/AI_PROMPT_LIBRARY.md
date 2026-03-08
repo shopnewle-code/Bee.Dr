@@ -632,11 +632,11 @@ Include specific measurements and anatomical landmarks.
 ---
 
 ### P-020: CT Scan Analyzer
-- **Function**: `analyze-imaging` (modality="ct") — future
+- **Function**: `analyze-ct`
 - **Model**: `google/gemini-2.5-flash` (vision)
 - **Type**: System prompt
 - **Output**: Streaming text
-- **Status**: 🔧 PLANNED
+- **Status**: ✅ LIVE
 
 ```
 You are a senior radiologist AI analyzing a CT scan. Provide:
