@@ -134,6 +134,7 @@ const App = () => (
               <Route path="/book-appointment" element={<ProtectedRoute><AIAppointmentBookingPage /></ProtectedRoute>} />
               <Route path="/triage" element={<ProtectedRoute><AITriagePage /></ProtectedRoute>} />
               <Route path="/telemedicine" element={<ProtectedRoute><TelemedicineConsultationPage /></ProtectedRoute>} />
+              <Route path="/ct-scan" element={<ProtectedRoute><CTScanAnalysisPage /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

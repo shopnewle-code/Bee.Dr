@@ -16,7 +16,7 @@ import BottomNav from '@/components/BottomNav';
 interface MedicalImagingProps {
   title: string;
   subtitle: string;
-  modality: 'ecg' | 'xray' | 'mri';
+  modality: 'ecg' | 'xray' | 'mri' | 'ct';
   icon: React.ElementType;
   color: string;
   tips: string[];

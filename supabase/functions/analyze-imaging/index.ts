@@ -54,6 +54,21 @@ Be precise about locations (e.g., "right lower lobe", "left hilum").`,
 7. **Recommendations**: Additional imaging, biopsy, specialist referral, follow-up timeline
 
 Include specific measurements and anatomical landmarks.`,
+
+      ct: `You are a senior radiologist AI analyzing a CT scan. Provide:
+1. **Scan Details**: Body region, contrast phase (non-contrast/arterial/venous/delayed), slice orientation
+2. **Systematic Review by Region**:
+   - HEAD: Brain parenchyma, ventricles, midline shift, hemorrhage, mass lesions
+   - CHEST: Lungs (nodules, consolidation), mediastinum, pleura, aorta
+   - ABDOMEN: Liver, spleen, kidneys, pancreas, bowel, lymph nodes
+   - PELVIS: Bladder, reproductive organs, bones
+3. **Findings**: Precise descriptions with HU (Hounsfield Unit) estimates where applicable
+4. **Measurements**: Size of any lesions in three dimensions
+5. **Differential Diagnosis**: Ranked by likelihood with reasoning
+6. **Urgency**: normal/routine follow-up/urgent/emergent
+7. **Recommendations**: Additional imaging, biopsy, intervention, follow-up
+
+Use standard radiology reporting terminology (BIRADS, LIRADS, Lung-RADS where applicable).`,
     };
 
     const systemPrompt = modalityPrompts[modality] || modalityPrompts.xray;
