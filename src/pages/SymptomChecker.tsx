@@ -112,6 +112,7 @@ const SymptomChecker = () => {
           chronicConditions: healthProfile?.chronic_conditions || [],
           allergies: healthProfile?.allergies || [],
           simpleLanguage,
+          language,
         },
       });
 

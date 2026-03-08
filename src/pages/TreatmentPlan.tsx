@@ -39,6 +39,7 @@ const TreatmentPlan = () => {
   const [generating, setGenerating] = useState(false);
   const [plan, setPlan] = useState('');
   const { simpleLanguage } = useSimpleLanguage();
+  const { language } = useLanguage();
 
   const addSymptom = (s: string) => {
     const trimmed = s.trim();
