@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { getLanguageModifier } from "../_shared/language-modifier.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
