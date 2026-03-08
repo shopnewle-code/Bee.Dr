@@ -58,6 +58,8 @@ const AITriagePage = lazy(() => import("./pages/AITriage"));
 const TelemedicineConsultationPage = lazy(() => import("./pages/TelemedicineConsultation"));
 const CTScanAnalysisPage = lazy(() => import("./pages/CTScanAnalysis"));
 const MelanomaScreenerPage = lazy(() => import("./pages/MelanomaScreener"));
+const DoctorDashboardPage = lazy(() => import("./pages/DoctorDashboard"));
+const HospitalDashboardPage = lazy(() => import("./pages/HospitalDashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
