@@ -66,6 +66,7 @@ const services = [
 
 const DashboardPage = () => {
   const { user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { languageInfo } = useLanguage();
   const [scans, setScans] = useState<Tables<'scan_results'>[]>([]);
