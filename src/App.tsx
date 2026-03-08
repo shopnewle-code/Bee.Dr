@@ -44,6 +44,7 @@ import SymptomCheckerPage from "./pages/SymptomChecker";
 import MedicineScannerPage from "./pages/MedicineScanner";
 import HealthMapPage from "./pages/HealthMap";
 import MedicineMarketplacePage from "./pages/MedicineMarketplace";
+import InvestorDeckPage from "./pages/InvestorDeck";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<IndexRedirect />} />
             <Route path="/pitch" element={<PitchPage />} />
+            <Route path="/investor-deck" element={<InvestorDeckPage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/language" element={<LanguageSelection />} />

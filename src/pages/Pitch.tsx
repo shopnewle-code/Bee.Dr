@@ -472,8 +472,8 @@ const PitchPage = () => {
               <Button size="lg" className="gradient-primary text-primary-foreground shadow-glow" onClick={() => navigate('/auth')}>
                 Try the Product <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
-              <Button size="lg" variant="outline">
-                Request Deck <FileText className="w-4 h-4 ml-2" />
+              <Button size="lg" variant="outline" onClick={() => navigate('/investor-deck')}>
+                View Full Deck <FileText className="w-4 h-4 ml-2" />
               </Button>
             </div>
           </motion.div>
