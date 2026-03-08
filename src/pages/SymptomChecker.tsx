@@ -56,6 +56,7 @@ const SymptomChecker = () => {
   const [profile, setProfile] = useState<any>(null);
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const { simpleLanguage } = useSimpleLanguage();
+  const { language } = useLanguage();
 
   useEffect(() => {
     if (!user) return;
