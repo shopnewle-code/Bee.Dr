@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { symptoms, age, gender, chronicConditions, allergies } = await req.json();
+    const { symptoms, age, gender, chronicConditions, allergies, simpleLanguage = false } = await req.json();
 
     if (!symptoms || !Array.isArray(symptoms) || symptoms.length === 0) {
       return new Response(JSON.stringify({ error: "Please provide at least one symptom" }), {
