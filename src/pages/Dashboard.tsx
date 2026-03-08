@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Activity, Upload, FileText, LogOut, Plus, Clock } from 'lucide-react';
+import { Activity, Upload, FileText, LogOut, Plus, Clock, Bot, User, History } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 
 const DashboardPage = () => {
@@ -17,7 +17,7 @@ const DashboardPage = () => {
     if (!user) return;
     const fetchData = async () => {
       const [scansRes, profileRes] = await Promise.all([
-        supabase.from('scan_results').select('*').order('created_at', { ascending: false }),
+        supabase.from('scan_results').select('*').order('created_at', { ascending: false }).limit(5),
         supabase.from('profiles').select('*').eq('user_id', user.id).single(),
       ]);
       if (scansRes.data) setScans(scansRes.data);
@@ -42,9 +42,11 @@ const DashboardPage = () => {
             <Activity className="w-7 h-7 text-primary" />
             <span className="text-xl font-display font-bold text-foreground">Bee.dr</span>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground hidden sm:block">Hi, {displayName}</span>
-            <Button variant="ghost" size="icon" onClick={handleSignOut}>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/profile')} title="Profile">
+              <User className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleSignOut} title="Sign Out">
               <LogOut className="w-4 h-4" />
             </Button>
           </div>
@@ -53,25 +55,59 @@ const DashboardPage = () => {
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-display font-bold text-foreground mb-2">Your Health Dashboard</h1>
-          <p className="text-muted-foreground mb-8">Upload medical reports for AI-powered analysis</p>
+          <h1 className="text-3xl font-display font-bold text-foreground mb-1">Hi, {displayName} 👋</h1>
+          <p className="text-muted-foreground mb-8">Your health intelligence hub</p>
 
-          {/* Upload CTA */}
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            onClick={() => navigate('/upload')}
-            className="w-full rounded-xl border-2 border-dashed border-primary/30 bg-accent/30 p-8 flex flex-col items-center gap-3 hover:border-primary/60 hover:bg-accent/50 transition-all mb-8"
+          {/* Quick Actions */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+            {[
+              { icon: Plus, label: 'Upload Report', path: '/upload', gradient: true },
+              { icon: Bot, label: 'AI Doctor', path: '/chat', gradient: false },
+              { icon: History, label: 'History', path: '/history', gradient: false },
+              { icon: User, label: 'Profile', path: '/profile', gradient: false },
+            ].map(({ icon: Icon, label, path, gradient }) => (
+              <motion.button
+                key={label}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate(path)}
+                className={`rounded-xl p-4 flex flex-col items-center gap-2 transition-all border ${
+                  gradient
+                    ? 'gradient-primary text-primary-foreground border-transparent shadow-glow'
+                    : 'bg-card border-border hover:border-primary/30 hover:shadow-md text-foreground'
+                }`}
+              >
+                <Icon className="w-6 h-6" />
+                <span className="text-sm font-medium">{label}</span>
+              </motion.button>
+            ))}
+          </div>
+
+          {/* AI Doctor promo */}
+          <motion.div
+            whileHover={{ scale: 1.005 }}
+            onClick={() => navigate('/chat')}
+            className="bg-card border border-border rounded-xl p-5 flex items-center gap-4 mb-8 cursor-pointer hover:border-primary/30 hover:shadow-md transition-all"
           >
-            <div className="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center">
-              <Plus className="w-7 h-7 text-primary-foreground" />
+            <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shrink-0">
+              <Bot className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="text-lg font-display font-semibold text-foreground">Upload New Report</span>
-            <span className="text-sm text-muted-foreground">PDF, image, or photo of your lab results</span>
-          </motion.button>
+            <div className="flex-1">
+              <h3 className="font-display font-semibold text-foreground">AI Doctor Chat</h3>
+              <p className="text-sm text-muted-foreground">Ask questions about your health, lab results, or medications</p>
+            </div>
+            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-accent text-accent-foreground">New</span>
+          </motion.div>
 
           {/* Recent scans */}
-          <h2 className="text-xl font-display font-semibold text-foreground mb-4">Recent Scans</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-display font-semibold text-foreground">Recent Scans</h2>
+            {scans.length > 0 && (
+              <Button variant="ghost" size="sm" onClick={() => navigate('/history')} className="text-primary">
+                View All
+              </Button>
+            )}
+          </div>
           {scans.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
