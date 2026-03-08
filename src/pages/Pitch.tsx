@@ -7,7 +7,8 @@ import {
   Target, DollarSign, Rocket, CheckCircle2, Star, MessageCircle,
   Sparkles, Stethoscope, ShoppingCart, BarChart3, Layers,
   ArrowUpRight, Play, ArrowDown, Database, Server, HardDrive,
-  Cloud, Container, RefreshCw, Building2
+  Cloud, Container, RefreshCw, Building2, Code, Cpu, AlertTriangle,
+  Terminal, Table2, Eye, Microscope
 } from 'lucide-react';
 
 const fadeUp = {
