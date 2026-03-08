@@ -5,11 +5,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
   Activity, ArrowLeft, Send, Bot, User, Sparkles, AlertCircle,
-  Mic, Stethoscope, BookOpen, Pill, HeartPulse
+  Mic, Stethoscope, BookOpen, Pill, HeartPulse, Type
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
 import BottomNav from '@/components/BottomNav';
+import { useSimpleLanguage } from '@/hooks/use-simple-language';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -95,6 +96,7 @@ const ChatPage = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<ChatMode>('general');
+  const { simpleLanguage, toggleSimpleLanguage } = useSimpleLanguage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -135,7 +137,7 @@ const ChatPage = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: [...messages, apiMsg] }),
+        body: JSON.stringify({ messages: [...messages, apiMsg], simpleLanguage }),
       });
 
       if (!resp.ok) {
@@ -226,6 +228,11 @@ const ChatPage = () => {
           </div>
           <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={() => navigate('/voice-doctor')}>
             <Mic className="w-3 h-3" /> Voice
+          </Button>
+          <Button variant={simpleLanguage ? "default" : "outline"} size="sm"
+            className={`text-xs gap-1.5 ${simpleLanguage ? 'gradient-primary text-primary-foreground' : ''}`}
+            onClick={toggleSimpleLanguage} title={simpleLanguage ? 'Simple Language ON' : 'Simple Language OFF'}>
+            <Type className="w-3 h-3" /> {simpleLanguage ? 'Simple' : 'Aₐ'}
           </Button>
         </div>
       </header>

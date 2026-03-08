@@ -2,13 +2,15 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
-  ArrowLeft, Shield, Lock, Download, Trash2, Eye, ToggleLeft, ChevronRight
+  ArrowLeft, Shield, Lock, Download, Trash2, Eye, ChevronRight, Type
 } from 'lucide-react';
+import { useSimpleLanguage } from '@/hooks/use-simple-language';
+import { toast } from 'sonner';
 
 const settings = [
-  { icon: Lock, title: 'Data Encryption', desc: 'All data encrypted with AES-256', toggle: true, enabled: true },
-  { icon: Eye, title: 'Biometric Lock', desc: 'Require fingerprint to open app', toggle: true, enabled: false },
-  { icon: Shield, title: 'Two-Factor Auth', desc: 'Add extra security to your account', toggle: true, enabled: false },
+  { icon: Lock, title: 'Data Encryption', desc: 'All data encrypted with AES-256', toggle: true, enabled: true, key: 'encryption' },
+  { icon: Eye, title: 'Biometric Lock', desc: 'Require fingerprint to open app', toggle: true, enabled: false, key: 'biometric' },
+  { icon: Shield, title: 'Two-Factor Auth', desc: 'Add extra security to your account', toggle: true, enabled: false, key: '2fa' },
 ];
 
 const actions = [
@@ -19,6 +21,7 @@ const actions = [
 
 const SettingsPrivacy = () => {
   const navigate = useNavigate();
+  const { simpleLanguage, toggleSimpleLanguage } = useSimpleLanguage();
 
   return (
     <div className="min-h-screen bg-background">
@@ -33,6 +36,31 @@ const SettingsPrivacy = () => {
       </header>
 
       <main className="container mx-auto px-4 py-6 max-w-lg space-y-6">
+        {/* Accessibility */}
+        <div>
+          <h2 className="text-sm font-display font-semibold text-foreground mb-3">Accessibility</h2>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            className="bg-card border border-border rounded-xl p-4 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shrink-0">
+              <Type className="w-4 h-4 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-foreground text-sm">Simple Language</p>
+              <p className="text-[11px] text-muted-foreground">
+                Use easy words, short sentences, and 🟢🟡🔴 indicators in AI responses
+              </p>
+            </div>
+            <button onClick={() => { toggleSimpleLanguage(); toast.success(simpleLanguage ? 'Simple Language OFF' : 'Simple Language ON'); }}
+              className={`w-10 h-6 rounded-full relative cursor-pointer transition-colors ${
+                simpleLanguage ? 'bg-primary' : 'bg-muted'
+              }`}>
+              <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-card shadow-sm transition-transform ${
+                simpleLanguage ? 'translate-x-4' : 'translate-x-0.5'
+              }`} />
+            </button>
+          </motion.div>
+        </div>
+
         {/* Security Settings */}
         <div>
           <h2 className="text-sm font-display font-semibold text-foreground mb-3">Security</h2>

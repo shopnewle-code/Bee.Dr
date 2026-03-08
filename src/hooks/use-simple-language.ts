@@ -1,0 +1,23 @@
+import { useState, useEffect, useCallback } from 'react';
+
+const STORAGE_KEY = 'beedr-simple-language';
+
+export function useSimpleLanguage() {
+  const [enabled, setEnabled] = useState(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, String(enabled));
+    } catch { /* noop */ }
+  }, [enabled]);
+
+  const toggle = useCallback(() => setEnabled(prev => !prev), []);
+
+  return { simpleLanguage: enabled, setSimpleLanguage: setEnabled, toggleSimpleLanguage: toggle };
+}
