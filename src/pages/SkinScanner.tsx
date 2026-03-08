@@ -18,6 +18,7 @@ import ReactMarkdown from 'react-markdown';
 /* ─── Single Scan Tab ─── */
 const ScanTab = () => {
   const { user } = useAuth();
+  const { language } = useLanguage();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
