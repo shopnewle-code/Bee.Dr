@@ -44,6 +44,7 @@ const ProfilePage = () => {
   };
 
   const menuItems = [
+    { icon: HeartPulse, label: 'Health Profile', path: '/health-profile', desc: 'Blood group, allergies' },
     { icon: Crown, label: 'Subscription', path: '/subscription', desc: 'Free Plan' },
     { icon: Globe, label: 'Language', path: '/language', desc: 'English' },
     { icon: Shield, label: 'Privacy & Security', path: '/settings', desc: 'Data protection' },
