@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   Activity, Upload, FileText, LogOut, Plus, Clock, Bot, User,
   Heart, Bell, Scan, TrendingUp, Pill, Shield, ChevronRight, GitCompare,
-  Calendar, ShieldAlert, Users
+  Calendar, ShieldAlert, Users, Droplets, HeartPulse
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
@@ -17,16 +17,19 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const [scans, setScans] = useState<Tables<'scan_results'>[]>([]);
   const [profile, setProfile] = useState<Tables<'profiles'> | null>(null);
+  const [healthProfile, setHealthProfile] = useState<Tables<'health_profiles'> | null>(null);
 
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const [scansRes, profileRes] = await Promise.all([
+      const [scansRes, profileRes, hpRes] = await Promise.all([
         supabase.from('scan_results').select('*').order('created_at', { ascending: false }).limit(5),
         supabase.from('profiles').select('*').eq('user_id', user.id).single(),
+        supabase.from('health_profiles').select('*').eq('user_id', user.id).maybeSingle(),
       ]);
       if (scansRes.data) setScans(scansRes.data);
       if (profileRes.data) setProfile(profileRes.data);
+      if (hpRes.data) setHealthProfile(hpRes.data);
     };
     fetchData();
   }, [user]);
@@ -88,6 +91,49 @@ const DashboardPage = () => {
               </div>
             </div>
           </div>
+        </motion.div>
+
+        {/* Health Profile Summary */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
+          onClick={() => navigate('/health-profile')}
+          className="bg-card border border-border rounded-xl p-4 cursor-pointer hover:border-primary/30 hover:shadow-md transition-all">
+          {healthProfile ? (() => {
+            const bmi = healthProfile.height_cm && healthProfile.weight_kg
+              ? (Number(healthProfile.weight_kg) / Math.pow(Number(healthProfile.height_cm) / 100, 2)).toFixed(1)
+              : null;
+            const allergyCount = healthProfile.allergies?.length || 0;
+            return (
+              <div className="flex items-center gap-4">
+                <div className="grid grid-cols-3 gap-3 flex-1">
+                  <div className="text-center">
+                    <Droplets className="w-4 h-4 text-primary mx-auto mb-1" />
+                    <p className="text-lg font-bold text-foreground">{healthProfile.blood_group || '—'}</p>
+                    <p className="text-[10px] text-muted-foreground">Blood Group</p>
+                  </div>
+                  <div className="text-center">
+                    <HeartPulse className="w-4 h-4 text-primary mx-auto mb-1" />
+                    <p className="text-lg font-bold text-foreground">{bmi || '—'}</p>
+                    <p className="text-[10px] text-muted-foreground">BMI</p>
+                  </div>
+                  <div className="text-center">
+                    <Shield className="w-4 h-4 text-destructive mx-auto mb-1" />
+                    <p className="text-lg font-bold text-foreground">{allergyCount}</p>
+                    <p className="text-[10px] text-muted-foreground">Allergies</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+              </div>
+            );
+          })() : (
+            <div className="flex items-center gap-3">
+              <HeartPulse className="w-5 h-5 text-primary" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">Set up Health Profile</p>
+                <p className="text-xs text-muted-foreground">Add blood group, height, weight & allergies</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </div>
+          )}
         </motion.div>
 
         {/* Main Actions */}
