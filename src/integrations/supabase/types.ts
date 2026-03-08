@@ -49,6 +49,53 @@ export type Database = {
           },
         ]
       }
+      consultations: {
+        Row: {
+          ai_summary: string | null
+          appointment_time: string | null
+          consultation_type: string
+          created_at: string
+          doctor_id: string
+          id: string
+          notes: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          appointment_time?: string | null
+          consultation_type?: string
+          created_at?: string
+          doctor_id: string
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_summary?: string | null
+          appointment_time?: string | null
+          consultation_type?: string
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultations_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_checkins: {
         Row: {
           created_at: string
@@ -94,6 +141,51 @@ export type Database = {
           symptoms?: string[] | null
           user_id?: string
           water_glasses?: number | null
+        }
+        Relationships: []
+      }
+      doctors: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          consultation_fee: number | null
+          created_at: string
+          experience_years: number | null
+          id: string
+          is_available: boolean | null
+          languages: string[] | null
+          location: string | null
+          name: string
+          rating: number | null
+          specialization: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          consultation_fee?: number | null
+          created_at?: string
+          experience_years?: number | null
+          id?: string
+          is_available?: boolean | null
+          languages?: string[] | null
+          location?: string | null
+          name: string
+          rating?: number | null
+          specialization: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          consultation_fee?: number | null
+          created_at?: string
+          experience_years?: number | null
+          id?: string
+          is_available?: boolean | null
+          languages?: string[] | null
+          location?: string | null
+          name?: string
+          rating?: number | null
+          specialization?: string
         }
         Relationships: []
       }
@@ -248,34 +340,64 @@ export type Database = {
       }
       health_profiles: {
         Row: {
+          address: string | null
+          alcohol: string | null
           allergies: string[] | null
           blood_group: string | null
           chronic_conditions: string[] | null
+          city: string | null
+          country: string | null
           created_at: string
+          diet_type: string | null
+          exercise_frequency: string | null
+          family_disease_history: string[] | null
           height_cm: number | null
           id: string
+          phone: string | null
+          sleep_pattern: string | null
+          smoking: string | null
           updated_at: string
           user_id: string
           weight_kg: number | null
         }
         Insert: {
+          address?: string | null
+          alcohol?: string | null
           allergies?: string[] | null
           blood_group?: string | null
           chronic_conditions?: string[] | null
+          city?: string | null
+          country?: string | null
           created_at?: string
+          diet_type?: string | null
+          exercise_frequency?: string | null
+          family_disease_history?: string[] | null
           height_cm?: number | null
           id?: string
+          phone?: string | null
+          sleep_pattern?: string | null
+          smoking?: string | null
           updated_at?: string
           user_id: string
           weight_kg?: number | null
         }
         Update: {
+          address?: string | null
+          alcohol?: string | null
           allergies?: string[] | null
           blood_group?: string | null
           chronic_conditions?: string[] | null
+          city?: string | null
+          country?: string | null
           created_at?: string
+          diet_type?: string | null
+          exercise_frequency?: string | null
+          family_disease_history?: string[] | null
           height_cm?: number | null
           id?: string
+          phone?: string | null
+          sleep_pattern?: string | null
+          smoking?: string | null
           updated_at?: string
           user_id?: string
           weight_kg?: number | null
