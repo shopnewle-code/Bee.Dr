@@ -26,7 +26,7 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are a dermatological AI assistant for the Bee.dr health platform. Analyze skin condition images and provide preliminary assessments.
+            content: `${langModifier}You are a dermatological AI assistant for the Bee.dr health platform. Analyze skin condition images and provide preliminary assessments.
 
 Return a JSON object with this EXACT structure:
 {
