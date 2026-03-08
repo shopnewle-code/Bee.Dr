@@ -6,7 +6,8 @@ import {
   FileText, Bot, Scan, Heart, Pill, ChevronRight, ArrowRight,
   Target, DollarSign, Rocket, CheckCircle2, Star, MessageCircle,
   Sparkles, Stethoscope, ShoppingCart, BarChart3, Layers,
-  ArrowUpRight, Play
+  ArrowUpRight, Play, ArrowDown, Database, Server, HardDrive,
+  Cloud, Container, RefreshCw, Building2
 } from 'lucide-react';
 
 const fadeUp = {
