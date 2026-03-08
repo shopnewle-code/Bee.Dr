@@ -17,6 +17,7 @@ import HistoryPage from "./pages/History";
 import PitchPage from "./pages/Pitch";
 import LanguageSelection from "./pages/LanguageSelection";
 import HealthTrends from "./pages/HealthTrends";
+import ReportComparison from "./pages/ReportComparison";
 import MedicationTracker from "./pages/MedicationTracker";
 import NotificationsPage from "./pages/Notifications";
 import SubscriptionPage from "./pages/Subscription";
