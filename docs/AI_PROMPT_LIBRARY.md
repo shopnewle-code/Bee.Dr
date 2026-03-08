@@ -1450,7 +1450,7 @@ Return:
 - **Model**: `google/gemini-2.5-flash` (vision)
 - **Type**: System prompt
 - **Output**: JSON
-- **Status**: 🔧 PLANNED
+- **Status**: ✅ LIVE
 
 ```
 Perform an ABCDE assessment on this skin lesion image for melanoma screening.

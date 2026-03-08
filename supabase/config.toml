@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.skin-progress]
 verify_jwt = false
+
+[functions.analyze-melanoma]
+verify_jwt = false
