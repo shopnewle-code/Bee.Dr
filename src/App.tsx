@@ -46,6 +46,10 @@ import HealthMapPage from "./pages/HealthMap";
 import MedicineMarketplacePage from "./pages/MedicineMarketplace";
 import InvestorDeckPage from "./pages/InvestorDeck";
 import PharmacyDashboardPage from "./pages/PharmacyDashboard";
+import ECGInterpreterPage from "./pages/ECGInterpreter";
+import XrayAnalysisPage from "./pages/XrayAnalysis";
+import MRIAnalysisPage from "./pages/MRIAnalysis";
+import TreatmentPlanPage from "./pages/TreatmentPlan";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
