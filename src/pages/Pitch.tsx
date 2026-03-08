@@ -7,7 +7,8 @@ import {
   Target, DollarSign, Rocket, CheckCircle2, Star, MessageCircle,
   Sparkles, Stethoscope, ShoppingCart, BarChart3, Layers,
   ArrowUpRight, Play, ArrowDown, Database, Server, HardDrive,
-  Cloud, Container, RefreshCw, Building2
+  Cloud, Container, RefreshCw, Building2, Code, Cpu, AlertTriangle,
+  Terminal, Table2, Eye, Microscope
 } from 'lucide-react';
 
 const fadeUp = {
@@ -271,6 +272,277 @@ const PitchPage = () => {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Document Intelligence System */}
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-secondary/[0.02]" />
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-secondary border border-secondary/20 mb-4">
+              <Eye className="w-3 h-3" /> Deep Dive
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Document Intelligence System</h2>
+            <p className="text-muted-foreground">Extract structured data from any medical report</p>
+          </motion.div>
+
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* Pipeline */}
+            <motion.div {...fadeUp} className="glass-card p-6">
+              <h4 className="font-display font-semibold text-foreground mb-4 text-center">Extraction Pipeline</h4>
+              <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
+                {[
+                  { label: 'PDF / Image', icon: FileText },
+                  { label: 'Layout Detection', icon: Eye },
+                  { label: 'OCR', icon: Scan },
+                  { label: 'Table Extraction', icon: Table2 },
+                  { label: 'Structured Lab Data', icon: Database },
+                ].map(({ label, icon: Icon }, i, arr) => (
+                  <span key={label} className="flex items-center gap-2">
+                    <span className="glass-subtle border border-secondary/20 text-foreground font-medium px-3 py-2 rounded-xl flex items-center gap-1.5">
+                      <Icon className="w-3 h-3 text-secondary" /> {label}
+                    </span>
+                    {i < arr.length - 1 && <ChevronRight className="w-3 h-3 text-secondary shrink-0" />}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Output Example */}
+            <motion.div {...fadeUp} className="glass-card p-6">
+              <h4 className="font-display font-semibold text-foreground mb-4">Output Example</h4>
+              <div className="bg-background/50 rounded-xl p-4 font-mono text-xs text-foreground space-y-1 border border-white/10">
+                <p><span className="text-primary">Hemoglobin:</span> 10 g/dL</p>
+                <p><span className="text-muted-foreground">Normal Range:</span> 13–17</p>
+                <p><span className="text-destructive">Status:</span> Low ⚠️</p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Medical NLP Layer */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-primary border border-primary/20 mb-4">
+              <Cpu className="w-3 h-3" /> NLP Engine
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Medical NLP Layer</h2>
+            <p className="text-muted-foreground">Transform raw text into structured medical entities</p>
+          </motion.div>
+
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* NLP Tasks */}
+            <motion.div {...fadeUp} className="grid sm:grid-cols-2 gap-4">
+              {[
+                { icon: Scan, title: 'Test Identification', desc: 'Recognize lab test names from messy report text' },
+                { icon: BarChart3, title: 'Value Extraction', desc: 'Parse numerical values, units, and reference ranges' },
+                { icon: AlertTriangle, title: 'Disease Mapping', desc: 'Map abnormal values to potential conditions' },
+                { icon: Pill, title: 'Medicine Recognition', desc: 'Identify drug names, dosages, and formulations' },
+              ].map(({ icon: Icon, title, desc }, i) => (
+                <motion.div key={title} {...fadeUp} transition={{ delay: i * 0.08 }}
+                  className="glass-card p-5 group hover:shadow-glow transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mb-3 group-hover:bg-primary/15 transition-colors">
+                    <Icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <h4 className="font-display font-semibold text-foreground text-sm mb-1">{title}</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Transformation Example */}
+            <motion.div {...fadeUp} className="glass-card p-6">
+              <h4 className="font-display font-semibold text-foreground mb-4 text-center">Entity Extraction Example</h4>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="bg-muted/10 rounded-xl p-4 border border-white/10">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Raw Input</p>
+                  <p className="font-mono text-sm text-foreground">Hb: 10 g/dl</p>
+                </div>
+                <div className="bg-primary/5 rounded-xl p-4 border border-primary/20">
+                  <p className="text-[10px] uppercase tracking-wider text-primary font-semibold mb-2">Structured Output</p>
+                  <div className="font-mono text-xs text-foreground space-y-0.5">
+                    <p>{`{`}</p>
+                    <p className="pl-3"><span className="text-primary">"test_name"</span>: "Hemoglobin",</p>
+                    <p className="pl-3"><span className="text-primary">"value"</span>: 10,</p>
+                    <p className="pl-3"><span className="text-primary">"unit"</span>: "g/dL",</p>
+                    <p className="pl-3"><span className="text-destructive">"status"</span>: "Low"</p>
+                    <p>{`}`}</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Risk Prediction Engine */}
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-primary/[0.02]" />
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-amber-500 border border-amber-500/20 mb-4">
+              <TrendingUp className="w-3 h-3" /> ML Models
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Risk Prediction Engine</h2>
+            <p className="text-muted-foreground">ML models predict disease risks from medical data</p>
+          </motion.div>
+
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* Input Variables */}
+            <motion.div {...fadeUp} className="glass-card p-6">
+              <h4 className="font-display font-semibold text-foreground mb-4">Input Variables</h4>
+              <div className="flex flex-wrap gap-2">
+                {['Age', 'Blood Sugar', 'Cholesterol', 'BMI', 'Blood Pressure', 'Hemoglobin', 'Creatinine', 'Thyroid Levels'].map((v) => (
+                  <span key={v} className="glass-subtle border border-amber-500/20 text-foreground text-xs font-medium px-3 py-1.5 rounded-lg">{v}</span>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Output */}
+            <motion.div {...fadeUp} className="grid sm:grid-cols-2 gap-4">
+              <div className="glass-card p-5">
+                <h4 className="font-display font-semibold text-foreground text-sm mb-3">Prediction Output</h4>
+                <div className="space-y-3">
+                  {[
+                    { condition: 'Heart Disease Risk', pct: '24%', color: 'bg-amber-500', width: '24%' },
+                    { condition: 'Diabetes Risk', pct: '17%', color: 'bg-primary', width: '17%' },
+                    { condition: 'Anemia Risk', pct: '42%', color: 'bg-destructive', width: '42%' },
+                  ].map(({ condition, pct, color, width }) => (
+                    <div key={condition}>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-foreground font-medium">{condition}</span>
+                        <span className="text-muted-foreground">{pct}</span>
+                      </div>
+                      <div className="h-2 bg-muted/20 rounded-full overflow-hidden">
+                        <div className={`h-full ${color} rounded-full`} style={{ width }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="glass-card p-5">
+                <h4 className="font-display font-semibold text-foreground text-sm mb-3">Algorithms Used</h4>
+                <ul className="space-y-2">
+                  {[
+                    { name: 'Gradient Boosting (XGBoost)', desc: 'Ensemble scoring for multi-factor risk' },
+                    { name: 'Random Forest', desc: 'Feature importance ranking' },
+                    { name: 'Neural Networks', desc: 'Complex pattern recognition' },
+                    { name: 'Logistic Regression', desc: 'Baseline probability estimation' },
+                  ].map(({ name, desc }) => (
+                    <li key={name} className="flex items-start gap-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-semibold text-foreground">{name}</p>
+                        <p className="text-[10px] text-muted-foreground">{desc}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Prompt System */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-primary border border-primary/20 mb-4">
+              <Terminal className="w-3 h-3" /> Production AI
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">AI Prompt System</h2>
+            <p className="text-muted-foreground">Specialized prompts powering each AI module</p>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 gap-4 max-w-4xl mx-auto">
+            {[
+              {
+                title: 'Report Explanation',
+                icon: FileText,
+                color: 'from-primary to-blue-glow',
+                tasks: ['Identify abnormal values', 'Explain what each test means', 'Suggest possible causes', 'Recommend lifestyle improvements'],
+              },
+              {
+                title: 'AI Doctor Chat',
+                icon: Bot,
+                color: 'from-secondary to-teal',
+                tasks: ['Use patient health profile', 'Reference medical reports', 'Apply verified medical knowledge', 'Context-aware follow-ups'],
+              },
+              {
+                title: 'Medicine Explanation',
+                icon: Pill,
+                color: 'from-amber-400 to-orange-500',
+                tasks: ['Usage & indications', 'Dosage guidelines', 'Side effects & interactions', 'Precautions & alternatives'],
+              },
+              {
+                title: 'Risk Prediction',
+                icon: TrendingUp,
+                color: 'from-emerald-400 to-green-600',
+                tasks: ['Analyze medical data patterns', 'Calculate disease probability', 'Temporal trend analysis', 'Preventive recommendations'],
+              },
+            ].map(({ title, icon: Icon, color, tasks }, i) => (
+              <motion.div key={title} {...fadeUp} transition={{ delay: i * 0.08 }}
+                className="glass-card p-6 relative overflow-hidden">
+                <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${color} opacity-10 rounded-full -translate-y-8 translate-x-8`} />
+                <div className="flex items-center gap-3 mb-4 relative z-10">
+                  <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center">
+                    <Icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Prompt</p>
+                    <h4 className="font-display font-semibold text-foreground text-sm">{title}</h4>
+                  </div>
+                </div>
+                <ul className="space-y-2 relative z-10">
+                  {tasks.map(task => (
+                    <li key={task} className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Code className="w-3 h-3 text-primary shrink-0" /> {task}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Health Insights Analytics */}
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-primary/[0.02]" />
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div {...fadeUp} className="text-center mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-subtle text-xs font-semibold text-primary border border-primary/20 mb-4">
+              <Microscope className="w-3 h-3" /> Health Data
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-foreground mb-3">Health Insights Analytics</h2>
+            <p className="text-muted-foreground">Top findings across the platform</p>
+          </motion.div>
+
+          <motion.div {...fadeUp} className="glass-card p-6 max-w-2xl mx-auto">
+            <h4 className="font-display font-semibold text-foreground mb-4 text-center">Most Common Findings</h4>
+            <div className="space-y-3">
+              {[
+                { condition: 'High Cholesterol', pct: '32%', width: '100%', color: 'from-destructive to-red-400' },
+                { condition: 'Vitamin D Deficiency', pct: '28%', width: '87%', color: 'from-amber-500 to-orange-400' },
+                { condition: 'Anemia', pct: '22%', width: '69%', color: 'from-primary to-blue-glow' },
+                { condition: 'Pre-Diabetes', pct: '18%', width: '56%', color: 'from-secondary to-teal' },
+                { condition: 'Thyroid Imbalance', pct: '12%', width: '38%', color: 'from-emerald-400 to-green-500' },
+              ].map(({ condition, pct, width, color }) => (
+                <div key={condition} className="flex items-center gap-3">
+                  <span className="text-xs text-foreground font-medium w-40 shrink-0">{condition}</span>
+                  <div className="flex-1 h-6 bg-muted/20 rounded-full overflow-hidden">
+                    <div className={`h-full bg-gradient-to-r ${color} rounded-full flex items-center justify-end pr-2`} style={{ width }}>
+                      <span className="text-[10px] font-bold text-white">{pct}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
