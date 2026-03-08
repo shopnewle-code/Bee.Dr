@@ -96,7 +96,7 @@ const DashboardPage = () => {
               { icon: Upload, label: 'Upload Report', desc: 'PDF or Photo', path: '/upload', gradient: true },
               { icon: Scan, label: 'Scan Prescription', desc: 'Camera OCR', path: '/upload', gradient: false },
               { icon: Bot, label: 'AI Doctor Chat', desc: 'Ask anything', path: '/chat', gradient: false },
-              { icon: TrendingUp, label: 'Health Insights', desc: 'Trends & tips', path: '/history', gradient: false },
+              { icon: TrendingUp, label: 'Health Trends', desc: 'Track biomarkers', path: '/trends', gradient: false },
             ].map(({ icon: Icon, label, desc, path, gradient }, i) => (
               <motion.button key={label}
                 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
