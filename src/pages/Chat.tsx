@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   Activity, ArrowLeft, Send, Bot, User, Sparkles, AlertCircle,
   Mic, Stethoscope, BookOpen, Pill, HeartPulse, Type,
-  Image, X, History, Plus, Trash2, Bookmark
+  Image, X, History, Plus, Trash2, Bookmark, GitCompareArrows
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSimpleLanguage } from '@/hooks/use-simple-language';
@@ -473,6 +473,9 @@ const ChatPage = () => {
             </SheetContent>
           </Sheet>
 
+          <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={() => navigate('/chat-compare')}>
+            <GitCompareArrows className="w-3 h-3" /> Compare
+          </Button>
           <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={() => navigate('/voice-doctor')}>
             <Mic className="w-3 h-3" /> Voice
           </Button>
