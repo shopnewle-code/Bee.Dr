@@ -83,6 +83,53 @@ For general/casual/non-medical queries (greetings, thanks, etc.), return plain t
 
 CRITICAL: For ANY health or medical question, you MUST use the JSON format. Only use plain text for truly non-medical conversation.`;
 
+// Helper: convert Supabase storage URLs to base64 data URIs
+async function imageUrlToBase64(url: string): Promise<string> {
+  const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+  const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  
+  // Only process Supabase storage URLs
+  if (SUPABASE_URL && url.startsWith(SUPABASE_URL)) {
+    const storagePath = url.replace(`${SUPABASE_URL}/storage/v1/object/public/`, "");
+    const privateUrl = `${SUPABASE_URL}/storage/v1/object/${storagePath}`;
+    const resp = await fetch(privateUrl, {
+      headers: { Authorization: `Bearer ${SERVICE_ROLE_KEY}` },
+    });
+    if (resp.ok) {
+      const buffer = await resp.arrayBuffer();
+      const uint8 = new Uint8Array(buffer);
+      let binary = "";
+      for (let i = 0; i < uint8.length; i++) binary += String.fromCharCode(uint8[i]);
+      const base64 = btoa(binary);
+      const contentType = resp.headers.get("content-type") || "image/jpeg";
+      return `data:${contentType};base64,${base64}`;
+    }
+  }
+  return url; // fallback to original URL
+}
+
+// Helper: process messages to convert image URLs to base64
+async function processMessages(messages: any[]): Promise<any[]> {
+  const processed = [];
+  for (const msg of messages) {
+    if (Array.isArray(msg.content)) {
+      const newContent = [];
+      for (const part of msg.content) {
+        if (part.type === "image_url" && part.image_url?.url) {
+          const dataUri = await imageUrlToBase64(part.image_url.url);
+          newContent.push({ type: "image_url", image_url: { url: dataUri } });
+        } else {
+          newContent.push(part);
+        }
+      }
+      processed.push({ ...msg, content: newContent });
+    } else {
+      processed.push(msg);
+    }
+  }
+  return processed;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -94,6 +141,9 @@ serve(async (req) => {
     const langModifier = getLanguageModifier(language);
     const systemContent = (simpleLanguage ? SIMPLE_LANGUAGE_MODIFIER : "") + langModifier + BASE_SYSTEM_PROMPT;
 
+    // Convert any Supabase storage image URLs to base64
+    const processedMessages = await processMessages(messages);
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -104,7 +154,7 @@ serve(async (req) => {
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemContent },
-          ...messages,
+          ...processedMessages,
         ],
         stream: true,
       }),
