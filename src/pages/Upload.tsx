@@ -22,12 +22,54 @@ interface UploadFile {
 const MAX_FILES = 10;
 const MAX_SIZE = 10 * 1024 * 1024;
 
-function detectReportType(name: string): string {
-  const n = name.toLowerCase();
-  if (/blood|cbc|hemoglobin|hematology|wbc|rbc|platelet/.test(n)) return 'blood_test';
-  if (/mri|xray|x-ray|ct|scan|radiology|ultrasound/.test(n)) return 'radiology';
-  if (/prescription|rx|presc/.test(n)) return 'prescription';
-  return 'general';
+// AI-powered report type detection
+async function detectReportTypeWithAI(file: File): Promise<{ reportType: string; confidence: number }> {
+  try {
+    let imageBase64: string | null = null;
+    
+    // Convert image to base64 for vision analysis
+    if (file.type.startsWith('image/')) {
+      imageBase64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const { data, error } = await supabase.functions.invoke('detect-report-type', {
+      body: {
+        fileName: file.name,
+        fileType: file.type,
+        imageBase64,
+      },
+    });
+
+    if (error) throw error;
+    
+    return {
+      reportType: data.reportType || 'general',
+      confidence: data.confidence || 0.5,
+    };
+  } catch (err) {
+    console.error('AI detection failed:', err);
+    // Fallback to simple detection
+    return detectReportTypeFallback(file.name);
+  }
+}
+
+// Fallback filename-based detection
+function detectReportTypeFallback(filename: string): { reportType: string; confidence: number } {
+  const n = filename.toLowerCase();
+  if (/blood|cbc|hemoglobin|hematology|wbc|rbc|platelet/.test(n)) return { reportType: 'blood_test', confidence: 0.7 };
+  if (/mri|xray|x-ray|ct|scan|radiology|ultrasound/.test(n)) return { reportType: 'radiology', confidence: 0.7 };
+  if (/prescription|rx|presc/.test(n)) return { reportType: 'prescription', confidence: 0.7 };
+  if (/biopsy|pathology|cytology/.test(n)) return { reportType: 'pathology', confidence: 0.7 };
+  if (/ecg|ekg|echo|cardiac|heart/.test(n)) return { reportType: 'cardiology', confidence: 0.7 };
+  return { reportType: 'general', confidence: 0.5 };
 }
 
 function reportTypeLabel(type: string) {
@@ -35,6 +77,8 @@ function reportTypeLabel(type: string) {
     blood_test: '🩸 Blood Test',
     radiology: '📡 Radiology',
     prescription: '💊 Prescription',
+    pathology: '🔬 Pathology',
+    cardiology: '❤️ Cardiology',
     general: '📄 General',
   };
   return map[type] || '📄 General';
