@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
   Activity, Upload, FileText, LogOut, Clock, Bot, User,
-  Heart, Bell, Scan, TrendingUp, Pill, Shield, ChevronRight, GitCompare,
+  Heart, Bell, Scan, TrendingUp, Pill, Shield, ChevronRight, GitCompare, GitCompareArrows,
   Calendar, ShieldAlert, Users, Droplets, HeartPulse, SmilePlus, Target,
   Syringe, AlertTriangle, ScanEye, Mic, Brain, Watch, Stethoscope,
   MapPin, ShoppingCart, Search, FileImage, ClipboardList, Building2,
@@ -42,6 +42,7 @@ const aiFeatures = [
 const medicalTools = [
   { icon: TrendingUp, label: 'Health Trends', path: '/trends' },
   { icon: GitCompare, label: 'Compare Reports', path: '/compare' },
+  { icon: GitCompareArrows, label: 'Compare Responses', path: '/chat-compare' },
   { icon: Calendar, label: 'Timeline', path: '/timeline' },
   { icon: Scan, label: 'Prescription Scan', path: '/prescription' },
   { icon: Heart, label: 'ECG Interpreter', path: '/ecg' },
