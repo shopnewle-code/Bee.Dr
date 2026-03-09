@@ -105,7 +105,7 @@ const ProcessingPage = () => {
           let extractedData = null;
           try {
             const { data: extData, error: extErr } = await supabase.functions.invoke('extract-medical-values', {
-              body: { reportText: JSON.stringify({ file_name: file.file_name }), reportType, fileName: file.file_name },
+              body: { reportText: ocrText || JSON.stringify({ file_name: file.file_name }), reportType, fileName: file.file_name },
             });
             if (!extErr && extData?.extracted) {
               extractedData = extData.extracted;
