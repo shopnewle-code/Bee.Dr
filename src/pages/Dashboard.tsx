@@ -42,6 +42,7 @@ const aiFeatures = [
 const medicalTools = [
   { icon: TrendingUp, label: 'Health Trends', path: '/trends' },
   { icon: GitCompare, label: 'Compare Reports', path: '/compare' },
+  { icon: GitCompareArrows, label: 'Compare Responses', path: '/chat-compare' },
   { icon: Calendar, label: 'Timeline', path: '/timeline' },
   { icon: Scan, label: 'Prescription Scan', path: '/prescription' },
   { icon: Heart, label: 'ECG Interpreter', path: '/ecg' },
