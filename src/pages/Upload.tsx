@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Activity, Upload, FileImage, FileText, X, ArrowLeft, Image, File, Eye } from 'lucide-react';
+import { Activity, Upload, FileImage, FileText, X, ArrowLeft, Image, File, Eye, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface UploadFile {
@@ -15,17 +15,61 @@ interface UploadFile {
   progress: number;
   status: 'pending' | 'uploading' | 'done' | 'error';
   reportType: string;
+  aiDetecting?: boolean;
+  aiConfidence?: number;
 }
 
 const MAX_FILES = 10;
 const MAX_SIZE = 10 * 1024 * 1024;
 
-function detectReportType(name: string): string {
-  const n = name.toLowerCase();
-  if (/blood|cbc|hemoglobin|hematology|wbc|rbc|platelet/.test(n)) return 'blood_test';
-  if (/mri|xray|x-ray|ct|scan|radiology|ultrasound/.test(n)) return 'radiology';
-  if (/prescription|rx|presc/.test(n)) return 'prescription';
-  return 'general';
+// AI-powered report type detection
+async function detectReportTypeWithAI(file: File): Promise<{ reportType: string; confidence: number }> {
+  try {
+    let imageBase64: string | null = null;
+    
+    // Convert image to base64 for vision analysis
+    if (file.type.startsWith('image/')) {
+      imageBase64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const { data, error } = await supabase.functions.invoke('detect-report-type', {
+      body: {
+        fileName: file.name,
+        fileType: file.type,
+        imageBase64,
+      },
+    });
+
+    if (error) throw error;
+    
+    return {
+      reportType: data.reportType || 'general',
+      confidence: data.confidence || 0.5,
+    };
+  } catch (err) {
+    console.error('AI detection failed:', err);
+    // Fallback to simple detection
+    return detectReportTypeFallback(file.name);
+  }
+}
+
+// Fallback filename-based detection
+function detectReportTypeFallback(filename: string): { reportType: string; confidence: number } {
+  const n = filename.toLowerCase();
+  if (/blood|cbc|hemoglobin|hematology|wbc|rbc|platelet/.test(n)) return { reportType: 'blood_test', confidence: 0.7 };
+  if (/mri|xray|x-ray|ct|scan|radiology|ultrasound/.test(n)) return { reportType: 'radiology', confidence: 0.7 };
+  if (/prescription|rx|presc/.test(n)) return { reportType: 'prescription', confidence: 0.7 };
+  if (/biopsy|pathology|cytology/.test(n)) return { reportType: 'pathology', confidence: 0.7 };
+  if (/ecg|ekg|echo|cardiac|heart/.test(n)) return { reportType: 'cardiology', confidence: 0.7 };
+  return { reportType: 'general', confidence: 0.5 };
 }
 
 function reportTypeLabel(type: string) {
@@ -33,6 +77,8 @@ function reportTypeLabel(type: string) {
     blood_test: '🩸 Blood Test',
     radiology: '📡 Radiology',
     prescription: '💊 Prescription',
+    pathology: '🔬 Pathology',
+    cardiology: '❤️ Cardiology',
     general: '📄 General',
   };
   return map[type] || '📄 General';
@@ -81,9 +127,35 @@ const UploadPage = () => {
             preview,
             progress: 0,
             status: 'pending' as const,
-            reportType: detectReportType(f.name),
+            reportType: 'general', // Will be updated by AI
+            aiDetecting: true,
+            aiConfidence: 0,
           };
         });
+
+      // Start AI detection for each file
+      mapped.forEach(async (mappedFile) => {
+        try {
+          const { reportType, confidence } = await detectReportTypeWithAI(mappedFile.file);
+          
+          setFiles(prevFiles => 
+            prevFiles.map(f => 
+              f.id === mappedFile.id 
+                ? { ...f, reportType, aiConfidence: confidence, aiDetecting: false }
+                : f
+            )
+          );
+        } catch (err) {
+          console.error('AI detection error:', err);
+          setFiles(prevFiles => 
+            prevFiles.map(f => 
+              f.id === mappedFile.id 
+                ? { ...f, aiDetecting: false, reportType: 'general', aiConfidence: 0.5 }
+                : f
+            )
+          );
+        }
+      });
 
       return [...prev, ...mapped];
     });
@@ -261,14 +333,31 @@ const UploadPage = () => {
                         {/* File Info */}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-foreground truncate">{uf.file.name}</p>
+                        <div className="flex items-center gap-3">
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">
                               {(uf.file.size / 1024 / 1024).toFixed(1)} MB
                             </span>
-                            <span className="text-xs px-1.5 py-0.5 rounded bg-accent text-accent-foreground">
-                              {reportTypeLabel(uf.reportType)}
-                            </span>
+                            <div className="flex items-center gap-1">
+                              {uf.aiDetecting ? (
+                                <>
+                                  <Loader2 className="w-3 h-3 text-primary animate-spin" />
+                                  <span className="text-xs text-primary">Detecting...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="w-3 h-3 text-primary" />
+                                  <span className="text-xs px-1.5 py-0.5 rounded bg-accent text-accent-foreground">
+                                    {reportTypeLabel(uf.reportType)}
+                                  </span>
+                                  {uf.aiConfidence && uf.aiConfidence > 0.8 && (
+                                    <span className="text-xs text-success">✓</span>
+                                  )}
+                                </>
+                              )}
+                            </div>
                           </div>
+                        </div>
                         </div>
 
                         {/* Status / Remove */}
