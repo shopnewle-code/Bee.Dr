@@ -75,10 +75,17 @@ function detectReportTypeFallback(filename: string): { reportType: string; confi
 function reportTypeLabel(type: string) {
   const map: Record<string, string> = {
     blood_test: '🩸 Blood Test',
+    ncv_emg: '🧠 NCV/EMG',
+    ecg: '❤️ ECG',
+    mri: '🧲 MRI',
+    ct_scan: '📡 CT Scan',
+    xray: '📷 X-ray',
     radiology: '📡 Radiology',
-    prescription: '💊 Prescription',
     pathology: '🔬 Pathology',
     cardiology: '❤️ Cardiology',
+    prescription: '💊 Prescription',
+    ultrasound: '🔊 Ultrasound',
+    urine_stool: '🧪 Urine/Stool',
     general: '📄 General',
   };
   return map[type] || '📄 General';

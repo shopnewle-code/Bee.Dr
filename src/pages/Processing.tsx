@@ -1,41 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Activity, Check, Loader2, FileText } from 'lucide-react';
+import { Activity, Check, Loader2, FileText, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
 
 const PIPELINE_STEPS = [
-  { label: 'Document scanning & noise removal', duration: 1500 },
-  { label: 'OCR + handwriting recognition (TrOCR)', duration: 2000 },
-  { label: 'Medical entity extraction (BioBERT)', duration: 2500 },
-  { label: 'Clinical interpretation', duration: 2000 },
-  { label: 'Risk prediction analysis', duration: 2500 },
-  { label: 'AI insight generation', duration: 1500 },
-  { label: 'Recommendation creation', duration: 1000 },
+  { label: 'Document scanning & noise removal', key: 'scan' },
+  { label: 'OCR + text extraction', key: 'ocr' },
+  { label: 'AI report type detection', key: 'detect' },
+  { label: 'Specialized medical analysis', key: 'analyze' },
+  { label: 'Risk scoring & insights', key: 'risk' },
+  { label: 'Generating recommendations', key: 'recommend' },
 ];
-
-const mockResults = {
-  risk_scores: {
-    cardiovascular: { score: 0.23, label: 'Low', color: 'success' },
-    anemia: { score: 0.67, label: 'Medium', color: 'warning' },
-    diabetes: { score: 0.12, label: 'Low', color: 'success' },
-    abnormal_findings: { score: 0.45, label: 'Medium', color: 'warning' },
-  },
-  insights: [
-    { title: 'Hemoglobin Below Normal', severity: 'medium', detail: 'Your hemoglobin (11.2 g/dL) is below the standard range (12-16 g/dL). This may indicate early-stage iron deficiency anemia.' },
-    { title: 'Cholesterol Within Range', severity: 'low', detail: 'Total cholesterol (185 mg/dL) is within the healthy range. HDL (52 mg/dL) is adequate but could be improved with exercise.' },
-    { title: 'Vitamin D Deficiency', severity: 'high', detail: 'Vitamin D level (18 ng/mL) is significantly below the recommended range (30-100 ng/mL). Supplementation is recommended.' },
-    { title: 'Fasting Glucose Normal', severity: 'low', detail: 'Fasting glucose (92 mg/dL) is within normal range, indicating healthy blood sugar regulation.' },
-  ],
-  recommendations: [
-    { action: 'Start iron-rich diet', context: 'Linked to low hemoglobin finding', priority: 'high' },
-    { action: 'Vitamin D3 supplement (2000 IU daily)', context: 'Address severe Vitamin D deficiency', priority: 'high' },
-    { action: 'Increase cardiovascular exercise', context: 'Improve HDL cholesterol levels', priority: 'medium' },
-    { action: 'Follow-up blood test in 3 months', context: 'Monitor hemoglobin and Vitamin D improvement', priority: 'medium' },
-    { action: 'Annual comprehensive metabolic panel', context: 'Maintain ongoing health monitoring', priority: 'low' },
-  ],
-};
 
 const ProcessingPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -45,96 +23,193 @@ const ProcessingPage = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [batchFiles, setBatchFiles] = useState<{ id: string; file_name: string }[]>([]);
+  const [batchFiles, setBatchFiles] = useState<{ id: string; file_name: string; report_type: string | null }[]>([]);
   const [processedCount, setProcessedCount] = useState(0);
+  const [detectedType, setDetectedType] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const started = useRef(false);
 
   // Fetch batch files
   useEffect(() => {
-    if (!batchId || !user) return;
-    supabase
-      .from('scan_results')
-      .select('id, file_name')
-      .eq('batch_id', batchId)
-      .then(({ data }) => {
-        if (data) setBatchFiles(data);
-      });
-  }, [batchId, user]);
+    if (!user) return;
+    if (batchId) {
+      supabase.from('scan_results').select('id, file_name, report_type')
+        .eq('batch_id', batchId)
+        .then(({ data }) => { if (data) setBatchFiles(data); });
+    } else if (id) {
+      supabase.from('scan_results').select('id, file_name, report_type')
+        .eq('id', id)
+        .then(({ data }) => { if (data) setBatchFiles(data); });
+    }
+  }, [batchId, id, user]);
 
+  // Run the real AI pipeline
   useEffect(() => {
-    let stepIndex = 0;
+    if (!user || batchFiles.length === 0 || started.current) return;
+    started.current = true;
 
-    const runPipeline = () => {
-      if (stepIndex >= PIPELINE_STEPS.length) {
-        // Update all batch files with mock results
-        const updateIds = batchId && batchFiles.length > 0
-          ? batchFiles.map(f => f.id)
-          : id ? [id] : [];
+    const runPipeline = async () => {
+      try {
+        for (let fi = 0; fi < batchFiles.length; fi++) {
+          const file = batchFiles[fi];
 
-        if (updateIds.length > 0 && user) {
-          const updateAll = updateIds.map(scanId =>
-            supabase
-              .from('scan_results')
-              .update({
-                status: 'complete',
-                risk_scores: mockResults.risk_scores,
-                insights: mockResults.insights,
-                recommendations: mockResults.recommendations,
-              })
-              .eq('id', scanId)
-          );
+          // Step 0-1: Scan & OCR (simulated — OCR happens via vision in detection)
+          setCurrentStep(0);
+          setProgress(10);
+          await delay(800);
+          setCurrentStep(1);
+          setProgress(20);
+          await delay(600);
 
-          Promise.all(updateAll).then(() => {
-            navigate(`/results/${updateIds[0]}${batchId ? `?batch=${batchId}` : ''}`);
-          });
+          // Step 2: AI report type detection
+          setCurrentStep(2);
+          setProgress(35);
+
+          let reportType = file.report_type || 'general';
+          try {
+            const { data: detectData, error: detectErr } = await supabase.functions.invoke('detect-report-type', {
+              body: { fileName: file.file_name, fileType: 'image/jpeg' },
+            });
+            if (!detectErr && detectData?.reportType) {
+              reportType = detectData.reportType;
+              setDetectedType(reportType);
+              // Save detected type
+              await supabase.from('scan_results').update({ report_type: reportType }).eq('id', file.id);
+            }
+          } catch (e) {
+            console.warn('Detection fallback:', e);
+          }
+
+          // Step 3: Specialized analysis
+          setCurrentStep(3);
+          setProgress(55);
+
+          let analysisResult = null;
+          try {
+            const resp = await fetch(
+              `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-report`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+                },
+                body: JSON.stringify({
+                  scanData: { file_name: file.file_name, report_type: reportType },
+                  reportType,
+                }),
+              }
+            );
+            if (resp.ok) {
+              analysisResult = await resp.json();
+            } else if (resp.status === 429) {
+              toast.error('Rate limit exceeded. Please wait and try again.');
+              setError('Rate limit exceeded');
+              return;
+            } else if (resp.status === 402) {
+              toast.error('Usage limit reached.');
+              setError('Usage limit reached');
+              return;
+            }
+          } catch (e) {
+            console.warn('Analysis error:', e);
+          }
+
+          // Step 4-5: Risk scoring & recommendations
+          setCurrentStep(4);
+          setProgress(80);
+          await delay(500);
+          setCurrentStep(5);
+          setProgress(95);
+
+          // Save results
+          const updateData: Record<string, any> = {
+            status: 'complete',
+            report_type: reportType,
+          };
+          if (analysisResult) {
+            updateData.raw_data = analysisResult;
+            // Extract risk scores from analysis
+            if (analysisResult.overallRisks) {
+              const riskScores: Record<string, any> = {};
+              analysisResult.overallRisks.forEach((r: any) => {
+                riskScores[r.condition?.toLowerCase().replace(/\s+/g, '_') || 'unknown'] = {
+                  score: r.level === 'high' ? 0.8 : r.level === 'medium' ? 0.5 : 0.2,
+                  label: r.level,
+                  color: r.level === 'high' ? 'destructive' : r.level === 'medium' ? 'warning' : 'success',
+                };
+              });
+              updateData.risk_scores = riskScores;
+            }
+            if (analysisResult.tests) {
+              updateData.insights = analysisResult.tests.filter((t: any) => t.status !== 'normal').map((t: any) => ({
+                title: t.name,
+                severity: t.status === 'critical' ? 'high' : t.status,
+                detail: t.explanation,
+              }));
+            }
+            if (analysisResult.lifestyleRecommendations) {
+              updateData.recommendations = analysisResult.lifestyleRecommendations.map((r: any) => ({
+                action: r.advice,
+                context: r.category,
+                priority: r.priority,
+              }));
+            }
+          }
+
+          await supabase.from('scan_results').update(updateData).eq('id', file.id);
+          setProcessedCount(fi + 1);
         }
-        return;
+
+        setProgress(100);
+        await delay(300);
+
+        const firstId = batchFiles[0].id;
+        navigate(`/results/${firstId}${batchId ? `?batch=${batchId}` : ''}`);
+
+      } catch (e: any) {
+        console.error('Pipeline error:', e);
+        setError(e.message || 'Processing failed');
+        toast.error('Processing failed. Please try again.');
       }
-
-      setCurrentStep(stepIndex);
-      setProgress(((stepIndex + 1) / PIPELINE_STEPS.length) * 100);
-
-      setTimeout(() => {
-        stepIndex++;
-        if (batchFiles.length > 0) {
-          setProcessedCount(Math.min(Math.floor((stepIndex / PIPELINE_STEPS.length) * batchFiles.length), batchFiles.length));
-        }
-        runPipeline();
-      }, PIPELINE_STEPS[stepIndex].duration);
     };
 
-    const timer = setTimeout(runPipeline, 500);
-    return () => clearTimeout(timer);
-  }, [id, user, navigate, batchId, batchFiles]);
+    runPipeline();
+  }, [batchFiles, user, navigate, batchId]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen gradient-hero flex flex-col items-center justify-center p-6">
+        <AlertTriangle className="w-12 h-12 text-primary-foreground mb-4" />
+        <h2 className="text-xl font-bold text-primary-foreground mb-2">Processing Error</h2>
+        <p className="text-primary-foreground/70 text-sm mb-4">{error}</p>
+        <button onClick={() => navigate('/upload')} className="text-primary-foreground underline text-sm">
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen gradient-hero flex flex-col items-center justify-center p-6">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md"
-      >
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md">
         <div className="text-center mb-8">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-            className="w-16 h-16 mx-auto mb-4"
-          >
+          <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }} className="w-16 h-16 mx-auto mb-4">
             <Activity className="w-16 h-16 text-primary-foreground" />
           </motion.div>
           <h1 className="text-2xl font-display font-bold text-primary-foreground mb-2">
             Analyzing Your Report{batchFiles.length > 1 ? 's' : ''}
           </h1>
           <p className="text-primary-foreground/70 text-sm">
-            {batchFiles.length > 1
-              ? `Processing ${batchFiles.length} reports • 7-step AI pipeline`
-              : '7-step AI pipeline in progress'}
+            {detectedType ? `Detected: ${reportTypeLabel(detectedType)} • ` : ''}
+            AI pipeline in progress
           </p>
         </div>
 
         {/* Batch file list */}
         {batchFiles.length > 1 && (
           <div className="glass rounded-xl p-4 mb-6">
-            <p className="text-xs font-medium text-primary-foreground/60 mb-2">Batch Upload</p>
+            <p className="text-xs font-medium text-primary-foreground/60 mb-2">Batch Processing</p>
             <div className="space-y-1.5">
               {batchFiles.map((f, i) => (
                 <div key={f.id} className="flex items-center gap-2 text-sm text-primary-foreground/80">
@@ -152,23 +227,14 @@ const ProcessingPage = () => {
 
         {/* Progress bar */}
         <div className="w-full h-2 rounded-full bg-primary-foreground/10 mb-8 overflow-hidden">
-          <motion.div
-            className="h-full rounded-full bg-primary-foreground"
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5 }}
-          />
+          <motion.div className="h-full rounded-full bg-primary-foreground" animate={{ width: `${progress}%` }} transition={{ duration: 0.5 }} />
         </div>
 
         {/* Steps */}
         <div className="space-y-3">
           {PIPELINE_STEPS.map((step, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: i <= currentStep ? 1 : 0.3, x: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="glass rounded-lg px-4 py-3 flex items-center gap-3"
-            >
+            <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: i <= currentStep ? 1 : 0.3, x: 0 }} transition={{ delay: i * 0.1 }}
+              className="glass rounded-lg px-4 py-3 flex items-center gap-3">
               {i < currentStep ? (
                 <Check className="w-5 h-5 text-primary-foreground shrink-0" />
               ) : i === currentStep ? (
@@ -176,10 +242,11 @@ const ProcessingPage = () => {
               ) : (
                 <div className="w-5 h-5 rounded-full border border-primary-foreground/30 shrink-0" />
               )}
-              <span className={`text-sm font-medium ${
-                i <= currentStep ? 'text-primary-foreground' : 'text-primary-foreground/40'
-              }`}>
+              <span className={`text-sm font-medium ${i <= currentStep ? 'text-primary-foreground' : 'text-primary-foreground/40'}`}>
                 {step.label}
+                {i === 2 && detectedType && i <= currentStep && (
+                  <span className="ml-2 text-xs opacity-70">→ {reportTypeLabel(detectedType)}</span>
+                )}
               </span>
             </motion.div>
           ))}
@@ -188,5 +255,26 @@ const ProcessingPage = () => {
     </div>
   );
 };
+
+function reportTypeLabel(type: string): string {
+  const map: Record<string, string> = {
+    blood_test: '🩸 Blood Test',
+    ncv_emg: '🧠 NCV/EMG',
+    ecg: '❤️ ECG',
+    mri: '🧲 MRI',
+    ct_scan: '📡 CT Scan',
+    xray: '📷 X-ray',
+    pathology: '🔬 Pathology',
+    prescription: '💊 Prescription',
+    ultrasound: '🔊 Ultrasound',
+    urine_stool: '🧪 Urine/Stool',
+    general: '📄 General',
+  };
+  return map[type] || '📄 Medical Report';
+}
+
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export default ProcessingPage;
