@@ -132,6 +132,7 @@ const ProcessingPage = () => {
                   scanData: { file_name: file.file_name, report_type: reportType },
                   reportType,
                   extractedData,
+                  ocrText: ocrText || undefined,
                 }),
               }
             );
