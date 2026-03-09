@@ -58,6 +58,7 @@ const CTScanAnalysisPage = lazy(() => import("@/pages/CTScanAnalysis"));
 const MelanomaScreenerPage = lazy(() => import("@/pages/MelanomaScreener"));
 const DoctorDashboardPage = lazy(() => import("@/pages/DoctorDashboard"));
 const HospitalDashboardPage = lazy(() => import("@/pages/HospitalDashboard"));
+const ChatComparisonPage = lazy(() => import("@/pages/ChatComparison"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const IndexRedirect = () => {
@@ -129,6 +130,7 @@ const AnimatedRoutes = () => {
         <Route path="/melanoma-screener" element={<ProtectedRoute><P><MelanomaScreenerPage /></P></ProtectedRoute>} />
         <Route path="/doctor-dashboard" element={<ProtectedRoute><P><DoctorDashboardPage /></P></ProtectedRoute>} />
         <Route path="/hospital-dashboard" element={<ProtectedRoute><P><HospitalDashboardPage /></P></ProtectedRoute>} />
+        <Route path="/chat-compare" element={<ProtectedRoute><P><ChatComparisonPage /></P></ProtectedRoute>} />
         <Route path="*" element={<P><NotFound /></P>} />
       </Routes>
     </AnimatePresence>
