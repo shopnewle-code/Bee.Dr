@@ -15,6 +15,8 @@ interface UploadFile {
   progress: number;
   status: 'pending' | 'uploading' | 'done' | 'error';
   reportType: string;
+  aiDetecting?: boolean;
+  aiConfidence?: number;
 }
 
 const MAX_FILES = 10;
