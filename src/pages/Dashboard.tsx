@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
   Activity, Upload, FileText, LogOut, Clock, Bot, User,
-  Heart, Bell, Scan, TrendingUp, Pill, Shield, ChevronRight, GitCompare,
+  Heart, Bell, Scan, TrendingUp, Pill, Shield, ChevronRight, GitCompare, GitCompareArrows,
   Calendar, ShieldAlert, Users, Droplets, HeartPulse, SmilePlus, Target,
   Syringe, AlertTriangle, ScanEye, Mic, Brain, Watch, Stethoscope,
   MapPin, ShoppingCart, Search, FileImage, ClipboardList, Building2,
