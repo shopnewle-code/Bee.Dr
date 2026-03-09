@@ -53,27 +53,45 @@ const ProcessingPage = () => {
         for (let fi = 0; fi < batchFiles.length; fi++) {
           const file = batchFiles[fi];
 
-          // Step 0-1: Scan & OCR (simulated — OCR happens via vision in detection)
+          // Step 0: Scan
           setCurrentStep(0);
-          setProgress(10);
-          await delay(800);
-          setCurrentStep(1);
-          setProgress(20);
-          await delay(600);
+          setProgress(5);
+          await delay(500);
 
-          // Step 2: AI report type detection
+          // Step 1: Vision OCR — extract text from the actual image
+          setCurrentStep(1);
+          setProgress(15);
+
+          let ocrText = '';
+          try {
+            const ocrBody: Record<string, string> = { fileName: file.file_name };
+            if (file.storage_path) {
+              ocrBody.storagePath = file.storage_path;
+            }
+            const { data: ocrData, error: ocrErr } = await supabase.functions.invoke('vision-ocr', {
+              body: ocrBody,
+            });
+            if (!ocrErr && ocrData?.ocrText) {
+              ocrText = ocrData.ocrText;
+            }
+          } catch (e) {
+            console.warn('Vision OCR fallback:', e);
+          }
+
+          // Step 2: AI report type detection (now with OCR text)
           setCurrentStep(2);
           setProgress(35);
 
           let reportType = file.report_type || 'general';
           try {
+            const detectBody: Record<string, string> = { fileName: file.file_name, fileType: 'image/jpeg' };
+            if (ocrText) detectBody.ocrText = ocrText;
             const { data: detectData, error: detectErr } = await supabase.functions.invoke('detect-report-type', {
-              body: { fileName: file.file_name, fileType: 'image/jpeg' },
+              body: detectBody,
             });
             if (!detectErr && detectData?.reportType) {
               reportType = detectData.reportType;
               setDetectedType(reportType);
-              // Save detected type
               await supabase.from('scan_results').update({ report_type: reportType }).eq('id', file.id);
             }
           } catch (e) {
