@@ -372,9 +372,14 @@ const ChatPage = () => {
         if (saved) {
           // Update message IDs for bookmark functionality
           setMessages(prev => {
-            const updated = [...prev];
-            const lastUser = updated.findLastIndex(m => m.role === 'user');
-            const lastAssistant = updated.findLastIndex(m => m.role === 'assistant');
+          const updated = [...prev];
+            let lastUser = -1;
+            let lastAssistant = -1;
+            for (let j = updated.length - 1; j >= 0; j--) {
+              if (lastUser < 0 && updated[j].role === 'user') lastUser = j;
+              if (lastAssistant < 0 && updated[j].role === 'assistant') lastAssistant = j;
+              if (lastUser >= 0 && lastAssistant >= 0) break;
+            }
             if (lastUser >= 0) updated[lastUser] = { ...updated[lastUser], id: saved.id };
             if (lastAssistant >= 0) updated[lastAssistant] = { ...updated[lastAssistant], id: saved.id, is_bookmarked: false };
             return updated;
