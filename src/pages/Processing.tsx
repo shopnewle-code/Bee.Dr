@@ -132,12 +132,10 @@ const ProcessingPage = () => {
             console.warn('Analysis error:', e);
           }
 
-          // Step 4-5: Risk scoring & recommendations
-          setCurrentStep(4);
-          setProgress(80);
-          await delay(500);
+          // Step 5: Risk scoring & recommendations
           setCurrentStep(5);
-          setProgress(95);
+          setProgress(90);
+          await delay(400);
 
           // Save results
           const updateData: Record<string, any> = {

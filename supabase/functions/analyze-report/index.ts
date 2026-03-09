@@ -267,7 +267,9 @@ IMPORTANT OUTPUT RULES:
           { role: "system", content: systemPrompt },
           {
             role: "user",
-            content: `Analyze this ${reportTypeName} and provide detailed structured findings.\n\nReport data:\n${JSON.stringify(scanData)}`
+            content: extractedData
+              ? `Analyze this ${reportTypeName} using the following STRUCTURED EXTRACTED DATA (these values were parsed directly from the document):\n\n${JSON.stringify(extractedData, null, 2)}\n\nOriginal report metadata:\n${JSON.stringify(scanData)}`
+              : `Analyze this ${reportTypeName} and provide detailed structured findings.\n\nReport data:\n${JSON.stringify(scanData)}`
           }
         ],
       }),
