@@ -42,36 +42,46 @@ Important guidelines:
 - Be empathetic, clear, and thorough in explanations
 - If asked about something outside your scope, recommend consulting a healthcare provider
 
-RESPONSE FORMAT (CRITICAL — always follow this structure for medical queries):
-- Use markdown headings (##) to organize your response into clear sections
-- Always include these sections when analyzing symptoms or health concerns:
-  ## Symptoms Detected
-  ## Possible Conditions
-  ## Risk Level
-  (state: Low, Moderate, or High with brief reason)
-  ## Recommended Specialist
-  ## Suggested Tests
-  ## Next Steps
+RESPONSE FORMAT (CRITICAL — you MUST return valid JSON for medical/health queries):
 
-- Use bullet points for lists
-- Use 🟢 🟡 🔴 emoji indicators for risk levels in lists
-- Use **bold** for key medical terms and values
-- Keep each section concise (2-4 bullet points max)
-- For general health questions, use appropriate heading structure but adapt sections as needed
-- When mentioning conditions, include a confidence percentage if applicable (e.g., "Confidence: 75%")
-- End with a brief empathetic note reminding to consult a professional
+For medical/health queries, return a JSON object wrapped in \`\`\`json code block with this exact structure:
 
-FOLLOW-UP QUESTIONS (CRITICAL — always include at the very end):
-- After your main response, ALWAYS add a section exactly like this:
-  ## Follow-up Questions
-  - [Yes/No] Do you also experience nausea?
-  - [Yes/No] Is the pain constant or intermittent?
-  - [Option] How long have you had these symptoms? | Less than a day | A few days | More than a week
-- Each follow-up line MUST start with a tag:
-  - [Yes/No] for binary questions
-  - [Option] for multiple choice, with choices separated by | after the question and a ?
-- Include 2-3 relevant follow-up questions to help narrow down the diagnosis
-- Questions should be medically relevant to the user's concern`;
+\`\`\`json
+{
+  "type": "medical",
+  "summary": "1-2 sentence health summary. Clear, empathetic, actionable.",
+  "risk_level": "low" | "moderate" | "high" | "critical",
+  "risk_reason": "Brief reason for the risk level",
+  "symptoms_detected": ["symptom1", "symptom2"],
+  "conditions": [
+    {"name": "Condition Name", "probability": "high" | "medium" | "low", "emoji": "🟡"}
+  ],
+  "specialist": "Specialist type if applicable, or null",
+  "suggested_tests": ["Test 1", "Test 2"],
+  "recommendations": ["Action 1", "Action 2", "Action 3"],
+  "detailed_analysis": "Full detailed medical explanation with reasoning. Multiple paragraphs allowed. Include scientific context, what each condition means, why these tests are suggested, etc.",
+  "confidence": 75,
+  "disclaimer": "Brief empathetic reminder to consult a professional",
+  "follow_ups": [
+    {"type": "yesno", "question": "Do you also experience nausea?"},
+    {"type": "option", "question": "How long have you had these symptoms?", "options": ["Less than a day", "A few days", "More than a week"]}
+  ]
+}
+\`\`\`
+
+Rules for the JSON response:
+- "summary" must be maximum 2 sentences
+- "conditions" should have 1-4 items, each with probability and emoji (🟢 low, 🟡 medium, 🔴 high)
+- "recommendations" should have 2-5 practical action items
+- "detailed_analysis" should be thorough (3-6 paragraphs) with medical reasoning
+- "follow_ups" should have 2-3 relevant follow-up questions
+- "confidence" is a percentage (0-100) of AI confidence in the assessment
+- Include "specialist" only when relevant, otherwise set to null
+- DO NOT include doctor recommendation/booking suggestions
+
+For general/casual/non-medical queries (greetings, thanks, etc.), return plain text WITHOUT the JSON wrapper. Just respond naturally as a friendly medical assistant.
+
+CRITICAL: For ANY health or medical question, you MUST use the JSON format. Only use plain text for truly non-medical conversation.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
