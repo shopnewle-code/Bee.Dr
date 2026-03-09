@@ -10,9 +10,9 @@ const PIPELINE_STEPS = [
   { label: 'Document scanning & noise removal', key: 'scan' },
   { label: 'OCR + text extraction', key: 'ocr' },
   { label: 'AI report type detection', key: 'detect' },
-  { label: 'Specialized medical analysis', key: 'analyze' },
-  { label: 'Risk scoring & insights', key: 'risk' },
-  { label: 'Generating recommendations', key: 'recommend' },
+  { label: 'Structured data extraction', key: 'extract' },
+  { label: 'Medical AI analysis', key: 'analyze' },
+  { label: 'Risk scoring & recommendations', key: 'risk' },
 ];
 
 const ProcessingPage = () => {
