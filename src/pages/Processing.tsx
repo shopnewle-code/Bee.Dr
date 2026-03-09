@@ -33,13 +33,13 @@ const ProcessingPage = () => {
   useEffect(() => {
     if (!user) return;
     if (batchId) {
-      supabase.from('scan_results').select('id, file_name, report_type')
+      (supabase.from('scan_results').select('id, file_name, report_type, storage_path') as any)
         .eq('batch_id', batchId)
-        .then(({ data }) => { if (data) setBatchFiles(data); });
+        .then(({ data }: any) => { if (data) setBatchFiles(data); });
     } else if (id) {
-      supabase.from('scan_results').select('id, file_name, report_type')
+      (supabase.from('scan_results').select('id, file_name, report_type, storage_path') as any)
         .eq('id', id)
-        .then(({ data }) => { if (data) setBatchFiles(data); });
+        .then(({ data }: any) => { if (data) setBatchFiles(data); });
     }
   }, [batchId, id, user]);
 
