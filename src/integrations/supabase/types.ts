@@ -780,36 +780,42 @@ export type Database = {
       }
       scan_results: {
         Row: {
+          batch_id: string | null
           created_at: string
           file_name: string
           id: string
           insights: Json | null
           raw_data: Json | null
           recommendations: Json | null
+          report_type: string | null
           risk_scores: Json | null
           status: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          batch_id?: string | null
           created_at?: string
           file_name: string
           id?: string
           insights?: Json | null
           raw_data?: Json | null
           recommendations?: Json | null
+          report_type?: string | null
           risk_scores?: Json | null
           status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          batch_id?: string | null
           created_at?: string
           file_name?: string
           id?: string
           insights?: Json | null
           raw_data?: Json | null
           recommendations?: Json | null
+          report_type?: string | null
           risk_scores?: Json | null
           status?: string
           updated_at?: string
