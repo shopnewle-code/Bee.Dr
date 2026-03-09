@@ -1,5 +1,8 @@
 project_id = "ebqrcizstqrifdxwnbcy"
 
+[functions.detect-report-type]
+verify_jwt = false
+
 [functions.medical-chat]
 verify_jwt = false
 
