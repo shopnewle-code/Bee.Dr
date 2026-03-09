@@ -23,7 +23,7 @@ const ProcessingPage = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [batchFiles, setBatchFiles] = useState<{ id: string; file_name: string; report_type: string | null }[]>([]);
+  const [batchFiles, setBatchFiles] = useState<{ id: string; file_name: string; report_type: string | null; storage_path: string | null }[]>([]);
   const [processedCount, setProcessedCount] = useState(0);
   const [detectedType, setDetectedType] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
