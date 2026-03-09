@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 
 const PIPELINE_STEPS = [
   { label: 'Document scanning & noise removal', key: 'scan' },
-  { label: 'OCR + text extraction', key: 'ocr' },
+  { label: 'Vision OCR — reading document image', key: 'ocr' },
   { label: 'AI report type detection', key: 'detect' },
   { label: 'Structured data extraction', key: 'extract' },
   { label: 'Medical AI analysis', key: 'analyze' },
