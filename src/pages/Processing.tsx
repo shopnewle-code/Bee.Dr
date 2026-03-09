@@ -80,9 +80,25 @@ const ProcessingPage = () => {
             console.warn('Detection fallback:', e);
           }
 
-          // Step 3: Specialized analysis
+          // Step 3: Structured data extraction
           setCurrentStep(3);
-          setProgress(55);
+          setProgress(50);
+
+          let extractedData = null;
+          try {
+            const { data: extData, error: extErr } = await supabase.functions.invoke('extract-medical-values', {
+              body: { reportText: JSON.stringify({ file_name: file.file_name }), reportType, fileName: file.file_name },
+            });
+            if (!extErr && extData?.extracted) {
+              extractedData = extData.extracted;
+            }
+          } catch (e) {
+            console.warn('Extraction fallback:', e);
+          }
+
+          // Step 4: Specialized AI analysis (with structured data)
+          setCurrentStep(4);
+          setProgress(70);
 
           let analysisResult = null;
           try {
@@ -97,6 +113,7 @@ const ProcessingPage = () => {
                 body: JSON.stringify({
                   scanData: { file_name: file.file_name, report_type: reportType },
                   reportType,
+                  extractedData,
                 }),
               }
             );
