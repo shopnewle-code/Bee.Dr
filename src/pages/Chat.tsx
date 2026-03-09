@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   Activity, ArrowLeft, Send, Bot, User, Sparkles, AlertCircle,
   Mic, Stethoscope, BookOpen, Pill, HeartPulse, Type,
-  Image, X, History, Plus, Trash2, Bookmark
+  Image, X, History, Plus, Trash2, Bookmark, GitCompareArrows
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSimpleLanguage } from '@/hooks/use-simple-language';
