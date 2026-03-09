@@ -228,7 +228,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { scanData, reportType = "general", language = "en", simpleLanguage = false } = await req.json();
+    const { scanData, reportType = "general", language = "en", simpleLanguage = false, extractedData = null } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -267,7 +267,9 @@ IMPORTANT OUTPUT RULES:
           { role: "system", content: systemPrompt },
           {
             role: "user",
-            content: `Analyze this ${reportTypeName} and provide detailed structured findings.\n\nReport data:\n${JSON.stringify(scanData)}`
+            content: extractedData
+              ? `Analyze this ${reportTypeName} using the following STRUCTURED EXTRACTED DATA (these values were parsed directly from the document):\n\n${JSON.stringify(extractedData, null, 2)}\n\nOriginal report metadata:\n${JSON.stringify(scanData)}`
+              : `Analyze this ${reportTypeName} and provide detailed structured findings.\n\nReport data:\n${JSON.stringify(scanData)}`
           }
         ],
       }),

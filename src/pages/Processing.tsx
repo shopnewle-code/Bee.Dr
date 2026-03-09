@@ -10,9 +10,9 @@ const PIPELINE_STEPS = [
   { label: 'Document scanning & noise removal', key: 'scan' },
   { label: 'OCR + text extraction', key: 'ocr' },
   { label: 'AI report type detection', key: 'detect' },
-  { label: 'Specialized medical analysis', key: 'analyze' },
-  { label: 'Risk scoring & insights', key: 'risk' },
-  { label: 'Generating recommendations', key: 'recommend' },
+  { label: 'Structured data extraction', key: 'extract' },
+  { label: 'Medical AI analysis', key: 'analyze' },
+  { label: 'Risk scoring & recommendations', key: 'risk' },
 ];
 
 const ProcessingPage = () => {
@@ -80,9 +80,25 @@ const ProcessingPage = () => {
             console.warn('Detection fallback:', e);
           }
 
-          // Step 3: Specialized analysis
+          // Step 3: Structured data extraction
           setCurrentStep(3);
-          setProgress(55);
+          setProgress(50);
+
+          let extractedData = null;
+          try {
+            const { data: extData, error: extErr } = await supabase.functions.invoke('extract-medical-values', {
+              body: { reportText: JSON.stringify({ file_name: file.file_name }), reportType, fileName: file.file_name },
+            });
+            if (!extErr && extData?.extracted) {
+              extractedData = extData.extracted;
+            }
+          } catch (e) {
+            console.warn('Extraction fallback:', e);
+          }
+
+          // Step 4: Specialized AI analysis (with structured data)
+          setCurrentStep(4);
+          setProgress(70);
 
           let analysisResult = null;
           try {
@@ -97,6 +113,7 @@ const ProcessingPage = () => {
                 body: JSON.stringify({
                   scanData: { file_name: file.file_name, report_type: reportType },
                   reportType,
+                  extractedData,
                 }),
               }
             );
@@ -115,12 +132,10 @@ const ProcessingPage = () => {
             console.warn('Analysis error:', e);
           }
 
-          // Step 4-5: Risk scoring & recommendations
-          setCurrentStep(4);
-          setProgress(80);
-          await delay(500);
+          // Step 5: Risk scoring & recommendations
           setCurrentStep(5);
-          setProgress(95);
+          setProgress(90);
+          await delay(400);
 
           // Save results
           const updateData: Record<string, any> = {
