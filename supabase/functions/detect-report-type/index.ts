@@ -5,76 +5,123 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Keyword-based pre-classification for speed + accuracy
+function keywordClassify(text: string): { reportType: string; confidence: number } | null {
+  const t = text.toLowerCase();
+
+  // NCV / EMG — very specific terms
+  if (/nerve conduction|ncv|emg|electromyograph|conduction velocity|motor latency|sensory latency|f.wave|h.reflex|demyelinat/.test(t)) {
+    return { reportType: "ncv_emg", confidence: 0.95 };
+  }
+  // ECG / EKG
+  if (/electrocardiog|ecg|ekg|p.wave|qrs|st.segment|pr interval|qt interval|sinus rhythm|atrial fibrillat|tachycardia|bradycardia|heart rate.*bpm/.test(t)) {
+    return { reportType: "ecg", confidence: 0.92 };
+  }
+  // MRI
+  if (/magnetic resonance|mri\b|t1.weighted|t2.weighted|flair|diffusion weighted|sagittal|coronal|axial.*scan|gadolinium/.test(t)) {
+    return { reportType: "mri", confidence: 0.93 };
+  }
+  // CT Scan
+  if (/ct\s*scan|computed tomography|hounsfield|contrast enhanced ct|hrct|cect|non.contrast ct/.test(t)) {
+    return { reportType: "ct_scan", confidence: 0.92 };
+  }
+  // X-ray
+  if (/x.ray|xray|radiograph|chest pa|ap view|lateral view|radio.?opaque|radio.?lucen/.test(t)) {
+    return { reportType: "xray", confidence: 0.90 };
+  }
+  // Pathology / Biopsy
+  if (/biopsy|histopath|cytology|tissue section|malignant|benign|carcinoma|adenoma|microscop.*exam/.test(t)) {
+    return { reportType: "pathology", confidence: 0.92 };
+  }
+  // Blood Test / CBC / Chemistry
+  if (/hemoglobin|haemoglobin|hematocrit|wbc|rbc|platelet|cbc|complete blood count|blood sugar|fasting glucose|hba1c|cholesterol|triglyceride|creatinine|bun|sgpt|sgot|alt|ast|bilirubin|albumin|thyroid|tsh|t3|t4|vitamin\s*d|vitamin\s*b12|ferritin|iron\s*stud|lipid\s*profile|liver function|kidney function|renal function|electrolyte|sodium|potassium|calcium|uric acid/.test(t)) {
+    return { reportType: "blood_test", confidence: 0.90 };
+  }
+  // Prescription
+  if (/prescription|rx\b|tab\.|cap\.|syrup|ointment|mg\s*(once|twice|thrice|daily|bd|tds|od)|before food|after food/.test(t)) {
+    return { reportType: "prescription", confidence: 0.88 };
+  }
+  // Ultrasound
+  if (/ultrasound|sonograph|usg|doppler|echogenic|hypoechoic|anechoic/.test(t)) {
+    return { reportType: "ultrasound", confidence: 0.90 };
+  }
+  // Urine / Stool test
+  if (/urinalysis|urine\s*(routine|test|exam)|stool\s*(test|exam|routine)|occult blood/.test(t)) {
+    return { reportType: "urine_stool", confidence: 0.88 };
+  }
+
+  return null;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { fileName, fileType, imageBase64 } = await req.json();
+    const { fileName, fileType, imageBase64, ocrText } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    // Use AI vision for images, filename analysis for other files
-    let messages;
-    
-    if (fileType?.startsWith('image/') && imageBase64) {
-      // Vision-based analysis for image files
-      messages = [
-        {
-          role: "system",
-          content: `You are a medical report classifier. Analyze the medical document image and classify it into one of these categories:
+    // Step 1: Try keyword classification on OCR text first (fastest, most accurate)
+    if (ocrText && ocrText.length > 20) {
+      const keywordResult = keywordClassify(ocrText);
+      if (keywordResult && keywordResult.confidence >= 0.88) {
+        console.log("Keyword classification hit:", keywordResult.reportType, keywordResult.confidence);
+        return new Response(JSON.stringify({
+          ...keywordResult,
+          reasoning: "Keyword-based classification from document content",
+          method: "keyword",
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+    }
 
-CATEGORIES:
-- blood_test: Blood work, CBC, chemistry panels, hematology reports
-- radiology: X-rays, MRI, CT scans, ultrasounds, mammograms  
-- pathology: Biopsy reports, tissue analysis, cytology
-- cardiology: ECG, stress tests, echocardiograms, cardiac catheterization
-- prescription: Medication prescriptions, pharmacy labels
+    // Step 2: Try keyword classification on filename
+    const filenameResult = keywordClassify(fileName || "");
+    if (filenameResult && filenameResult.confidence >= 0.90) {
+      console.log("Filename keyword hit:", filenameResult.reportType);
+      return new Response(JSON.stringify({
+        ...filenameResult,
+        reasoning: "Keyword-based classification from filename",
+        method: "keyword_filename",
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    // Step 3: LLM classification (vision for images, text for OCR content)
+    let messages;
+    const classificationPrompt = `You are a medical report classifier. Your ONLY job is to identify the type of medical document.
+
+Possible categories (return EXACTLY one):
+- blood_test: Blood work, CBC, chemistry panels, hematology, lipid profile, liver/kidney function, thyroid
+- ncv_emg: Nerve conduction velocity, electromyography, nerve studies
+- ecg: Electrocardiogram, heart rhythm analysis
+- mri: Magnetic resonance imaging
+- ct_scan: Computed tomography
+- xray: X-ray / radiograph
+- ultrasound: Ultrasound / sonography
+- pathology: Biopsy, histopathology, cytology
+- prescription: Medication prescription
+- urine_stool: Urinalysis, stool examination
 - general: Any other medical document
 
-Return JSON with this EXACT structure:
-{
-  "reportType": "category_name",
-  "confidence": 0.95,
-  "reasoning": "Brief explanation of classification decision"
-}
+Return JSON: {"reportType": "category", "confidence": 0.95, "reasoning": "brief reason"}
+Return ONLY valid JSON.`;
 
-IMPORTANT: Return ONLY valid JSON, no markdown formatting.`
-        },
+    if (fileType?.startsWith('image/') && imageBase64) {
+      messages = [
+        { role: "system", content: classificationPrompt },
         {
           role: "user",
           content: [
-            { type: "text", text: `Classify this medical document: ${fileName}` },
+            { type: "text", text: `Classify this medical document. Filename: ${fileName}${ocrText ? `\n\nExtracted text:\n${ocrText.slice(0, 2000)}` : ''}` },
             { type: "image_url", image_url: { url: imageBase64 } }
           ]
         }
       ];
     } else {
-      // Filename-based analysis for non-images or when no image data
       messages = [
-        {
-          role: "system", 
-          content: `You are a medical report classifier. Based on the filename, classify it into one of these categories:
-
-CATEGORIES:
-- blood_test: Blood work, CBC, chemistry panels, hematology reports
-- radiology: X-rays, MRI, CT scans, ultrasounds, mammograms
-- pathology: Biopsy reports, tissue analysis, cytology  
-- cardiology: ECG, stress tests, echocardiograms, cardiac catheterization
-- prescription: Medication prescriptions, pharmacy labels
-- general: Any other medical document
-
-Return JSON with this EXACT structure:
-{
-  "reportType": "category_name", 
-  "confidence": 0.85,
-  "reasoning": "Brief explanation based on filename analysis"
-}
-
-IMPORTANT: Return ONLY valid JSON, no markdown formatting.`
-        },
+        { role: "system", content: classificationPrompt },
         {
           role: "user",
-          content: `Classify this medical document filename: "${fileName}"`
+          content: `Classify this medical document.\nFilename: "${fileName}"\n\n${ocrText ? `Document content:\n${ocrText.slice(0, 3000)}` : 'No text content available.'}`
         }
       ];
     }
@@ -86,7 +133,7 @@ IMPORTANT: Return ONLY valid JSON, no markdown formatting.`
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-2.5-flash-lite",
         messages,
       }),
     });
@@ -102,47 +149,25 @@ IMPORTANT: Return ONLY valid JSON, no markdown formatting.`
           status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
       throw new Error("AI service unavailable");
     }
 
     const result = await response.json();
     let content = result.choices?.[0]?.message?.content || "";
-    
-    // Strip markdown code fences if present
     content = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     
     let parsed;
     try {
       parsed = JSON.parse(content);
+      parsed.method = "llm";
     } catch {
-      // Fallback to simple filename-based detection if AI parsing fails
-      const fileName_lower = fileName.toLowerCase();
-      let fallbackType = "general";
-      
-      if (/blood|cbc|hemoglobin|hematology|wbc|rbc|platelet|chemistry/.test(fileName_lower)) {
-        fallbackType = "blood_test";
-      } else if (/mri|xray|x-ray|ct|scan|radiology|ultrasound|mammogram/.test(fileName_lower)) {
-        fallbackType = "radiology";
-      } else if (/prescription|rx|presc|medication/.test(fileName_lower)) {
-        fallbackType = "prescription";
-      } else if (/biopsy|pathology|cytology|tissue/.test(fileName_lower)) {
-        fallbackType = "pathology";
-      } else if (/ecg|ekg|echo|cardiac|heart|stress/.test(fileName_lower)) {
-        fallbackType = "cardiology";
-      }
-      
+      // Fallback
       parsed = {
-        reportType: fallbackType,
-        confidence: 0.7,
-        reasoning: "Fallback filename analysis due to AI parsing error"
+        reportType: filenameResult?.reportType || "general",
+        confidence: 0.5,
+        reasoning: "Fallback due to AI parsing error",
+        method: "fallback",
       };
-    }
-
-    // Validate the response structure
-    if (!parsed.reportType || typeof parsed.confidence !== "number") {
-      throw new Error("Invalid AI response format");
     }
 
     return new Response(JSON.stringify(parsed), {
@@ -151,24 +176,11 @@ IMPORTANT: Return ONLY valid JSON, no markdown formatting.`
 
   } catch (e) {
     console.error("detect-report-type error:", e);
-    
-    // Return fallback detection on error
-    const { fileName } = await req.json().catch(() => ({ fileName: "unknown" }));
-    const fileName_lower = fileName.toLowerCase();
-    let fallbackType = "general";
-    
-    if (/blood|cbc|hemoglobin/.test(fileName_lower)) {
-      fallbackType = "blood_test";
-    } else if (/mri|xray|ct|scan/.test(fileName_lower)) {
-      fallbackType = "radiology";  
-    } else if (/prescription|rx/.test(fileName_lower)) {
-      fallbackType = "prescription";
-    }
-    
     return new Response(JSON.stringify({
-      reportType: fallbackType,
-      confidence: 0.5,
-      reasoning: "Fallback detection due to service error"
+      reportType: "general",
+      confidence: 0.3,
+      reasoning: "Service error fallback",
+      method: "error_fallback",
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
