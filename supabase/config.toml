@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.extract-medical-values]
 verify_jwt = false
+
+[functions.vision-ocr]
+verify_jwt = false

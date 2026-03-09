@@ -1,0 +1,1 @@
+ALTER TABLE public.scan_results ADD COLUMN IF NOT EXISTS storage_path text;

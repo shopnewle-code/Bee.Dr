@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 
 const PIPELINE_STEPS = [
   { label: 'Document scanning & noise removal', key: 'scan' },
-  { label: 'OCR + text extraction', key: 'ocr' },
+  { label: 'Vision OCR — reading document image', key: 'ocr' },
   { label: 'AI report type detection', key: 'detect' },
   { label: 'Structured data extraction', key: 'extract' },
   { label: 'Medical AI analysis', key: 'analyze' },
@@ -23,7 +23,7 @@ const ProcessingPage = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [batchFiles, setBatchFiles] = useState<{ id: string; file_name: string; report_type: string | null }[]>([]);
+  const [batchFiles, setBatchFiles] = useState<{ id: string; file_name: string; report_type: string | null; storage_path: string | null }[]>([]);
   const [processedCount, setProcessedCount] = useState(0);
   const [detectedType, setDetectedType] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,13 +33,13 @@ const ProcessingPage = () => {
   useEffect(() => {
     if (!user) return;
     if (batchId) {
-      supabase.from('scan_results').select('id, file_name, report_type')
+      (supabase.from('scan_results').select('id, file_name, report_type, storage_path') as any)
         .eq('batch_id', batchId)
-        .then(({ data }) => { if (data) setBatchFiles(data); });
+        .then(({ data }: any) => { if (data) setBatchFiles(data); });
     } else if (id) {
-      supabase.from('scan_results').select('id, file_name, report_type')
+      (supabase.from('scan_results').select('id, file_name, report_type, storage_path') as any)
         .eq('id', id)
-        .then(({ data }) => { if (data) setBatchFiles(data); });
+        .then(({ data }: any) => { if (data) setBatchFiles(data); });
     }
   }, [batchId, id, user]);
 
@@ -53,27 +53,45 @@ const ProcessingPage = () => {
         for (let fi = 0; fi < batchFiles.length; fi++) {
           const file = batchFiles[fi];
 
-          // Step 0-1: Scan & OCR (simulated — OCR happens via vision in detection)
+          // Step 0: Scan
           setCurrentStep(0);
-          setProgress(10);
-          await delay(800);
-          setCurrentStep(1);
-          setProgress(20);
-          await delay(600);
+          setProgress(5);
+          await delay(500);
 
-          // Step 2: AI report type detection
+          // Step 1: Vision OCR — extract text from the actual image
+          setCurrentStep(1);
+          setProgress(15);
+
+          let ocrText = '';
+          try {
+            const ocrBody: Record<string, string> = { fileName: file.file_name };
+            if (file.storage_path) {
+              ocrBody.storagePath = file.storage_path;
+            }
+            const { data: ocrData, error: ocrErr } = await supabase.functions.invoke('vision-ocr', {
+              body: ocrBody,
+            });
+            if (!ocrErr && ocrData?.ocrText) {
+              ocrText = ocrData.ocrText;
+            }
+          } catch (e) {
+            console.warn('Vision OCR fallback:', e);
+          }
+
+          // Step 2: AI report type detection (now with OCR text)
           setCurrentStep(2);
           setProgress(35);
 
           let reportType = file.report_type || 'general';
           try {
+            const detectBody: Record<string, string> = { fileName: file.file_name, fileType: 'image/jpeg' };
+            if (ocrText) detectBody.ocrText = ocrText;
             const { data: detectData, error: detectErr } = await supabase.functions.invoke('detect-report-type', {
-              body: { fileName: file.file_name, fileType: 'image/jpeg' },
+              body: detectBody,
             });
             if (!detectErr && detectData?.reportType) {
               reportType = detectData.reportType;
               setDetectedType(reportType);
-              // Save detected type
               await supabase.from('scan_results').update({ report_type: reportType }).eq('id', file.id);
             }
           } catch (e) {
@@ -87,7 +105,7 @@ const ProcessingPage = () => {
           let extractedData = null;
           try {
             const { data: extData, error: extErr } = await supabase.functions.invoke('extract-medical-values', {
-              body: { reportText: JSON.stringify({ file_name: file.file_name }), reportType, fileName: file.file_name },
+              body: { reportText: ocrText || JSON.stringify({ file_name: file.file_name }), reportType, fileName: file.file_name },
             });
             if (!extErr && extData?.extracted) {
               extractedData = extData.extracted;
@@ -114,6 +132,7 @@ const ProcessingPage = () => {
                   scanData: { file_name: file.file_name, report_type: reportType },
                   reportType,
                   extractedData,
+                  ocrText: ocrText || undefined,
                 }),
               }
             );

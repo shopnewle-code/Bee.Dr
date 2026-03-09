@@ -213,7 +213,8 @@ const UploadPage = () => {
             status: 'processing',
             report_type: uf.reportType,
             batch_id: batchId,
-          })
+            storage_path: filePath,
+          } as any)
           .select()
           .single();
 
