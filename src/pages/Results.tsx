@@ -36,6 +36,13 @@ const ResultsPage = () => {
 
   useEffect(() => {
     if (!scan) return;
+
+    // If we already have cached AI analysis in raw_data, use it
+    if (scan.raw_data && typeof scan.raw_data === 'object' && (scan.raw_data as any).summary) {
+      setAnalysis(scan.raw_data);
+      return;
+    }
+
     const fetchAnalysis = async () => {
       setAnalysisLoading(true);
       try {
@@ -50,11 +57,13 @@ const ResultsPage = () => {
             body: JSON.stringify({
               scanData: {
                 file_name: scan.file_name,
+                report_type: scan.report_type,
                 risk_scores: scan.risk_scores,
                 insights: scan.insights,
                 recommendations: scan.recommendations,
                 raw_data: scan.raw_data,
               },
+              reportType: scan.report_type || 'general',
               language,
               simpleLanguage,
             }),
@@ -63,6 +72,8 @@ const ResultsPage = () => {
         if (!resp.ok) throw new Error('Failed to analyze');
         const data = await resp.json();
         setAnalysis(data);
+        // Cache for future visits
+        await supabase.from('scan_results').update({ raw_data: data }).eq('id', scan.id);
       } catch (e: any) {
         toast.error(e.message || 'Failed to load analysis');
       } finally {
