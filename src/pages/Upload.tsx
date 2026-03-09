@@ -128,9 +128,35 @@ const UploadPage = () => {
             preview,
             progress: 0,
             status: 'pending' as const,
-            reportType: detectReportType(f.name),
+            reportType: 'general', // Will be updated by AI
+            aiDetecting: true,
+            aiConfidence: 0,
           };
         });
+
+      // Start AI detection for each file
+      mapped.forEach(async (mappedFile) => {
+        try {
+          const { reportType, confidence } = await detectReportTypeWithAI(mappedFile.file);
+          
+          setFiles(prevFiles => 
+            prevFiles.map(f => 
+              f.id === mappedFile.id 
+                ? { ...f, reportType, aiConfidence: confidence, aiDetecting: false }
+                : f
+            )
+          );
+        } catch (err) {
+          console.error('AI detection error:', err);
+          setFiles(prevFiles => 
+            prevFiles.map(f => 
+              f.id === mappedFile.id 
+                ? { ...f, aiDetecting: false, reportType: 'general', aiConfidence: 0.5 }
+                : f
+            )
+          );
+        }
+      });
 
       return [...prev, ...mapped];
     });
