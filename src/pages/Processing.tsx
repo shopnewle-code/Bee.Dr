@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Activity, Check, Loader2 } from 'lucide-react';
+import { Activity, Check, Loader2, FileText } from 'lucide-react';
 
 const PIPELINE_STEPS = [
   { label: 'Document scanning & noise removal', duration: 1500 },
@@ -39,30 +39,53 @@ const mockResults = {
 
 const ProcessingPage = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const batchId = searchParams.get('batch');
   const { user } = useAuth();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [batchFiles, setBatchFiles] = useState<{ id: string; file_name: string }[]>([]);
+  const [processedCount, setProcessedCount] = useState(0);
+
+  // Fetch batch files
+  useEffect(() => {
+    if (!batchId || !user) return;
+    supabase
+      .from('scan_results')
+      .select('id, file_name')
+      .eq('batch_id', batchId)
+      .then(({ data }) => {
+        if (data) setBatchFiles(data);
+      });
+  }, [batchId, user]);
 
   useEffect(() => {
     let stepIndex = 0;
 
     const runPipeline = () => {
       if (stepIndex >= PIPELINE_STEPS.length) {
-        // Save mock results and navigate
-        if (id && user) {
-          supabase
-            .from('scan_results')
-            .update({
-              status: 'complete',
-              risk_scores: mockResults.risk_scores,
-              insights: mockResults.insights,
-              recommendations: mockResults.recommendations,
-            })
-            .eq('id', id)
-            .then(() => {
-              navigate(`/results/${id}`);
-            });
+        // Update all batch files with mock results
+        const updateIds = batchId && batchFiles.length > 0
+          ? batchFiles.map(f => f.id)
+          : id ? [id] : [];
+
+        if (updateIds.length > 0 && user) {
+          const updateAll = updateIds.map(scanId =>
+            supabase
+              .from('scan_results')
+              .update({
+                status: 'complete',
+                risk_scores: mockResults.risk_scores,
+                insights: mockResults.insights,
+                recommendations: mockResults.recommendations,
+              })
+              .eq('id', scanId)
+          );
+
+          Promise.all(updateAll).then(() => {
+            navigate(`/results/${updateIds[0]}${batchId ? `?batch=${batchId}` : ''}`);
+          });
         }
         return;
       }
@@ -72,13 +95,16 @@ const ProcessingPage = () => {
 
       setTimeout(() => {
         stepIndex++;
+        if (batchFiles.length > 0) {
+          setProcessedCount(Math.min(Math.floor((stepIndex / PIPELINE_STEPS.length) * batchFiles.length), batchFiles.length));
+        }
         runPipeline();
       }, PIPELINE_STEPS[stepIndex].duration);
     };
 
     const timer = setTimeout(runPipeline, 500);
     return () => clearTimeout(timer);
-  }, [id, user, navigate]);
+  }, [id, user, navigate, batchId, batchFiles]);
 
   return (
     <div className="min-h-screen gradient-hero flex flex-col items-center justify-center p-6">
@@ -96,12 +122,33 @@ const ProcessingPage = () => {
             <Activity className="w-16 h-16 text-primary-foreground" />
           </motion.div>
           <h1 className="text-2xl font-display font-bold text-primary-foreground mb-2">
-            Analyzing Your Report
+            Analyzing Your Report{batchFiles.length > 1 ? 's' : ''}
           </h1>
           <p className="text-primary-foreground/70 text-sm">
-            7-step AI pipeline in progress
+            {batchFiles.length > 1
+              ? `Processing ${batchFiles.length} reports • 7-step AI pipeline`
+              : '7-step AI pipeline in progress'}
           </p>
         </div>
+
+        {/* Batch file list */}
+        {batchFiles.length > 1 && (
+          <div className="glass rounded-xl p-4 mb-6">
+            <p className="text-xs font-medium text-primary-foreground/60 mb-2">Batch Upload</p>
+            <div className="space-y-1.5">
+              {batchFiles.map((f, i) => (
+                <div key={f.id} className="flex items-center gap-2 text-sm text-primary-foreground/80">
+                  {i < processedCount ? (
+                    <Check className="w-3.5 h-3.5 text-primary-foreground shrink-0" />
+                  ) : (
+                    <FileText className="w-3.5 h-3.5 text-primary-foreground/40 shrink-0" />
+                  )}
+                  <span className="truncate">{f.file_name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Progress bar */}
         <div className="w-full h-2 rounded-full bg-primary-foreground/10 mb-8 overflow-hidden">
