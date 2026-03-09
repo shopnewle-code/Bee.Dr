@@ -334,14 +334,31 @@ const UploadPage = () => {
                         {/* File Info */}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-foreground truncate">{uf.file.name}</p>
+                        <div className="flex items-center gap-3">
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">
                               {(uf.file.size / 1024 / 1024).toFixed(1)} MB
                             </span>
-                            <span className="text-xs px-1.5 py-0.5 rounded bg-accent text-accent-foreground">
-                              {reportTypeLabel(uf.reportType)}
-                            </span>
+                            <div className="flex items-center gap-1">
+                              {uf.aiDetecting ? (
+                                <>
+                                  <Loader2 className="w-3 h-3 text-primary animate-spin" />
+                                  <span className="text-xs text-primary">Detecting...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="w-3 h-3 text-primary" />
+                                  <span className="text-xs px-1.5 py-0.5 rounded bg-accent text-accent-foreground">
+                                    {reportTypeLabel(uf.reportType)}
+                                  </span>
+                                  {uf.aiConfidence && uf.aiConfidence > 0.8 && (
+                                    <span className="text-xs text-success">✓</span>
+                                  )}
+                                </>
+                              )}
+                            </div>
                           </div>
+                        </div>
                         </div>
 
                         {/* Status / Remove */}
