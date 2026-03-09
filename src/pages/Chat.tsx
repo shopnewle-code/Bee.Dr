@@ -473,6 +473,9 @@ const ChatPage = () => {
             </SheetContent>
           </Sheet>
 
+          <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={() => navigate('/chat-compare')}>
+            <GitCompareArrows className="w-3 h-3" /> Compare
+          </Button>
           <Button variant="outline" size="sm" className="text-xs gap-1.5" onClick={() => navigate('/voice-doctor')}>
             <Mic className="w-3 h-3" /> Voice
           </Button>
