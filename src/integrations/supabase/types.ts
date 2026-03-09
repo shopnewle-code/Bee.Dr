@@ -833,6 +833,7 @@ export type Database = {
           report_type: string | null
           risk_scores: Json | null
           status: string
+          storage_path: string | null
           updated_at: string
           user_id: string
         }
@@ -847,6 +848,7 @@ export type Database = {
           report_type?: string | null
           risk_scores?: Json | null
           status?: string
+          storage_path?: string | null
           updated_at?: string
           user_id: string
         }
@@ -861,6 +863,7 @@ export type Database = {
           report_type?: string | null
           risk_scores?: Json | null
           status?: string
+          storage_path?: string | null
           updated_at?: string
           user_id?: string
         }
