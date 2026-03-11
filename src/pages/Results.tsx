@@ -127,7 +127,7 @@ const ResultsPage = () => {
 
       <main className="container mx-auto px-4 py-6 max-w-3xl">
         <Tabs defaultValue="explanation" className="w-full">
-          <TabsList className="w-full grid grid-cols-4 mb-6">
+          <TabsList className="w-full grid grid-cols-5 mb-6">
             <TabsTrigger value="explanation" className="flex items-center gap-1.5 text-xs">
               <FileText className="w-3.5 h-3.5" /> Report
             </TabsTrigger>
@@ -136,6 +136,9 @@ const ResultsPage = () => {
             </TabsTrigger>
             <TabsTrigger value="risks" className="flex items-center gap-1.5 text-xs">
               <Shield className="w-3.5 h-3.5" /> Risks
+            </TabsTrigger>
+            <TabsTrigger value="ocr" className="flex items-center gap-1.5 text-xs">
+              <Eye className="w-3.5 h-3.5" /> OCR
             </TabsTrigger>
             <TabsTrigger value="chat" className="flex items-center gap-1.5 text-xs">
               <MessageCircle className="w-3.5 h-3.5" /> Ask AI
