@@ -161,6 +161,9 @@ const ProcessingPage = () => {
             status: 'complete',
             report_type: reportType,
           };
+          if (ocrText) {
+            updateData.ocr_text = ocrText;
+          }
           if (analysisResult) {
             updateData.raw_data = analysisResult;
             // Extract risk scores from analysis

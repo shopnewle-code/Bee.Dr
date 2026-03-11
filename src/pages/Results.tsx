@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Activity, ArrowLeft, Shield, FileText, MessageCircle,
-  Globe, Loader2, Radar
+  Globe, Loader2, Radar, Eye
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import ReportExplanation from '@/components/report/ReportExplanation';
