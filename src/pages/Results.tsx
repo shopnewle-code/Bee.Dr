@@ -244,6 +244,35 @@ const ResultsPage = () => {
             )}
           </TabsContent>
 
+          <TabsContent value="ocr">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-display font-semibold text-foreground text-sm">Extracted OCR Text</h3>
+                <span className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                  AI Vision
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                This is the raw text extracted from your report image. Verify that AI read your report correctly.
+              </p>
+              {scan.ocr_text ? (
+                <div className="bg-card border border-border rounded-xl p-4 max-h-[400px] overflow-auto">
+                  <pre className="text-xs text-foreground whitespace-pre-wrap font-mono leading-relaxed">
+                    {scan.ocr_text}
+                  </pre>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 gap-3">
+                  <Eye className="w-8 h-8 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">No OCR text available</p>
+                  <p className="text-[10px] text-muted-foreground text-center max-w-xs">
+                    This report was processed before vision OCR was enabled.
+                  </p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
           <TabsContent value="chat">
             <ReportChat
               scanData={{
