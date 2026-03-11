@@ -28,6 +28,8 @@ const ResultsPage = () => {
   const { language, setLanguage, languageInfo } = useLanguage();
   const { simpleLanguage } = useSimpleLanguage();
 
+  const [showOCR, setShowOCR] = useState(false);
+
   useEffect(() => {
     if (!id || !user) return;
     supabase.from('scan_results').select('*').eq('id', id).single()
