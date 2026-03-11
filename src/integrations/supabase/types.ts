@@ -828,6 +828,7 @@ export type Database = {
           file_name: string
           id: string
           insights: Json | null
+          ocr_text: string | null
           raw_data: Json | null
           recommendations: Json | null
           report_type: string | null
@@ -843,6 +844,7 @@ export type Database = {
           file_name: string
           id?: string
           insights?: Json | null
+          ocr_text?: string | null
           raw_data?: Json | null
           recommendations?: Json | null
           report_type?: string | null
@@ -858,6 +860,7 @@ export type Database = {
           file_name?: string
           id?: string
           insights?: Json | null
+          ocr_text?: string | null
           raw_data?: Json | null
           recommendations?: Json | null
           report_type?: string | null

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Activity, ArrowLeft, Shield, FileText, MessageCircle,
-  Globe, Loader2, Radar
+  Globe, Loader2, Radar, Eye
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import ReportExplanation from '@/components/report/ReportExplanation';
@@ -27,6 +27,8 @@ const ResultsPage = () => {
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const { language, setLanguage, languageInfo } = useLanguage();
   const { simpleLanguage } = useSimpleLanguage();
+
+  const [showOCR, setShowOCR] = useState(false);
 
   useEffect(() => {
     if (!id || !user) return;
@@ -125,7 +127,7 @@ const ResultsPage = () => {
 
       <main className="container mx-auto px-4 py-6 max-w-3xl">
         <Tabs defaultValue="explanation" className="w-full">
-          <TabsList className="w-full grid grid-cols-4 mb-6">
+          <TabsList className="w-full grid grid-cols-5 mb-6">
             <TabsTrigger value="explanation" className="flex items-center gap-1.5 text-xs">
               <FileText className="w-3.5 h-3.5" /> Report
             </TabsTrigger>
@@ -134,6 +136,9 @@ const ResultsPage = () => {
             </TabsTrigger>
             <TabsTrigger value="risks" className="flex items-center gap-1.5 text-xs">
               <Shield className="w-3.5 h-3.5" /> Risks
+            </TabsTrigger>
+            <TabsTrigger value="ocr" className="flex items-center gap-1.5 text-xs">
+              <Eye className="w-3.5 h-3.5" /> OCR
             </TabsTrigger>
             <TabsTrigger value="chat" className="flex items-center gap-1.5 text-xs">
               <MessageCircle className="w-3.5 h-3.5" /> Ask AI
@@ -237,6 +242,35 @@ const ResultsPage = () => {
             ) : (
               <p className="text-center text-muted-foreground py-12">Unable to load risk assessment</p>
             )}
+          </TabsContent>
+
+          <TabsContent value="ocr">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-display font-semibold text-foreground text-sm">Extracted OCR Text</h3>
+                <span className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                  AI Vision
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                This is the raw text extracted from your report image. Verify that AI read your report correctly.
+              </p>
+              {scan.ocr_text ? (
+                <div className="bg-card border border-border rounded-xl p-4 max-h-[400px] overflow-auto">
+                  <pre className="text-xs text-foreground whitespace-pre-wrap font-mono leading-relaxed">
+                    {scan.ocr_text}
+                  </pre>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 gap-3">
+                  <Eye className="w-8 h-8 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">No OCR text available</p>
+                  <p className="text-[10px] text-muted-foreground text-center max-w-xs">
+                    This report was processed before vision OCR was enabled.
+                  </p>
+                </div>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="chat">
