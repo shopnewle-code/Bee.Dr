@@ -248,12 +248,22 @@ const ResultsPage = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-display font-semibold text-foreground text-sm">Extracted OCR Text</h3>
-                <span className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded-full">
-                  AI Vision
-                </span>
+                <div className="flex items-center gap-2">
+                  {scan.ocr_text && (() => {
+                    const pageCount = (scan.ocr_text.match(/---\s*Page\s+\d+\s*---/gi) || []).length;
+                    return pageCount > 0 ? (
+                      <span className="text-[10px] text-primary bg-primary/10 px-2 py-1 rounded-full font-medium">
+                        📄 {pageCount} {pageCount === 1 ? 'page' : 'pages'}
+                      </span>
+                    ) : null;
+                  })()}
+                  <span className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                    AI Vision
+                  </span>
+                </div>
               </div>
               <p className="text-xs text-muted-foreground">
-                This is the raw text extracted from your report image. Verify that AI read your report correctly.
+                This is the raw text extracted from your report{scan.ocr_text && (scan.ocr_text.match(/---\s*Page\s+\d+\s*---/gi) || []).length > 1 ? ' (multi-page PDF)' : ''}. Verify that AI read your report correctly.
               </p>
               {scan.ocr_text ? (
                 <div className="bg-card border border-border rounded-xl p-4 max-h-[400px] overflow-auto">
