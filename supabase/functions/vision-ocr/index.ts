@@ -57,10 +57,12 @@ serve(async (req) => {
       });
     }
 
+    const isPdf = base64Data.startsWith("data:application/pdf");
+
     // Use Gemini multimodal for vision-based OCR
     const systemPrompt = `You are a medical document OCR engine for the Bee.dr health platform.
 
-Your job is to extract ALL text visible in this medical report image with maximum accuracy.
+Your job is to extract ALL text visible in this medical report with maximum accuracy.
 
 RULES:
 - Extract every piece of text you can see: headers, values, units, patient info, dates, doctor names, lab names.
@@ -69,8 +71,20 @@ RULES:
 - Include ALL numeric values exactly as they appear.
 - If text is partially obscured or blurry, mark it as [unclear].
 - Do NOT interpret or analyze — just extract the raw text.
-- Do NOT fabricate any text not visible in the image.
-- If the image is not a medical document, state that clearly.`;
+- Do NOT fabricate any text not visible in the document.
+- If the document is not a medical document, state that clearly.
+${isPdf ? `
+MULTI-PAGE PDF INSTRUCTIONS:
+- This is a PDF document that may contain MULTIPLE pages.
+- Extract text from EVERY page in the document.
+- Clearly mark page boundaries with "--- Page X ---" headers.
+- Do not skip any pages. Process all pages from first to last.
+- Tables that span across pages should be extracted page by page.
+` : ""}`; 
+
+    const userPrompt = isPdf
+      ? `Extract ALL text from EVERY page of this multi-page PDF medical document. Process all pages from beginning to end. Filename: ${fileName || "unknown"}`
+      : `Extract all text from this medical document image. Filename: ${fileName || "unknown"}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -85,11 +99,12 @@ RULES:
           {
             role: "user",
             content: [
-              { type: "text", text: `Extract all text from this medical document image. Filename: ${fileName || "unknown"}` },
+              { type: "text", text: userPrompt },
               { type: "image_url", image_url: { url: base64Data } },
             ],
           },
         ],
+        max_tokens: isPdf ? 16000 : 8000,
       }),
     });
 
