@@ -14,6 +14,7 @@ import ReportExplanation from '@/components/report/ReportExplanation';
 import ReportChat from '@/components/report/ReportChat';
 import RiskRadarChart from '@/components/report/RiskRadarChart';
 import { useSimpleLanguage } from '@/hooks/use-simple-language';
+import OCRHighlightedText from '@/components/report/OCRHighlightedText';
 import { useLanguage, SUPPORTED_LANGUAGES } from '@/hooks/use-language';
 import { toast } from 'sonner';
 
