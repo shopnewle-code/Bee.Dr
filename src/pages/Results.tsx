@@ -284,9 +284,7 @@ const ResultsPage = () => {
               </p>
               {scan.ocr_text ? (
                 <div className="bg-card border border-border rounded-xl p-4 max-h-[400px] overflow-auto">
-                  <pre className="text-xs text-foreground whitespace-pre-wrap font-mono leading-relaxed">
-                    {scan.ocr_text}
-                  </pre>
+                  <OCRHighlightedText text={scan.ocr_text} />
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 gap-3">
