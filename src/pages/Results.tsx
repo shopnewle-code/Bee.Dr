@@ -29,6 +29,15 @@ const ResultsPage = () => {
   const { simpleLanguage } = useSimpleLanguage();
 
   const [showOCR, setShowOCR] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyOCR = async () => {
+    if (!scan?.ocr_text) return;
+    await navigator.clipboard.writeText(scan.ocr_text);
+    setCopied(true);
+    toast.success('OCR text copied to clipboard');
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     if (!id || !user) return;
