@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Activity, ArrowLeft, Shield, FileText, MessageCircle,
-  Globe, Loader2, Radar, Eye
+  Globe, Loader2, Radar, Eye, Copy, Check
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import ReportExplanation from '@/components/report/ReportExplanation';
@@ -29,6 +29,15 @@ const ResultsPage = () => {
   const { simpleLanguage } = useSimpleLanguage();
 
   const [showOCR, setShowOCR] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyOCR = async () => {
+    if (!scan?.ocr_text) return;
+    await navigator.clipboard.writeText(scan.ocr_text);
+    setCopied(true);
+    toast.success('OCR text copied to clipboard');
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     if (!id || !user) return;
@@ -260,6 +269,13 @@ const ResultsPage = () => {
                   <span className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded-full">
                     AI Vision
                   </span>
+                  {scan.ocr_text && (
+                    <Button variant="ghost" size="sm" onClick={handleCopyOCR}
+                      className="h-7 px-2 text-xs gap-1">
+                      {copied ? <Check className="w-3 h-3 text-success" /> : <Copy className="w-3 h-3" />}
+                      {copied ? 'Copied' : 'Copy'}
+                    </Button>
+                  )}
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
