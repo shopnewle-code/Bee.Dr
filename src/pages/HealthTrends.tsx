@@ -16,48 +16,55 @@ import {
 import BottomNav from '@/components/BottomNav';
 import type { Tables } from '@/integrations/supabase/types';
 
-// Extract biomarker values from scan insights/raw_data
-function extractBiomarkers(scans: Tables<'scan_results'>[]) {
+type TrendPoint = {
+  date: string;
+  hemoglobin: number | null;
+  cholesterol: number | null;
+  vitaminD: number | null;
+  glucose: number | null;
+  scanId: string;
+};
+
+function matchBiomarkerKey(testName: string): keyof typeof biomarkerConfig | null {
+  const normalized = testName.toLowerCase();
+
+  if (/(hemoglobin|haemoglobin|\bhb\b)/.test(normalized)) return 'hemoglobin';
+  if (/(cholesterol|total cholesterol)/.test(normalized)) return 'cholesterol';
+  if (/(vitamin\s*d|25[- ]?oh|25 hydroxy)/.test(normalized)) return 'vitaminD';
+  if (/(fasting glucose|blood glucose|glucose|\bfbs\b)/.test(normalized)) return 'glucose';
+
+  return null;
+}
+
+function buildTrendPoints(scans: Tables<'scan_results'>[], testResults: Tables<'test_results'>[]): TrendPoint[] {
   return scans
-    .filter(s => s.status === 'complete')
+    .filter((scan) => scan.status === 'complete')
     .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-    .map(scan => {
-      const insights = (scan.insights as any[]) || [];
-      const raw = (scan.raw_data as any) || {};
+    .map((scan) => {
+      const scanResults = testResults.filter((result) => result.scan_id === scan.id);
+      const values: Record<string, number | null> = {
+        hemoglobin: null,
+        cholesterol: null,
+        vitaminD: null,
+        glucose: null,
+      };
 
-      // Try extracting from insights text or use mock trend data based on scan date
-      const date = new Date(scan.created_at);
-      const monthLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
-      // Parse values from insights if available
-      let hemoglobin = raw.hemoglobin || null;
-      let cholesterol = raw.cholesterol || null;
-      let vitaminD = raw.vitamin_d || null;
-      let glucose = raw.glucose || null;
-
-      // Try parsing from insight text
-      insights.forEach((ins: any) => {
-        const detail = ins.detail?.toLowerCase() || '';
-        if (!hemoglobin && detail.includes('hemoglobin')) {
-          const match = detail.match(/(\d+\.?\d*)\s*g\/dl/i);
-          if (match) hemoglobin = parseFloat(match[1]);
-        }
-        if (!cholesterol && detail.includes('cholesterol')) {
-          const match = detail.match(/(\d+)\s*mg\/dl/i);
-          if (match) cholesterol = parseInt(match[1]);
-        }
-        if (!vitaminD && detail.includes('vitamin d')) {
-          const match = detail.match(/(\d+\.?\d*)\s*ng\/ml/i);
-          if (match) vitaminD = parseFloat(match[1]);
-        }
-        if (!glucose && detail.includes('glucose')) {
-          const match = detail.match(/(\d+)\s*mg\/dl/i);
-          if (match) glucose = parseInt(match[1]);
-        }
+      scanResults.forEach((result) => {
+        const biomarkerKey = matchBiomarkerKey(result.test_name);
+        if (!biomarkerKey || values[biomarkerKey] !== null) return;
+        values[biomarkerKey] = Number(result.result_value);
       });
 
-      return { date: monthLabel, hemoglobin, cholesterol, vitaminD, glucose, scanId: scan.id };
-    });
+      return {
+        date: new Date(scan.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        hemoglobin: values.hemoglobin,
+        cholesterol: values.cholesterol,
+        vitaminD: values.vitaminD,
+        glucose: values.glucose,
+        scanId: scan.id,
+      };
+    })
+    .filter((point) => Object.values(point).some((value) => typeof value === 'number'));
 }
 
 // Demo data for when user has fewer than 3 scans
@@ -132,32 +139,29 @@ const HealthTrends = () => {
   const { user } = useAuth();
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [usingDemoData, setUsingDemoData] = useState(false);
   const [activeTab, setActiveTab] = useState<BiomarkerKey>('hemoglobin');
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from('scan_results')
-      .select('*')
-      .eq('status', 'complete')
-      .order('created_at', { ascending: true })
-      .then(({ data: scans }) => {
-        if (scans && scans.length >= 2) {
-          const extracted = extractBiomarkers(scans);
-          // Fill nulls with demo-like values if parsing didn't find real ones
-          const filled = extracted.map((d, i) => ({
-            ...d,
-            hemoglobin: d.hemoglobin ?? demoData[i % demoData.length]?.hemoglobin,
-            cholesterol: d.cholesterol ?? demoData[i % demoData.length]?.cholesterol,
-            vitaminD: d.vitaminD ?? demoData[i % demoData.length]?.vitaminD,
-            glucose: d.glucose ?? demoData[i % demoData.length]?.glucose,
-          }));
-          setData(filled);
-        } else {
-          setData(demoData);
-        }
-        setLoading(false);
-      });
+    Promise.all([
+      supabase.from('scan_results').select('*').eq('status', 'complete').order('created_at', { ascending: true }),
+      supabase.from('test_results').select('*').order('created_at', { ascending: true }),
+    ]).then(([scanResponse, testResponse]) => {
+      const scans = scanResponse.data || [];
+      const testResults = testResponse.data || [];
+      const trendData = buildTrendPoints(scans, testResults);
+
+      if (trendData.length >= 2) {
+        setData(trendData);
+        setUsingDemoData(false);
+      } else {
+        setData(demoData);
+        setUsingDemoData(true);
+      }
+
+      setLoading(false);
+    });
   }, [user]);
 
   const cfg = biomarkerConfig[activeTab];
@@ -270,7 +274,7 @@ const HealthTrends = () => {
               </AreaChart>
             </ResponsiveContainer>
           )}
-          {data === demoData && (
+          {usingDemoData && (
             <p className="text-[10px] text-muted-foreground text-center mt-2 italic">
               📊 Demo data shown — upload more reports to see your real trends
             </p>

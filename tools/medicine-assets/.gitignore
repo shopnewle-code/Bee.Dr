@@ -1,0 +1,12 @@
+data/raw/**
+!data/raw/.gitkeep
+data/processed/**
+!data/processed/.gitkeep
+datasets/**
+!datasets/.gitkeep
+models/**
+!models/.gitkeep
+runs/**
+!runs/.gitkeep
+__pycache__/
+*.pyc

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
+import { getReportTypeLabel, normalizeScanAnalysis } from '@/lib/report-analysis';
 
 type Scan = Tables<'scan_results'>;
 
@@ -27,66 +28,76 @@ function buildTimeline(scans: Scan[]): TimelineEvent[] {
   const sorted = [...scans].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
 
   sorted.forEach((scan, idx) => {
+    const analysis = normalizeScanAnalysis(scan);
     events.push({
       id: `scan-${scan.id}`,
       date: scan.created_at,
       title: scan.file_name,
-      description: scan.status === 'completed' ? 'Report analyzed successfully' : 'Report uploaded',
+      description: scan.status === 'complete'
+        ? `${getReportTypeLabel(analysis.reportType)} analyzed successfully`
+        : 'Report uploaded',
       type: 'scan',
       scanId: scan.id,
     });
 
-    const insights = scan.insights as any;
-    const riskScores = scan.risk_scores as any;
-
-    if (insights?.abnormal_values && Array.isArray(insights.abnormal_values)) {
-      insights.abnormal_values.forEach((v: any) => {
+    analysis.abnormalTests.slice(0, 4).forEach((test) => {
         events.push({
-          id: `alert-${scan.id}-${v.name || Math.random()}`,
+          id: `alert-${scan.id}-${test.name.replace(/\s+/g, '-')}`,
           date: scan.created_at,
-          title: `${v.name || 'Value'} flagged abnormal`,
-          description: v.explanation || `Value: ${v.value} ${v.unit || ''}`,
+          title: `${test.name} flagged abnormal`,
+          description: `${test.value} ${test.unit} • ${test.explanation}`,
           type: 'alert',
           scanId: scan.id,
         });
       });
-    }
 
-    if (riskScores && typeof riskScores === 'object') {
-      Object.entries(riskScores).forEach(([key, val]: [string, any]) => {
-        const score = typeof val === 'number' ? val : val?.score;
-        if (score && score > 60) {
+    analysis.overallRisks
+      .filter((risk) => risk.level !== 'low')
+      .forEach((risk) => {
+        events.push({
+          id: `risk-${scan.id}-${risk.condition.replace(/\s+/g, '-')}`,
+          date: scan.created_at,
+          title: `${risk.condition} risk highlighted`,
+          description: risk.explanation,
+          type: risk.level === 'high' ? 'decline' : 'alert',
+          scanId: scan.id,
+        });
+      });
+
+    if (idx > 0) {
+      const prev = sorted[idx - 1];
+      const previousAnalysis = normalizeScanAnalysis(prev);
+      previousAnalysis.tests.forEach((previousTest) => {
+        const matchingCurrent = analysis.tests.find(
+          (test) => test.name.toLowerCase() === previousTest.name.toLowerCase(),
+        );
+        if (!matchingCurrent) return;
+
+        const wasAbnormal = previousTest.status !== 'normal';
+        const isNowNormal = matchingCurrent.status === 'normal';
+        const wasNormal = previousTest.status === 'normal';
+        const isNowAbnormal = matchingCurrent.status !== 'normal';
+
+        if (wasAbnormal && isNowNormal) {
           events.push({
-            id: `risk-${scan.id}-${key}`,
+            id: `improve-${scan.id}-${previousTest.name.replace(/\s+/g, '-')}`,
             date: scan.created_at,
-            title: `High ${key} risk detected`,
-            description: `Risk score: ${score}%`,
+            title: `${previousTest.name} improved`,
+            description: `${matchingCurrent.value} ${matchingCurrent.unit} is now back within range.`,
+            type: 'improvement',
+            scanId: scan.id,
+          });
+        } else if (wasNormal && isNowAbnormal) {
+          events.push({
+            id: `decline-${scan.id}-${previousTest.name.replace(/\s+/g, '-')}`,
+            date: scan.created_at,
+            title: `${previousTest.name} moved out of range`,
+            description: matchingCurrent.explanation,
             type: 'decline',
             scanId: scan.id,
           });
         }
       });
-    }
-
-    if (idx > 0) {
-      const prev = sorted[idx - 1];
-      const prevRisk = prev.risk_scores as any;
-      if (riskScores && prevRisk) {
-        Object.entries(riskScores).forEach(([key, val]: [string, any]) => {
-          const curr = typeof val === 'number' ? val : val?.score;
-          const prevVal = prevRisk[key];
-          const prevScore = typeof prevVal === 'number' ? prevVal : prevVal?.score;
-          if (curr && prevScore && prevScore - curr > 10) {
-            events.push({
-              id: `improve-${scan.id}-${key}`,
-              date: scan.created_at,
-              title: `${key} risk improved`,
-              description: `Decreased from ${prevScore}% to ${curr}%`,
-              type: 'improvement',
-            });
-          }
-        });
-      }
     }
   });
 

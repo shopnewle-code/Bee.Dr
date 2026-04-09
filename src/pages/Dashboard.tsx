@@ -20,6 +20,7 @@ import { HealthScoreRing } from '@/components/ai/HealthScoreRing';
 import { AIThinkingPulse, AIBrainWave } from '@/components/ai/AIThinkingAnimation';
 import { ECGLine } from '@/components/ai/ECGLine';
 import { AIGlowCard, AIBadge } from '@/components/ai/AIGlowCard';
+import { getReportTypeLabel, normalizeScanAnalysis } from '@/lib/report-analysis';
 
 // Feature categories
 const quickActions = [
@@ -40,6 +41,7 @@ const aiFeatures = [
 ];
 
 const medicalTools = [
+  { icon: Sparkles, label: 'Health Insights', path: '/health-insights' },
   { icon: TrendingUp, label: 'Health Trends', path: '/trends' },
   { icon: GitCompare, label: 'Compare Reports', path: '/compare' },
   { icon: GitCompareArrows, label: 'Compare Responses', path: '/chat-compare' },
@@ -100,8 +102,13 @@ const DashboardPage = () => {
 
   const handleSignOut = async () => { await signOut(); navigate('/'); };
   const displayName = profile?.display_name || user?.email?.split('@')[0] || 'User';
+  const latestCompletedScan = scans.find(s => s.status === 'complete') || null;
+  const latestAnalysis = latestCompletedScan ? normalizeScanAnalysis(latestCompletedScan) : null;
+  const topAbnormalValues = latestAnalysis?.abnormalTests.slice(0, 3) || [];
+  const topRecommendations = latestAnalysis?.lifestyleRecommendations.slice(0, 2) || [];
 
   const healthScore = (() => {
+    if (latestAnalysis) return latestAnalysis.healthScore;
     const latestScan = scans.find(s => s.status === 'complete' && s.risk_scores);
     if (!latestScan?.risk_scores) return 78;
     const scores = latestScan.risk_scores as Record<string, { score?: number }>;
@@ -196,17 +203,113 @@ const DashboardPage = () => {
               <HealthScoreRing score={healthScore} size={130} />
               <div className="flex-1 space-y-2.5">
                 <p className="font-display font-semibold text-foreground text-lg">Your Health Score</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">Based on your latest reports and daily check-ins</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {latestAnalysis
+                    ? `Based on your latest ${getReportTypeLabel(latestAnalysis.reportType).toLowerCase()} and AI insights`
+                    : 'Based on your latest reports and daily check-ins'}
+                </p>
                 <div className="flex flex-wrap gap-1.5 mt-2">
-                  <AIBadge variant="glow" className="bg-success/10 text-success">
-                    <Heart className="w-2.5 h-2.5" /> Heart: OK
-                  </AIBadge>
-                  <AIBadge variant="pulse" className="bg-warning/10 text-warning">
-                    <Shield className="w-2.5 h-2.5" /> Vit D: Low
-                  </AIBadge>
+                  {topAbnormalValues.length > 0 ? topAbnormalValues.slice(0, 2).map((test) => (
+                    <AIBadge key={test.name} variant="pulse" className="bg-warning/10 text-warning">
+                      <Shield className="w-2.5 h-2.5" /> {test.name}: {test.status}
+                    </AIBadge>
+                  )) : (
+                    <AIBadge variant="glow" className="bg-success/10 text-success">
+                      <Heart className="w-2.5 h-2.5" /> Latest report stable
+                    </AIBadge>
+                  )}
                 </div>
               </div>
             </div>
+          </AIGlowCard>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+        >
+          <AIGlowCard glowColor="primary" animated={false} className="space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-[0.18em] text-primary/80 font-semibold">AI Health Analysis</p>
+                <h2 className="font-display font-bold text-foreground text-xl mt-1">
+                  {latestAnalysis ? latestAnalysis.summary : 'Upload a report to unlock your first insight'}
+                </h2>
+              </div>
+              <div className="shrink-0">
+                <AIBadge variant="glow" className="bg-primary/10 text-primary">
+                  <Sparkles className="w-2.5 h-2.5" /> {latestAnalysis ? getReportTypeLabel(latestAnalysis.reportType) : 'MVP'}
+                </AIBadge>
+              </div>
+            </div>
+
+            {latestAnalysis ? (
+              <div className="space-y-4">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-border bg-background/70 p-4">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Abnormal Values</p>
+                    {topAbnormalValues.length > 0 ? (
+                      <div className="space-y-2">
+                        {topAbnormalValues.map((test) => (
+                          <div key={test.name} className="rounded-xl bg-warning/10 px-3 py-2">
+                            <p className="text-sm font-semibold text-foreground">{test.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {test.value} {test.unit} • Normal {test.normalRange}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No obvious abnormal values were highlighted in your latest report.</p>
+                    )}
+                  </div>
+
+                  <div className="rounded-2xl border border-border bg-background/70 p-4">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Recommendations</p>
+                    {topRecommendations.length > 0 ? (
+                      <div className="space-y-2">
+                        {topRecommendations.map((recommendation) => (
+                          <div key={`${recommendation.category}-${recommendation.advice}`} className="rounded-xl bg-primary/10 px-3 py-2">
+                            <p className="text-sm font-semibold text-foreground">{recommendation.category}</p>
+                            <p className="text-xs text-muted-foreground">{recommendation.advice}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No lifestyle recommendations yet. Upload a richer report for deeper guidance.</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    className="gradient-primary text-primary-foreground rounded-xl"
+                    onClick={() => navigate(`/results/${latestCompletedScan?.id}`)}
+                  >
+                    View Full Analysis <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                  <Button variant="outline" className="rounded-xl" onClick={() => navigate('/health-insights')}>
+                    Insights Dashboard
+                  </Button>
+                  <Button variant="outline" className="rounded-xl" onClick={() => navigate('/upload')}>
+                    Upload New Report
+                  </Button>
+                  <Button variant="ghost" className="rounded-xl" onClick={() => navigate('/symptom-checker')}>
+                    Symptom Checker
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                <Button className="gradient-primary text-primary-foreground rounded-xl" onClick={() => navigate('/upload')}>
+                  Upload Report <Upload className="w-4 h-4 ml-2" />
+                </Button>
+                <Button variant="outline" className="rounded-xl" onClick={() => navigate('/symptom-checker')}>
+                  Start Symptom Check
+                </Button>
+              </div>
+            )}
           </AIGlowCard>
         </motion.div>
 

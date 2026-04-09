@@ -5,6 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Activity, Check, Loader2, FileText, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  buildFallbackReportAnalysis,
+  buildInsightCards,
+  buildRecommendationCards,
+  buildRiskScores,
+  normalizeScanAnalysis,
+} from '@/lib/report-analysis';
 
 const PIPELINE_STEPS = [
   { label: 'Document scanning & noise removal', key: 'scan' },
@@ -14,6 +21,98 @@ const PIPELINE_STEPS = [
   { label: 'Medical AI analysis', key: 'analyze' },
   { label: 'Risk scoring & recommendations', key: 'risk' },
 ];
+
+async function persistNumericTestResults(scanId: string, userId: string, rawAnalysis: Record<string, unknown>) {
+  const normalized = normalizeScanAnalysis({
+    report_type: String(rawAnalysis.reportType || 'general'),
+    raw_data: rawAnalysis,
+    insights: null,
+    recommendations: null,
+    risk_scores: null,
+  });
+
+  const numericTests = normalized.tests.filter((test) => test.numericValue !== null);
+  if (numericTests.length === 0) return;
+
+  const { data: existingRows } = await supabase
+    .from('test_results')
+    .select('id')
+    .eq('scan_id', scanId)
+    .limit(1);
+
+  if (existingRows && existingRows.length > 0) return;
+
+  const { error } = await supabase.from('test_results').insert(
+    numericTests.map((test) => ({
+      scan_id: scanId,
+      user_id: userId,
+      test_name: test.name,
+      result_value: test.numericValue!,
+      unit: test.unit || '',
+      normal_range_min: test.normalMin,
+      normal_range_max: test.normalMax,
+      status: test.status,
+    })) as any,
+  );
+
+  if (error) {
+    console.warn('Failed to persist test results:', error);
+  }
+}
+
+async function persistHealthInsights(scanId: string, userId: string, rawAnalysis: Record<string, unknown>) {
+  const normalized = normalizeScanAnalysis({
+    report_type: String(rawAnalysis.reportType || 'general'),
+    raw_data: rawAnalysis,
+    insights: null,
+    recommendations: null,
+    risk_scores: null,
+  });
+
+  const { data: recentInsights } = await supabase
+    .from('health_insights')
+    .select('id, details')
+    .eq('user_id', userId)
+    .order('generated_at', { ascending: false })
+    .limit(25);
+
+  const alreadySaved = (recentInsights || []).some((row: any) => row?.details?.scan_id === scanId);
+  if (alreadySaved) return;
+
+  const abnormalValues = normalized.abnormalTests.slice(0, 6).map((test) => ({
+    name: test.name,
+    value: test.value,
+    unit: test.unit,
+    normalRange: test.normalRange,
+    status: test.status,
+    explanation: test.explanation,
+  }));
+
+  const insightRows = (normalized.overallRisks.length > 0
+    ? normalized.overallRisks
+    : [{
+        condition: 'report_summary',
+        level: normalized.abnormalTests.length > 0 ? 'medium' : 'low',
+        explanation: normalized.summary,
+      }]
+  ).map((risk) => ({
+    user_id: userId,
+    risk_type: risk.condition,
+    risk_score: risk.level === 'high' ? 0.82 : risk.level === 'medium' ? 0.56 : 0.24,
+    details: {
+      scan_id: scanId,
+      report_type: normalized.reportType,
+      summary: normalized.summary,
+      abnormal_values: abnormalValues,
+      recommendations: normalized.lifestyleRecommendations.slice(0, 5),
+    },
+  }));
+
+  const { error } = await supabase.from('health_insights').insert(insightRows as any);
+  if (error) {
+    console.warn('Failed to persist health insights:', error);
+  }
+}
 
 const ProcessingPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -151,50 +250,48 @@ const ProcessingPage = () => {
             console.warn('Analysis error:', e);
           }
 
+          const finalAnalysis = analysisResult || buildFallbackReportAnalysis({
+            reportType,
+            extractedData,
+            ocrText,
+            fileName: file.file_name,
+          });
+
           // Step 5: Risk scoring & recommendations
           setCurrentStep(5);
           setProgress(90);
           await delay(400);
 
           // Save results
+          const normalized = normalizeScanAnalysis({
+            report_type: reportType,
+            raw_data: finalAnalysis,
+            insights: null,
+            recommendations: null,
+            risk_scores: null,
+          });
+          const rawPayload = {
+            ...finalAnalysis,
+            extractedData,
+            ocrText,
+            processedAt: new Date().toISOString(),
+            reportType,
+          };
           const updateData: Record<string, any> = {
             status: 'complete',
             report_type: reportType,
+            raw_data: rawPayload,
+            risk_scores: buildRiskScores(normalized),
+            insights: buildInsightCards(normalized),
+            recommendations: buildRecommendationCards(normalized),
           };
           if (ocrText) {
             updateData.ocr_text = ocrText;
           }
-          if (analysisResult) {
-            updateData.raw_data = analysisResult;
-            // Extract risk scores from analysis
-            if (analysisResult.overallRisks) {
-              const riskScores: Record<string, any> = {};
-              analysisResult.overallRisks.forEach((r: any) => {
-                riskScores[r.condition?.toLowerCase().replace(/\s+/g, '_') || 'unknown'] = {
-                  score: r.level === 'high' ? 0.8 : r.level === 'medium' ? 0.5 : 0.2,
-                  label: r.level,
-                  color: r.level === 'high' ? 'destructive' : r.level === 'medium' ? 'warning' : 'success',
-                };
-              });
-              updateData.risk_scores = riskScores;
-            }
-            if (analysisResult.tests) {
-              updateData.insights = analysisResult.tests.filter((t: any) => t.status !== 'normal').map((t: any) => ({
-                title: t.name,
-                severity: t.status === 'critical' ? 'high' : t.status,
-                detail: t.explanation,
-              }));
-            }
-            if (analysisResult.lifestyleRecommendations) {
-              updateData.recommendations = analysisResult.lifestyleRecommendations.map((r: any) => ({
-                action: r.advice,
-                context: r.category,
-                priority: r.priority,
-              }));
-            }
-          }
 
           await supabase.from('scan_results').update(updateData).eq('id', file.id);
+          await persistNumericTestResults(file.id, user.id, rawPayload);
+          await persistHealthInsights(file.id, user.id, rawPayload);
           setProcessedCount(fi + 1);
         }
 

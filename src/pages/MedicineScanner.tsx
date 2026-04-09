@@ -132,7 +132,7 @@ const MedicineScanner = () => {
                 <Pill className="w-10 h-10 text-primary-foreground" />
               </div>
               <h1 className="text-2xl font-display font-bold text-foreground mb-2">Medicine Scanner</h1>
-              <p className="text-sm text-muted-foreground">Enter a medicine name to get complete information — uses, dosage, side effects, interactions & alternatives.</p>
+              <p className="text-sm text-muted-foreground">Enter a medicine name to get reference-backed information — uses, dosage, side effects, interactions & alternatives.</p>
             </div>
 
             <div className="bg-card border border-border rounded-xl p-5 space-y-4">
@@ -372,7 +372,7 @@ const MedicineScanner = () => {
               {/* Disclaimer */}
               <div className="bg-accent/30 border border-border rounded-xl p-4">
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  ⚕️ <strong>Disclaimer:</strong> This information is AI-generated for educational purposes only. Always consult your doctor or pharmacist before taking any medicine.
+                  ⚕️ <strong>Disclaimer:</strong> This information combines source-backed drug references with AI assistance when needed. Always consult your doctor or pharmacist before taking any medicine.
                 </p>
               </div>
 

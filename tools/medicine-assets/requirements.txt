@@ -1,0 +1,6 @@
+fastapi>=0.116.0,<1
+ijson>=3.3.0,<4
+psycopg2-binary>=2.9.9,<3
+requests>=2.32.0,<3
+ultralytics>=8.3.0,<9
+uvicorn>=0.35.0,<1

@@ -19,12 +19,19 @@ interface ScanResult {
 
 const TYPE_CONFIG: Record<string, { label: string; icon: string }> = {
   blood_test: { label: 'Blood Tests', icon: '🩸' },
-  radiology: { label: 'Radiology', icon: '📡' },
+  ecg: { label: 'ECG', icon: '❤️' },
+  ncv_emg: { label: 'NCV / EMG', icon: '🧠' },
+  mri: { label: 'MRI', icon: '🧲' },
+  ct_scan: { label: 'CT Scan', icon: '📡' },
+  xray: { label: 'X-ray', icon: '📷' },
+  ultrasound: { label: 'Ultrasound', icon: '🔊' },
+  pathology: { label: 'Pathology', icon: '🔬' },
   prescription: { label: 'Prescriptions', icon: '💊' },
+  urine_stool: { label: 'Urine / Stool', icon: '🧪' },
   general: { label: 'General Reports', icon: '📄' },
 };
 
-const FILTER_OPTIONS = ['all', 'blood_test', 'radiology', 'prescription', 'general'] as const;
+const FILTER_OPTIONS = ['all', 'blood_test', 'ecg', 'mri', 'ct_scan', 'xray', 'pathology', 'prescription', 'general'] as const;
 
 const HistoryPage = () => {
   const { user } = useAuth();

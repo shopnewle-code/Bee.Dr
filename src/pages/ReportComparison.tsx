@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, TrendingUp, TrendingDown, Minus, ArrowRight, Activity, Loader2 } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
 import BottomNav from '@/components/BottomNav';
+import { normalizeScanAnalysis } from '@/lib/report-analysis';
 
 type Scan = Tables<'scan_results'>;
 
@@ -17,6 +18,10 @@ interface BiomarkerValue {
   unit: string;
   normalMin: number;
   normalMax: number;
+}
+
+function normalizeBiomarkerName(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 }
 
 const demoBiomarkers: Record<string, BiomarkerValue[]> = {
@@ -39,27 +44,26 @@ const demoBiomarkers: Record<string, BiomarkerValue[]> = {
 };
 
 function extractBiomarkers(scan: Scan): BiomarkerValue[] {
-  const raw = scan.raw_data as any;
-  const insights = scan.insights as any;
-  if (Array.isArray(raw?.tests)) {
-    return raw.tests.map((t: any) => ({
-      name: t.name || t.test_name || 'Unknown',
-      value: parseFloat(t.value) || 0,
-      unit: t.unit || '',
-      normalMin: parseFloat(t.normalMin ?? t.normal_min ?? 0),
-      normalMax: parseFloat(t.normalMax ?? t.normal_max ?? 999),
+  const normalized = normalizeScanAnalysis(scan);
+  return normalized.tests
+    .filter((test) => test.numericValue !== null)
+    .map((test) => ({
+      name: test.name,
+      value: test.numericValue || 0,
+      unit: test.unit,
+      normalMin: test.normalMin ?? 0,
+      normalMax: test.normalMax ?? 999,
     }));
-  }
-  if (Array.isArray(insights?.biomarkers)) {
-    return insights.biomarkers.map((b: any) => ({
-      name: b.name || 'Unknown',
-      value: parseFloat(b.value) || 0,
-      unit: b.unit || '',
-      normalMin: parseFloat(b.normalMin ?? 0),
-      normalMax: parseFloat(b.normalMax ?? 999),
-    }));
-  }
-  return [];
+}
+
+function extractBiomarkersFromRows(results: Tables<'test_results'>[]): BiomarkerValue[] {
+  return results.map((result) => ({
+    name: result.test_name,
+    value: Number(result.result_value),
+    unit: result.unit || '',
+    normalMin: result.normal_range_min ?? 0,
+    normalMax: result.normal_range_max ?? 999,
+  }));
 }
 
 function isNormal(v: number, min: number, max: number) {
@@ -70,22 +74,29 @@ const ReportComparison = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [scans, setScans] = useState<Scan[]>([]);
+  const [testResults, setTestResults] = useState<Tables<'test_results'>[]>([]);
   const [loading, setLoading] = useState(true);
   const [oldId, setOldId] = useState<string>('');
   const [newId, setNewId] = useState<string>('');
-  const useDemo = scans.length < 2;
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from('scan_results')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('status', 'completed')
-      .order('created_at', { ascending: true })
-      .then(({ data }) => {
-        const results = data || [];
+    Promise.all([
+      supabase
+        .from('scan_results')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'complete')
+        .order('created_at', { ascending: true }),
+      supabase
+        .from('test_results')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true }),
+    ]).then(([scanResponse, testResponse]) => {
+        const results = scanResponse.data || [];
         setScans(results);
+        setTestResults(testResponse.data || []);
         if (results.length >= 2) {
           setOldId(results[0].id);
           setNewId(results[results.length - 1].id);
@@ -94,16 +105,24 @@ const ReportComparison = () => {
       });
   }, [user]);
 
-  const oldBiomarkers = useDemo
-    ? demoBiomarkers.demo_old
-    : extractBiomarkers(scans.find((s) => s.id === oldId)!);
-  const newBiomarkers = useDemo
-    ? demoBiomarkers.demo_new
-    : extractBiomarkers(scans.find((s) => s.id === newId)!);
+  const oldScan = scans.find((scan) => scan.id === oldId) || null;
+  const newScan = scans.find((scan) => scan.id === newId) || null;
+
+  const oldBiomarkers =
+    (testResults.filter((result) => result.scan_id === oldId).length > 0
+      ? extractBiomarkersFromRows(testResults.filter((result) => result.scan_id === oldId))
+      : oldScan ? extractBiomarkers(oldScan) : []);
+  const newBiomarkers =
+    (testResults.filter((result) => result.scan_id === newId).length > 0
+      ? extractBiomarkersFromRows(testResults.filter((result) => result.scan_id === newId))
+      : newScan ? extractBiomarkers(newScan) : []);
+
+  const useDemo = scans.length < 2 || (oldBiomarkers.length === 0 && newBiomarkers.length === 0);
 
   // Match by name
-  const paired = oldBiomarkers.map((old) => {
-    const match = newBiomarkers.find((n) => n.name === old.name);
+  const paired = (useDemo ? demoBiomarkers.demo_old : oldBiomarkers).map((old) => {
+    const comparisonSet = useDemo ? demoBiomarkers.demo_new : newBiomarkers;
+    const match = comparisonSet.find((n) => normalizeBiomarkerName(n.name) === normalizeBiomarkerName(old.name));
     return { old, new: match || null };
   });
 
