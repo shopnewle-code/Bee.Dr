@@ -60,6 +60,8 @@ const MelanomaScreenerPage = lazy(() => import("@/pages/MelanomaScreener"));
 const DoctorDashboardPage = lazy(() => import("@/pages/DoctorDashboard"));
 const HospitalDashboardPage = lazy(() => import("@/pages/HospitalDashboard"));
 const ChatComparisonPage = lazy(() => import("@/pages/ChatComparison"));
+const InsightsPageNew = lazy(() => import("@/pages/InsightsPage"));
+const ServicesPageNew = lazy(() => import("@/pages/ServicesPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const IndexRedirect = () => {
@@ -133,6 +135,9 @@ const AnimatedRoutes = () => {
         <Route path="/doctor-dashboard" element={<ProtectedRoute><P><DoctorDashboardPage /></P></ProtectedRoute>} />
         <Route path="/hospital-dashboard" element={<ProtectedRoute><P><HospitalDashboardPage /></P></ProtectedRoute>} />
         <Route path="/chat-compare" element={<ProtectedRoute><P><ChatComparisonPage /></P></ProtectedRoute>} />
+        {/* New refactored pages */}
+        <Route path="/insights" element={<ProtectedRoute><P><InsightsPageNew /></P></ProtectedRoute>} />
+        <Route path="/services" element={<ProtectedRoute><P><ServicesPageNew /></P></ProtectedRoute>} />
         <Route path="*" element={<P><NotFound /></P>} />
       </Routes>
     </AnimatePresence>

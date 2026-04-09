@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { RoleProvider } from "@/contexts/RoleContext";
 import AnimatedRoutes from "@/components/AnimatedRoutes";
 
 const queryClient = new QueryClient();
@@ -27,9 +28,11 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
-            <Suspense fallback={<PageLoader />}>
-              <AnimatedRoutes />
-            </Suspense>
+            <RoleProvider>
+              <Suspense fallback={<PageLoader />}>
+                <AnimatedRoutes />
+              </Suspense>
+            </RoleProvider>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

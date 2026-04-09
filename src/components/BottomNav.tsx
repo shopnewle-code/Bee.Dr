@@ -1,12 +1,12 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, FileText, Bot, Clock, User } from 'lucide-react';
+import { Home, FileText, Bot, TrendingUp, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const tabs = [
   { icon: Home, label: 'Home', path: '/dashboard' },
   { icon: FileText, label: 'Reports', path: '/upload' },
   { icon: Bot, label: 'AI Doctor', path: '/chat' },
-  { icon: Clock, label: 'History', path: '/history' },
+  { icon: TrendingUp, label: 'Insights', path: '/insights' },
   { icon: User, label: 'Profile', path: '/profile' },
 ];
 
