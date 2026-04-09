@@ -158,7 +158,7 @@ const AuthPage = () => {
                 {!isSignUp && (
                   <button
                     type="button"
-                    onClick={() => navigate('/forgot-password')}
+                    onClick={() => navigate('/forgot-password-security-questions')}
                     className="text-xs font-semibold text-primary hover:underline transition-colors"
                   >
                     Forgot?
