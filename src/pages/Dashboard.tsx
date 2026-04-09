@@ -30,6 +30,7 @@ const quickActions = [
 ];
 
 const aiFeatures = [
+  { icon: Sparkles, label: 'Health Insights', desc: 'AI summary hub', path: '/health-insights' },
   { icon: Brain, label: 'Predictive Health', desc: 'AI forecasts', path: '/predictive' },
   { icon: ScanEye, label: 'Skin Scanner', desc: 'AI dermatology', path: '/skin-scanner' },
   { icon: ShieldAlert, label: 'Melanoma Screen', desc: 'ABCDE check', path: '/melanoma-screener' },

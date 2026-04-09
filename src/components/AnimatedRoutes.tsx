@@ -19,6 +19,7 @@ const PitchPage = lazy(() => import("@/pages/Pitch"));
 const LanguageSelection = lazy(() => import("@/pages/LanguageSelection"));
 const HealthTrends = lazy(() => import("@/pages/HealthTrends"));
 const ReportComparison = lazy(() => import("@/pages/ReportComparison"));
+const HealthInsightsPage = lazy(() => import("@/pages/HealthInsights"));
 const MedicationTracker = lazy(() => import("@/pages/MedicationTracker"));
 const NotificationsPage = lazy(() => import("@/pages/Notifications"));
 const SubscriptionPage = lazy(() => import("@/pages/Subscription"));
@@ -96,6 +97,7 @@ const AnimatedRoutes = () => {
         <Route path="/settings" element={<ProtectedRoute><P><SettingsPrivacy /></P></ProtectedRoute>} />
         <Route path="/help" element={<ProtectedRoute><P><HelpSupport /></P></ProtectedRoute>} />
         <Route path="/trends" element={<ProtectedRoute><P><HealthTrends /></P></ProtectedRoute>} />
+        <Route path="/health-insights" element={<ProtectedRoute><P><HealthInsightsPage /></P></ProtectedRoute>} />
         <Route path="/compare" element={<ProtectedRoute><P><ReportComparison /></P></ProtectedRoute>} />
         <Route path="/timeline" element={<ProtectedRoute><P><MedicalTimeline /></P></ProtectedRoute>} />
         <Route path="/alerts" element={<ProtectedRoute><P><EmergencyAlerts /></P></ProtectedRoute>} />
