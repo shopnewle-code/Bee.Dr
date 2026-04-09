@@ -44,14 +44,7 @@ const ForgotPassword = () => {
           return;
         }
 
-        // Check if user exists (security: don't reveal if account exists)
-        const { data: exists } = await supabase
-          .from('profiles')
-          .select('user_id')
-          .eq('user_id', (await supabase.auth.signInWithPassword({ email: input, password: 'dummy' }).catch(() => ({ data: null }))).user?.id || '')
-          .single();
-
-        // Always show generic message
+        // Always show generic message (don't reveal if account exists)
         const token = generateResetToken();
         setResetToken(token);
 
@@ -171,8 +164,8 @@ const ForgotPassword = () => {
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   {method === 'email'
-                    ? 'We'll send you a link to reset your password'
-                    : 'We'll send you a 6-digit code'}
+                    ? "We'll send you a link to reset your password"
+                    : "We'll send you a 6-digit code"}
                 </p>
               </div>
 
