@@ -8,6 +8,8 @@ import PageTransition from '@/components/PageTransition';
 // Lazy-loaded pages
 const OnboardingPage = lazy(() => import("@/pages/Onboarding"));
 const AuthPage = lazy(() => import("@/pages/Auth"));
+const AuthSignupPage = lazy(() => import("@/pages/AuthSignup"));
+const VerifyEmailPage = lazy(() => import("@/pages/VerifyEmail"));
 const ForgotPasswordPage = lazy(() => import("@/pages/ForgotPassword"));
 const ForgotPasswordSecurityQuestionsPage = lazy(() => import("@/pages/ForgotPasswordSecurityQuestions"));
 const ResetPasswordPage = lazy(() => import("@/pages/ResetPassword"));
@@ -88,6 +90,8 @@ const AnimatedRoutes = () => {
         <Route path="/investor-deck" element={<P><InvestorDeckPage /></P>} />
         <Route path="/onboarding" element={<P><OnboardingPage /></P>} />
         <Route path="/auth" element={<P><AuthPage /></P>} />
+        <Route path="/signup" element={<P><AuthSignupPage /></P>} />
+        <Route path="/verify-email" element={<P><VerifyEmailPage /></P>} />
         <Route path="/forgot-password" element={<P><ForgotPasswordPage /></P>} />
         <Route path="/forgot-password-security-questions" element={<P><ForgotPasswordSecurityQuestionsPage /></P>} />
         <Route path="/reset-password" element={<P><ResetPasswordPage /></P>} />

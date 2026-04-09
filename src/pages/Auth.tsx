@@ -16,25 +16,18 @@ const features = [
 ];
 
 const AuthPage = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (isSignUp) {
-        await signUp(email, password, fullName);
-        toast.success('Account created! Check your email to confirm.');
-      } else {
-        await signIn(email, password);
-        navigate('/dashboard');
-      }
+      await signIn(email, password);
+      navigate('/dashboard');
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -107,10 +100,10 @@ const AuthPage = () => {
           </div>
 
           <h1 className="text-2xl font-display font-bold text-foreground mb-1 tracking-tight">
-            {isSignUp ? 'Create your account' : 'Welcome back'}
+            Welcome back
           </h1>
           <p className="text-sm text-muted-foreground mb-6">
-            {isSignUp ? 'Start your AI-powered health journey' : 'Sign in to your health dashboard'}
+            Sign in to your health dashboard
           </p>
 
           {/* Google Sign-In */}
@@ -132,17 +125,6 @@ const AuthPage = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignUp && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-                <Label htmlFor="name" className="text-xs font-medium text-muted-foreground">Full Name</Label>
-                <div className="relative mt-1.5">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input id="name" value={fullName} onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Dr. Jane Smith" className="pl-10 h-11 rounded-xl bg-white/50 border-border/60 focus:border-primary/40" required />
-                </div>
-              </motion.div>
-            )}
-
             <div>
               <Label htmlFor="email" className="text-xs font-medium text-muted-foreground">Email</Label>
               <div className="relative mt-1.5">
@@ -155,15 +137,13 @@ const AuthPage = () => {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <Label htmlFor="password" className="text-xs font-medium text-muted-foreground">Password</Label>
-                {!isSignUp && (
-                  <button
-                    type="button"
-                    onClick={() => navigate('/forgot-password-security-questions')}
-                    className="text-xs font-semibold text-primary hover:underline transition-colors"
-                  >
-                    Forgot?
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => navigate('/forgot-password-security-questions')}
+                  className="text-xs font-semibold text-primary hover:underline transition-colors"
+                >
+                  Forgot?
+                </button>
               </div>
               <div className="relative mt-1.5">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -181,7 +161,7 @@ const AuthPage = () => {
                 </div>
               ) : (
                 <>
-                  {isSignUp ? 'Create Account' : 'Sign In'}
+                  Sign In
                   <ChevronRight className="w-4 h-4 ml-1" />
                 </>
               )}
@@ -189,9 +169,12 @@ const AuthPage = () => {
           </form>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
-            {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-            <button onClick={() => setIsSignUp(!isSignUp)} className="text-primary font-semibold hover:underline">
-              {isSignUp ? 'Sign in' : 'Sign up'}
+            Don't have an account?{' '}
+            <button 
+              onClick={() => navigate('/signup')} 
+              className="text-primary font-semibold hover:underline"
+            >
+              Sign up
             </button>
           </p>
         </motion.div>
