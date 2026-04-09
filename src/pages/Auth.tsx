@@ -153,7 +153,18 @@ const AuthPage = () => {
             </div>
 
             <div>
-              <Label htmlFor="password" className="text-xs font-medium text-muted-foreground">Password</Label>
+              <div className="flex items-center justify-between mb-1.5">
+                <Label htmlFor="password" className="text-xs font-medium text-muted-foreground">Password</Label>
+                {!isSignUp && (
+                  <button
+                    type="button"
+                    onClick={() => navigate('/forgot-password')}
+                    className="text-xs font-semibold text-primary hover:underline transition-colors"
+                  >
+                    Forgot?
+                  </button>
+                )}
+              </div>
               <div className="relative mt-1.5">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
