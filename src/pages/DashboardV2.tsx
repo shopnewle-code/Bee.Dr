@@ -49,26 +49,38 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         // Fetch profile
-        const { data: profileData } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
-          .select('full_name')
+          .select('display_name')
           .eq('user_id', user.id)
-          .single();
+          .single() as { 
+            data: Tables<'profiles'> | null; 
+            error: any 
+          };
 
-        if (profileData?.full_name) {
-          setUserName(profileData.full_name.split(' ')[0]);
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+        }
+
+        if (profileData && 'display_name' in profileData && profileData.display_name) {
+          const firstName = (profileData.display_name as string).split(' ')[0];
+          setUserName(firstName);
         }
 
         // Fetch recent reports
-        const { data: scansData } = await supabase
+        const { data: scansData, error: scansError } = await supabase
           .from('scan_results')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(3);
 
+        if (scansError) {
+          console.error('Error fetching reports:', scansError);
+        }
+
         if (scansData) {
-          setRecentReports(scansData);
+          setRecentReports(scansData as Tables<'scan_results'>[]);
         }
 
         // Mock health metrics - replace with actual data

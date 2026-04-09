@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { useAuth } from './AuthContext';
 import { UserRole, ROLE_PERMISSIONS, RolePermissions } from '@/types/roles';
 import { supabase } from '@/integrations/supabase/client';
+import type { Tables } from '@/integrations/supabase/types';
 
 interface RoleContextType {
   userRole: UserRole;
@@ -28,15 +29,24 @@ export const RoleProvider = ({ children }: { children: ReactNode }) => {
       }
 
       try {
-        // Try to fetch role from profiles table
-        const { data } = await supabase
+        // Try to fetch role from profiles table with proper typing
+        const { data, error } = await supabase
           .from('profiles')
           .select('role')
           .eq('user_id', user.id)
-          .single();
+          .single() as { 
+            data: Tables<'profiles'> | null; 
+            error: any 
+          };
 
-        if (data?.role) {
-          setUserRole(data.role as UserRole);
+        if (error) {
+          console.error('Error fetching user role:', error);
+          setUserRole('user');
+          return;
+        }
+
+        if (data && 'role' in data && data.role) {
+          setUserRole(String(data.role) as UserRole);
         } else {
           setUserRole('user');
         }
