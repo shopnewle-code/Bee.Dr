@@ -119,14 +119,8 @@ const AuthSignup = () => {
       // 1. Create user account in Supabase
       const { user, error: signupError } = await signUp(email, password, fullName);
 
-      if (signupError) {
-        setError(signupError.message || 'Failed to create account');
-        setLoading(false);
-        return;
-      }
-
-      if (!user?.id) {
-        setError('Failed to create account - no user ID returned');
+      if (signupError || !user?.id) {
+        setError(signupError?.message || 'Failed to create account');
         setLoading(false);
         return;
       }
